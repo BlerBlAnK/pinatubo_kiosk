@@ -1,0 +1,419 @@
+/* ============================================================
+   Apo Pinatubo — Field Observatory Ledger
+   Portrait kiosk (1080 × 1920), 100% offline
+   ============================================================ */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100dvh;
+}
+
+/* CSS variables — ash, ember, aged paper */
+.apo-shell {
+  --bg:            #0c0a08;
+  --surface:       #15110c;
+  --surface-raised:#1c1610;
+  --rule:          rgba(201, 166, 103, 0.18);
+  --rule-strong:   rgba(201, 166, 103, 0.4);
+  --ember:         #d49b4f;
+  --ember-bright:  #e8b561;
+  --ink:           #f5efe1;
+  --ink-dim:       #c3b89e;
+  --ink-faint:     #9c9077;
+  --on-ember:      #1c1006;
+  --font-display:  Georgia, 'Palatino Linotype', serif;
+  --font-sans:     -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100dvh;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(201,138,61,0.08), transparent 50%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cg fill='none' stroke='%23c98a3d' stroke-opacity='0.05' stroke-width='1'%3E%3Ccircle cx='110' cy='110' r='18'/%3E%3Ccircle cx='110' cy='110' r='42'/%3E%3Ccircle cx='110' cy='110' r='66'/%3E%3Ccircle cx='110' cy='110' r='90'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat, repeat;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  overflow: hidden;
+}
+
+/* ---------- Top bar ---------- */
+.apo-topbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 28px;
+  background: var(--surface-raised);
+  border-bottom: 1px solid var(--rule);
+}
+
+.apo-topbar-icon { font-size: 1.25rem; }
+
+.apo-topbar-label {
+  flex: 1;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  text-align: center;
+}
+
+.apo-topbar-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.blip {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ember-bright);
+  animation: blipPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes blipPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(232,181,97,0.45); }
+  70%  { box-shadow: 0 0 0 7px rgba(232,181,97,0); }
+  100% { box-shadow: 0 0 0 0 rgba(232,181,97,0); }
+}
+
+.apo-topbar-offline {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+}
+
+/* ---------- Main ---------- */
+.apo-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 40px 20px;
+}
+
+/* ---------- Header ---------- */
+.apo-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+}
+
+.apo-eyebrow {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ember-bright);
+  margin: 0 0 6px;
+}
+
+.apo-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.3rem;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.apo-title em {
+  color: var(--ember-bright);
+  font-style: italic;
+}
+
+.apo-header-note {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink-dim);
+  text-align: right;
+  max-width: 220px;
+  margin: 0;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+/* ---------- Chat ---------- */
+.apo-chat {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  padding: 6px 4px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.apo-chat::-webkit-scrollbar { width: 8px; }
+.apo-chat::-webkit-scrollbar-track { background: transparent; }
+.apo-chat::-webkit-scrollbar-thumb { background: var(--rule-strong); border-radius: 4px; }
+
+.apo-row {
+  display: flex;
+  gap: 0.9rem;
+  max-width: 100%;
+}
+.apo-row-bot { justify-content: flex-start; }
+.apo-row-user { justify-content: flex-end; }
+
+.apo-avatar {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 5px;
+  background: var(--surface-raised);
+  border: 1px solid var(--rule-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+}
+
+.apo-bubble {
+  max-width: 83%;
+  padding: 1.15rem 1.4rem;
+  font-size: 1.05rem;
+  line-height: 1.72;
+}
+
+.apo-bubble-bot {
+  background: var(--surface-raised);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  border-radius: 2px 14px 14px 14px;
+}
+
+.apo-bubble-user {
+  background: var(--ember);
+  color: var(--on-ember);
+  font-weight: 600;
+  border-radius: 14px 2px 14px 14px;
+}
+
+.apo-para {
+  margin: 0 0 0.5rem;
+}
+.apo-para:last-child { margin-bottom: 0; }
+
+.apo-page-tags {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.apo-page-tag {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ember-bright);
+  border: 1px solid var(--rule-strong);
+  padding: 0.18rem 0.55rem;
+  border-radius: 3px;
+}
+
+.apo-followups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+
+.apo-followup-chip {
+  font-size: 0.76rem;
+  color: var(--ember-bright);
+  background: rgba(212,155,79,0.08);
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  padding: 0.28rem 0.65rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  font-family: var(--font-sans);
+}
+.apo-followup-chip:hover { background: rgba(212,155,79,0.18); border-color: var(--ember); }
+
+/* Thinking / seismograph */
+.apo-thinking {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.seismo {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+}
+.seismo i {
+  display: block;
+  width: 3px;
+  border-radius: 1px;
+  background: var(--ember);
+  transform: scaleY(0.3);
+  animation: seismoPulse 0.9s ease-in-out infinite;
+}
+.seismo i:nth-child(1) { height: 8px;  animation-delay: 0s; }
+.seismo i:nth-child(2) { height: 16px; animation-delay: 0.12s; }
+.seismo i:nth-child(3) { height: 11px; animation-delay: 0.24s; }
+.seismo i:nth-child(4) { height: 15px; animation-delay: 0.36s; }
+.seismo i:nth-child(5) { height: 7px;  animation-delay: 0.48s; }
+
+@keyframes seismoPulse {
+  0%,100% { transform: scaleY(0.3); opacity: 0.55; }
+  50%     { transform: scaleY(1);   opacity: 1; }
+}
+
+/* ---------- Starter chips ---------- */
+.apo-starters {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.apo-chip {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink-dim);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  padding: 0.75rem 1.2rem;
+  min-height: 50px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.apo-chip:hover { border-color: var(--ember); color: var(--ember-bright); background: rgba(212,155,79,0.07); }
+
+/* ---------- Input bar ---------- */
+.apo-input-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+}
+
+.apo-input-wrap {
+  flex: 1;
+  position: relative;
+}
+
+.apo-input {
+  width: 100%;
+  padding: 1.05rem 0.25rem;
+  border: none;
+  border-bottom: 2px solid var(--rule-strong);
+  background: transparent;
+  color: var(--ink);
+  font-size: 1.08rem;
+  font-family: var(--font-sans);
+  outline: none;
+  border-radius: 0;
+  transition: border-color 0.15s;
+}
+.apo-input::placeholder { color: var(--ink-faint); }
+.apo-input:focus { border-bottom-color: var(--ember-bright); }
+
+.apo-send-btn {
+  flex-shrink: 0;
+  height: 54px;
+  padding: 0 28px;
+  border: none;
+  border-radius: 8px;
+  background: var(--ember);
+  color: var(--on-ember);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.96rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+.apo-send-btn:hover { background: var(--ember-bright); transform: translateY(-1px); }
+.apo-send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ---------- Autocomplete ---------- */
+.apo-autocomplete {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--surface-raised);
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  box-shadow: 0 -12px 32px rgba(0,0,0,0.4);
+  overflow: hidden;
+  z-index: 100;
+  animation: fadeIn 0.14s ease;
+}
+
+.apo-ac-item {
+  padding: 10px 14px;
+  font-size: 0.86rem;
+  color: var(--ink);
+  cursor: pointer;
+  border-bottom: 1px solid var(--rule);
+  border-left: 4px solid transparent;
+  transition: border-color 0.1s, background 0.1s;
+}
+.apo-ac-item:last-child { border-bottom: none; }
+.apo-ac-item:hover, .apo-ac-item.apo-ac-active {
+  background: rgba(212,155,79,0.1);
+  border-left-color: var(--ember-bright);
+}
+.apo-ac-item ::ng-deep mark {
+  background: none;
+  color: var(--ember-bright);
+  font-weight: 700;
+}
+
+/* ---------- Footnote & Back ---------- */
+.apo-footnote {
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 0.74rem;
+  color: var(--ink-faint);
+  margin: 0.8rem 0 0;
+}
+.apo-footnote em { font-style: italic; color: var(--ink-dim); }
+
+.apo-back-btn {
+  flex-shrink: 0;
+  align-self: center;
+  margin-top: 0.8rem;
+  padding: 0.5rem 1.4rem;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  color: var(--ink-dim);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.apo-back-btn:hover { border-color: var(--ember); color: var(--ember-bright); }

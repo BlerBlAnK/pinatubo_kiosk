@@ -1,0 +1,160 @@
+/* Core Layout Container with Dark Volcanic Tone Background */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(transparent, rgba(18, 26, 33, 0.95)),
+              url('/assets/images/pinatubo.jpg') no-repeat center center/cover;
+  padding: 4rem 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Horizontal Track Configured for Center Snap Behavior */
+.slider-track {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 2rem 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none; /* Hides horizontal bars on Firefox */
+  -webkit-overflow-scrolling: touch; /* Kinetic scrolling touch support */
+}
+
+.slider-track::-webkit-scrollbar {
+  display: none; /* Hides scrollbars on Chrome/Safari/Edge */
+}
+
+/* Updated Spacing: Ensures first and last items can align perfectly in viewport center */
+.slider-track::before,
+.slider-track::after {
+  content: '';
+  flex: 0 0 calc(50vw - 160px); /* 160px represents exactly half of your 320px polaroid width */
+}
+
+/* The Polaroid Board Styles */
+.polaroid-card {
+  position: relative;
+  flex: 0 0 320px; 
+  background: rgba(255, 255, 255, 0.55); 
+  backdrop-filter: blur(5px);
+  padding: 3rem 2rem;
+  box-sizing: border-box;
+  scroll-snap-align: center;
+  cursor: pointer;
+  
+  /* Responsive cubic-bezier curve provides crisp scaling animations as elements pass by */
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+              background-color 0.4s ease, 
+              opacity 0.4s ease,
+              box-shadow 0.4s ease;
+  border: 2px solid transparent;
+  transform: scale(0.85); /* Slightly shrinks non-selected cards to emphasize the active one */
+  opacity: 0.6; /* Dims the background cards slightly so the center one pops */
+}
+
+/* The Selected Center Highlight (Bigger Scale) */
+.polaroid-card.is-active {
+  opacity: 1;
+  transform: scale(1.15); /* Increases size by 15% relative to normal, making it prominently larger */
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7); /* Deep dramatic shadow to lift it forward */
+  z-index: 10; /* Ensures the larger selected card stays layered on top of adjacent cards */
+}
+
+/* Photo Container Constraint */
+.image-inner {
+  width: 100%;
+  height: 300px;
+  background-color: #1a1a1a;
+  overflow: hidden;
+}
+
+.image-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Dark Accent Text Box on the Bottom of Polaroid */
+.inner-label {
+  background-color: #3e3837;
+  color: #ebebeb;
+  text-align: center;
+  padding: 1rem 0.5rem;
+  margin-top: 1rem;
+  width: 100%;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  box-sizing: border-box;
+}
+
+/* Ornamental Mount Rivets / Mechanical Pins */
+.pin {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background-color: #5c5552;
+  border-radius: 50%;
+  box-shadow: inset -1px -1px 3px rgba(0,0,0,0.5);
+}
+.top-l { top: 14px; left: 14px; }
+.top-r { top: 14px; right: 14px; }
+.bot-l { bottom: 14px; left: 14px; }
+.bot-r { bottom: 14px; right: 14px; }
+
+/* Lower Dynamic Caption Block */
+.caption-block {
+  width: 100%;
+  max-width: 320px; /* Aligns visually with the column width of active card */
+  margin-top: 1.5rem;
+  text-align: left;
+  align-self: center;
+}
+
+.caption-heading {
+  font-family: 'Kinetika Bold';
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 0.5px;
+}
+
+.caption-body {
+  font-family: 'Kinetika Regular';
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #dedede;
+  margin: 0;
+  letter-spacing: 0.2px;
+  text-align: justify;
+}
+
+/* KIOSK FLASH-CLICK TRANSITION */
+.polaroid-card.clicked-flash {
+  animation: dynamicPulse 0.2s ease-out forwards;
+  z-index: 99; /* Forces card forward over other elements during execution */
+}
+
+@keyframes dynamicPulse {
+  0% {
+    transform: scale(1.15);
+    filter: brightness(1);
+  }
+  40% {
+    transform: scale(0.95); /* Quickly shrinks layout down */
+    filter: brightness(1.7); /* Explodes into a vibrant flash */
+    box-shadow: 0 5px 25px rgba(255, 204, 0, 0.7); /* Golden highlight burst */
+  }
+  100% {
+    transform: scale(1.0);
+    filter: brightness(1.2);
+  }
+}

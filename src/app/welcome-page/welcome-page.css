@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.welcome-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.bg-layer {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(transparent, rgba(18, 26, 33, 0.95)),url('/assets/images/pinatubo.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: sepia(80%)grayscale(10%);
+  transition: filter 3s ease;
+}
+
+.bg-layer.colored {
+  filter: sepia(0%);
+}
+
+.welcome-container {
+  position: relative;
+  z-index: 1;
+}
+
+.heading {
+  font-family: Cinzel;
+}

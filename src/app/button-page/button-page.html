@@ -1,0 +1,29 @@
+<div class="layout-container">
+  
+  <div #sliderTrack class="slider-track" (scroll)="onTrackScroll($event)">
+    
+    <div 
+      *ngFor="let slide of slides; let i = index" 
+      class="polaroid-card"
+      [ngClass]="{'is-active': i === activeIndex}"
+      (click)="setActiveCard(i, slide.route, $event)"
+    >
+      <div class="pin top-l"></div>
+      <div class="pin top-r"></div>
+      
+      <div class="image-inner">
+        <img [src]="slide.imageSrc" [alt]="slide.title">
+      </div>
+
+      <div class="pin bot-l"></div>
+      <div class="pin bot-r"></div>
+    </div>
+
+  </div>
+
+  <div class="caption-block">
+    <h2 class="caption-heading">{{ slides[activeIndex].captionTitle }}</h2>
+    <p class="caption-body">{{ slides[activeIndex].description }}</p>
+  </div>
+
+</div>

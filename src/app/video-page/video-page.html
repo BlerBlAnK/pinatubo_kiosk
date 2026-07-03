@@ -1,0 +1,56 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
+
+<div class="video-container">
+  <header class="header">Mga Tinig</header>
+  <div class="header">Saalon Ng Lahar</div>
+  <div class="sub-head">MT. PINATUBO MUSEUM STORIES</div>
+
+  <main class="grid-content">
+    <div 
+      *ngFor="let person of interviewees" 
+      class="profile-card" 
+      (click)="openVideoModal(person)"
+    >
+      <div class="avatar-ring">
+        <img [src]="person.avatar" [alt]="person.name" (error)="onAvatarError($event)">
+      </div>
+      
+      <div class="profile-meta">
+        <h3>{{ person.name }}</h3>
+      </div>
+    </div>
+  </main>
+
+  <div class="video-modal" *ngIf="selectedPerson" (click)="closeVideoModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      
+      <button class="close-modal-btn" (click)="closeVideoModal()">&times;</button>
+      
+      <div class="player-surface">
+        <video 
+          #kioskVideoPlayer
+          *ngIf="!videoUnavailable"
+          controls 
+          autoplay
+          controlsList="nodownload noremoteplayback"
+          disablePictureInPicture
+          [src]="selectedPerson.videoSrc"
+          (error)="onVideoError()"
+        >
+          Your browser does not support native video playback tracks.
+        </video>
+        <div class="video-unavailable" *ngIf="videoUnavailable">
+          This story's video isn't available on this kiosk yet.
+        </div>
+      </div>
+
+      <div class="modal-descriptor">
+        <h2>{{ selectedPerson.name }}</h2>
+      </div>
+
+    </div>
+  </div>
+
+</div>
