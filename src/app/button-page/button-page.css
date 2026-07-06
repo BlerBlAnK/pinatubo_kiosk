@@ -37,6 +37,43 @@
   flex: 0 0 calc(50vw - 160px); /* 160px represents exactly half of your 320px polaroid width */
 }
 
+/* ==========================================================================
+   CAROUSEL LAYOUT CONFIGURATION (UPDATED)
+   ========================================================================== */
+
+/* Photo Container Constraint - Added relative positioning to anchor absolute child images */
+.image-inner {
+  position: relative; 
+  width: 100%;
+  height: 300px;
+  background-color: #1a1a1a;
+  overflow: hidden;
+}
+
+/* Stacks all images precisely on top of each other across all cards */
+.carousel-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  
+  /* Start completely hidden and out of the layout layer flow */
+  opacity: 0;
+  visibility: hidden;
+  
+  /* Fine-tuned 0.6s hardware-accelerated transition for smooth kiosk crossfades */
+  transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
+  will-change: opacity;
+}
+
+/* Brings only the current looping frame into full view */
+.carousel-img.visible {
+  opacity: 1;
+  visibility: visible;
+  z-index: 2; /* Lifts it above hidden background frames */
+}
 /* The Polaroid Board Styles */
 .polaroid-card {
   position: relative;

@@ -7,5 +7,32 @@
     width: 80px;
 }
 
+/* nav-container needs to be the positioning context for the back button */
+.nav-container {
+    position: relative;
+    height: 100%;
+}
 
+.back-btn {
+    position: absolute;
+    top: 50%;
+    right: 2.5rem; /* aligns with the px-10 container padding */
+    transform: translateY(-50%);
+}
 
+.back-btn a {
+    color: #ebebeb;
+    font-family: "Kinetika Bold";
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(235, 235, 235, 0.4);
+    border-radius: 2px;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.back-btn a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(235, 235, 235, 0.8);
+}   

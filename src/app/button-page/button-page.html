@@ -12,7 +12,16 @@
       <div class="pin top-r"></div>
       
       <div class="image-inner">
-        <img [src]="slide.imageSrc" [alt]="slide.title">
+        <!-- Evaluates the child loop perfectly -->
+        <img 
+          *ngFor="let imgPath of slide.images; let subIdx = index"
+          [src]="imgPath" 
+          [alt]="slide.title"
+          class="carousel-img"
+          [ngClass]="{
+            'visible': (i === activeIndex && subIdx === slide.currentImageIndex) || (i !== activeIndex && subIdx === 0)
+          }"
+        >
       </div>
 
       <div class="pin bot-l"></div>
