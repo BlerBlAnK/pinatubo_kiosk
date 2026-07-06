@@ -25,29 +25,29 @@ export class ButtonPage implements OnInit, OnDestroy {
   slides: TimelineSlide[] = [
     {
       id: 1,
-      images: ['assets/images/ptstories.jpg', 'assets/images/ptstories2.jpg', 'assets/images/ptstories3.jpg'],
+      images: ['assets/images/ptstories.jpg', 'assets/images/ptstories2.jpg', 'assets/images/ptstories3.jpg', 'assets/images/ptstories4.jpeg', 'assets/images/ptstories5.jpg'],
       currentImageIndex: 0,
       title: 'Mt. Pinatubo Stories',
       captionTitle: 'Pinatubo Stories',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
+      description: 'Explore powerful firsthand accounts and personal narratives of resilience from the historic 1991 eruption.',
       route: '/videos'
     },
     {
       id: 2,
-      images: ['assets/images/pt2.jpg', 'assets/images/pt2_sub1.jpg', 'assets/images/pt2_sub2.jpg'],
+      images: ['assets/images/pttl1.jpg', 'assets/images/pttl2.jpg', 'assets/images/pttl3.jpg', 'assets/images/pttl4.jpg', 'assets/images/pttl5.jpg' ],
       currentImageIndex: 0,
       title: 'Pinatubo Timeline',
       captionTitle: 'Pinatubo Timeline',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
+      description: 'Journey through history to trace the critical hours of the eruption and the decades of recovery that followed.',
       route: '/timeline'
     },
     {
       id: 3,
-      images: ['assets/images/pt3.jpg', 'assets/images/pt3_sub1.jpg', 'assets/images/pt3_sub2.jpg'],
+      images: ['assets/images/pt3.jpg'],
       currentImageIndex: 0,
       title: 'Pinatubo Caldera',
       captionTitle: 'Ask Apo Namalyari (AI)',
-      description: 'Duis aute irure dolor in reprehenderit in voluptate...',
+      description: 'Interact with our intelligent guide to explore the science, geology, and indigenous legends of the majestic caldera.',
       route: '/apo-pinatubo'
     },
   ];
