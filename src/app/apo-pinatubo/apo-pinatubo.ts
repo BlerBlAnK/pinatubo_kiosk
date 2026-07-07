@@ -102,20 +102,19 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
     this.acIdx = -1;
     this.shouldScroll = true;
 
-    // Only show the "thinking" seismograph if the lookup is actually slow
-    // (most answers resolve in under a millisecond).
-    const THINKING_INDICATOR_DELAY = 120;
-    const showThinkingTimer = setTimeout(() => {
-      this.thinking.set(true);
-    }, THINKING_INDICATOR_DELAY);
+    // Answer lookup itself is near-instant, so the "thinking" bubble is
+    // shown on a fixed timer instead of being tied to actual lookup time —
+    // this gives Apu Malyari a believable pause before responding rather
+    // than an answer that snaps in with no read time at all.
+    this.thinking.set(true);
 
+    const TYPING_BUBBLE_DURATION = 2500;
     setTimeout(() => {
       const ans = buildAnswer(q);
-      clearTimeout(showThinkingTimer);
       this.thinking.set(false);
       this.addBotMessage(ans.text, ans.pages, ans.followups);
       setTimeout(() => this.queryInputEl?.nativeElement.focus(), 50);
-    }, 0);
+    }, TYPING_BUBBLE_DURATION);
   }
 
   askStarter(q: string): void {
