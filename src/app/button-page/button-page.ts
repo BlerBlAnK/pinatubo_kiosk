@@ -1,69 +1,98 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Router } from "@angular/router";
+import { Component, ElementRef, ViewChild, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Router, RouterLink } from "@angular/router";
 
 interface TimelineSlide {
   id: number;
-  imageSrc: string;
+  images: string[];
+  currentImageIndex: number; // Keep track of the active sub-index explicitly
   title: string;
   captionTitle: string;
   description: string;
-  route: string; // Dynamic navigation route mapping target
+  route: string;
 }
 
 @Component({
   selector: 'app-button-page',
-  standalone: true, // Ensuring clean standalone configuration
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './button-page.html',
   styleUrl: './button-page.css',
 })
-export class ButtonPage {
-  // Grab a direct reference to the track element from the DOM
+export class ButtonPage implements OnInit, OnDestroy {
   @ViewChild('sliderTrack') sliderTrack!: ElementRef;
 
-  // Added custom routes matching your separate kiosk presentation screens
   slides: TimelineSlide[] = [
     {
       id: 1,
-      imageSrc: 'assets/images/pt1.jpg',
+      images: ['assets/images/ptstories.jpg', 'assets/images/ptstories2.jpg', 'assets/images/ptstories3.jpg', 'assets/images/ptstories4.jpeg', 'assets/images/ptstories5.jpg'],
+      currentImageIndex: 0,
       title: 'Mt. Pinatubo Stories',
-      captionTitle: 'Pintaubo Stories',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim.',
-      route: '/videos' // Links to videos page
+      captionTitle: 'Pinatubo Stories',
+      description: 'Explore powerful firsthand accounts and personal narratives of resilience from the historic 1991 eruption.',
+      route: '/videos'
     },
     {
       id: 2,
-      imageSrc: 'assets/images/pt2.jpg', 
+      images: ['assets/images/pttl1.jpg', 'assets/images/pttl2.jpg', 'assets/images/pttl3.jpg', 'assets/images/pttl4.jpg', 'assets/images/pttl5.jpg' ],
+      currentImageIndex: 0,
       title: 'Pinatubo Timeline',
       captionTitle: 'Pinatubo Timeline',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim.',
-      route: '/timeline' // Change this to your actual timeline page path
+      description: 'Journey through history to trace the critical hours of the eruption and the decades of recovery that followed.',
+      route: '/timeline'
     },
     {
       id: 3,
-      imageSrc: 'assets/images/pt3.jpg',
+      images: ['assets/images/pt3.jpg'],
+      currentImageIndex: 0,
       title: 'Pinatubo Caldera',
-      captionTitle: 'Ask AI Pinatubo',
-      description: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.',
-      route: '/apo-pinatubo' // Change this to your actual caldera page path
+      captionTitle: 'Ask Apo Namalyari (AI)',
+      description: 'Interact with our intelligent guide to explore the science, geology, and indigenous legends of the majestic caldera.',
+      route: '/apo-pinatubo'
     },
   ];
 
-  // NOTE: Your array has 3 elements. Arrays are 0-indexed, so the center card is index 1.
   activeIndex: number = 1;
+  private rotationInterval: any;
 
-  constructor(private router: Router) {}
+  // Inject ChangeDetectorRef to explicitly push DOM refreshes out to the template
+  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
+
+  ngOnInit(): void {
+    this.startActiveRotation();
+  }
+
+  ngOnDestroy(): void {
+    this.stopRotation();
+  }
 
   /**
-   * Runs continuously while scrolling. Detects which polaroid element is closest 
-   * to the physical center line of the slider container.
+   * Loops explicitly and forces a template update only on the enlarged card
    */
+  startActiveRotation(): void {
+    this.stopRotation();
+    this.rotationInterval = setInterval(() => {
+      const activeSlide = this.slides[this.activeIndex];
+      
+      if (activeSlide && activeSlide.images.length > 1) {
+        // Increment the current active image index
+        activeSlide.currentImageIndex = (activeSlide.currentImageIndex + 1) % activeSlide.images.length;
+        
+        // Force Angular to check the DOM immediately to avoid background-stalling
+        this.cdr.detectChanges();
+      }
+    }, 3000); // 1.5s fast loop transitions
+  }
+
+  stopRotation(): void {
+    if (this.rotationInterval) {
+      clearInterval(this.rotationInterval);
+    }
+  }
+
   onTrackScroll(event: Event): void {
     const track = event.target as HTMLElement;
     const cards = track.querySelectorAll('.polaroid-card');
-    
-    // Determine the exact horizontal center line of the container view track
     const trackCenter = track.getBoundingClientRect().left + (track.offsetWidth / 2);
 
     let closestIndex = this.activeIndex;
@@ -71,7 +100,6 @@ export class ButtonPage {
 
     cards.forEach((cardElement, i) => {
       const card = cardElement as HTMLElement;
-      // Get the current dynamic center point of this polaroid on screen
       const cardCenter = card.getBoundingClientRect().left + (card.offsetWidth / 2);
       const distanceFromCenter = Math.abs(trackCenter - cardCenter);
 
@@ -81,24 +109,25 @@ export class ButtonPage {
       }
     });
 
-    // Only trigger a change detection update if a new slide crosses the center threshold
     if (this.activeIndex !== closestIndex) {
+      // Clean up old active card instantly back to cover image
+      this.slides[this.activeIndex].currentImageIndex = 0;
       this.activeIndex = closestIndex;
+      
+      // Reset timer track to start looping instantly from 0 delay
+      this.startActiveRotation();
     }
   }
 
-  /**
-   * First tap on a card that isn't already centered/active just selects
-   * and centers it — it does NOT navigate. Only a tap on a card that is
-   * already active triggers navigation. This stops a single accidental
-   * touch (e.g. brushing past the AI Pinatubo card) from immediately
-   * launching that page.
-   */
   setActiveCard(index: number, targetRoute: string, event: MouseEvent): void {
     const clickedCard = event.currentTarget as HTMLElement;
 
     if (this.activeIndex !== index) {
+      this.slides[this.activeIndex].currentImageIndex = 0;
       this.activeIndex = index;
+      
+      this.startActiveRotation();
+      
       clickedCard.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
@@ -107,15 +136,12 @@ export class ButtonPage {
       return;
     }
 
-    // 1. Instantly inject the CSS animation class
     clickedCard.classList.add('clicked-flash');
 
-    // 2. Briefly delay the view engine router step so the animation can visually express itself
     setTimeout(() => {
       this.router.navigate([targetRoute])
         .catch(error => {
-          console.error(`Angular Router failed to navigate to ${targetRoute}:`, error);
-          // Safely strip class if transition faults completely
+          console.error(`Navigation error:`, error);
           clickedCard.classList.remove('clicked-flash');
         });
     }, 200);
