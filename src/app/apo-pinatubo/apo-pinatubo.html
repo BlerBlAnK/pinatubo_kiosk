@@ -1,5 +1,5 @@
 <div class="apo-shell">
-  <!-- Drifting embers — purely decorative, gives the dark ground a sense
+  <!-- Falling ash — purely decorative, gives the ash-gray ground a sense
        of life and motion instead of sitting static. -->
   <div class="apo-embers" aria-hidden="true">
     <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
@@ -40,8 +40,8 @@
           <div *ngIf="msg.role==='apo'" class="apo-avatar"><img src="/assets/images/logos/mainlogo.png" alt="Apung Malyari" /></div>
           <div class="apo-bubble" [class.apo-bubble-bot]="msg.role==='apo'" [class.apo-bubble-user]="msg.role==='user'">
             <p *ngFor="let para of msg.paragraphs" [innerHTML]="para" class="apo-para"></p>
-            <div *ngIf="msg.pages && msg.pages.length" class="apo-page-tags">
-              <span *ngFor="let p of msg.pages" class="apo-page-tag">p.{{ p }}</span>
+            <div *ngIf="msg.citations && msg.citations.length" class="apo-page-tags">
+              <span *ngFor="let c of msg.citations" class="apo-page-tag">{{ c }}</span>
             </div>
             <div *ngIf="msg.followups && msg.followups.length" class="apo-followups">
               <button *ngFor="let f of msg.followups" class="apo-followup-chip" (click)="askFollowup(f)">{{ f }}</button>

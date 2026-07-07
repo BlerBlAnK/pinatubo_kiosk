@@ -28,25 +28,25 @@
 }
 
 .apo-shell {
-  --bg:            #705A48;
-  --bg-deep:       #594636;
-  --surface:       #f0e1e1;
-  --paper:         #d1cfcc;
+  --bg:            #65615D;
+  --bg-deep:       #4B4744;
+  --surface:       #F7F7F5;
+  --paper:         #F7F7F5;
 
-  --magma:         #E2703A;
-  --magma-deep:    #B8531F;
+  --magma:         #b4b4b4;
+  --magma-deep:    #3b3b3b;
   --verdant:       #3FAE7A;
   --verdant-deep:  #278F5D;
 
-  --ink:           #FAF3E6;
-  --ink-soft:      #E3D5C2;
-  --ink-faint:     #C7B7A0;
-  --ink-on-white:  #2E2419;
-  --ink-on-white-soft: #6B5A48;
+  --ink:           #F5F4F2;
+  --ink-soft:      #D2D0CC;
+  --ink-faint:     #ACA9A4;
+  --ink-on-white:  #2B2A28;
+  --ink-on-white-soft: #6B6864;
 
-  --rule:          rgba(250,243,230,0.16);
-  --rule-strong:   rgba(250,243,230,0.30);
-  --rule-on-white: rgba(46,36,25,0.10);
+  --rule:          rgba(245,244,242,0.14);
+  --rule-strong:   rgba(245,244,242,0.28);
+  --rule-on-white: rgba(43,42,40,0.10);
 
   --font-display: 'Kinetika Bold', -apple-system, sans-serif;
   --font-sans:    'Kinetika Regular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
@@ -74,9 +74,9 @@
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 60% 40% at 15% 0%, rgba(226,112,58,0.28), transparent 60%),
-    radial-gradient(ellipse 50% 45% at 100% 20%, rgba(63,174,122,0.20), transparent 65%),
-    radial-gradient(ellipse 55% 40% at 10% 100%, rgba(184,83,31,0.18), transparent 60%);
+    radial-gradient(ellipse 60% 40% at 15% 0%, rgba(185, 34, 34, 0.06), transparent 60%),
+    radial-gradient(ellipse 50% 45% at 100% 20%, rgba(255,255,255,0.04), transparent 65%),
+    radial-gradient(ellipse 55% 40% at 10% 100%, rgba(0,0,0,0.12), transparent 60%);
   pointer-events: none;
 }
 
@@ -100,14 +100,14 @@
 
 .apo-embers i {
   position: absolute;
-  bottom: -20px;
+  top: -20px;
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--magma);
-  box-shadow: 0 0 8px 1px rgba(226,112,58,0.7);
+  background: var(--ink-soft);
+  box-shadow: 0 0 6px 1px rgba(245,244,242,0.5);
   opacity: 0;
-  animation: emberRise linear infinite;
+  animation: ashFall linear infinite;
 }
 
 .apo-embers i:nth-child(1)  { left: 6%;  width: 3px; height: 3px; animation-duration: 9s;  animation-delay: 0s; }
@@ -121,11 +121,11 @@
 .apo-embers i:nth-child(9)  { left: 91%; width: 3px; height: 3px; animation-duration: 10s; animation-delay: 3.5s; }
 .apo-embers i:nth-child(10) { left: 50%; width: 4px; height: 4px; animation-duration: 14s; animation-delay: 6s; }
 
-@keyframes emberRise {
+@keyframes ashFall {
   0%   { transform: translate(0, 0);      opacity: 0; }
-  10%  { opacity: 0.9; }
-  80%  { opacity: 0.5; }
-  100% { transform: translate(14px, -110vh); opacity: 0; }
+  10%  { opacity: 0.8; }
+  80%  { opacity: 0.4; }
+  100% { transform: translate(14px, 110vh); opacity: 0; }
 }
 
 /* ---------- Top row: title lives beside the logo ---------- */
@@ -165,7 +165,7 @@
 }
 
 .apo-title em {
-  background: linear-gradient(100deg, var(--magma) 10%, #F2A15E 50%, var(--magma) 90%);
+  background: linear-gradient(100deg, var(--magma) 10%, #808080 50%, var(--magma) 90%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -467,7 +467,7 @@
   font-size: 0.78rem;
   font-weight: 500;
   color: var(--ink);
-  background: linear-gradient(155deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+  background: linear-gradient(155deg, rgba(88, 79, 79, 0.14), rgba(255,255,255,0.04));
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border: 1px solid var(--rule-strong);

@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { buildAnswer, getAutocompleteMatches } from './pinatubo-engine';
 
 interface ChatMessage {
+citations: any;
   role: 'apo' | 'user';
   paragraphs: string[];
   pages?: number[];
@@ -84,12 +85,16 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
       paragraphs: this.textToParagraphs(text),
       pages,
       followups,
+      citations: undefined
     }]);
     this.shouldScroll = true;
   }
 
   private addUserMessage(text: string): void {
-    this.messages.update(msgs => [...msgs, { role: 'user', paragraphs: [text] }]);
+    this.messages.update(msgs => [...msgs, {
+      role: 'user', paragraphs: [text],
+      citations: undefined
+    }]);
     this.shouldScroll = true;
   }
 
