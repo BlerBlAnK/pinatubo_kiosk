@@ -1,98 +1,106 @@
 <div class="apo-shell">
-
-  <!-- Top bar -->
-  <div class="apo-topbar">
-    <span class="apo-topbar-icon">🌋</span>
-    <span class="apo-topbar-label">MOUNT PINATUBO · 1991 ERUPTION ARCHIVE</span>
-    <div class="apo-topbar-status">
-      <span class="blip"></span>
-      <span class="apo-topbar-offline">OFFLINE</span>
-    </div>
+  <!-- Drifting embers — purely decorative, gives the dark ground a sense
+       of life and motion instead of sitting static. -->
+  <div class="apo-embers" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
   </div>
 
-  <!-- Main content -->
-  <div class="apo-main">
+  <div class="apo-shell-inner">
 
-    <!-- Header -->
-    <header class="apo-header">
-      <div class="apo-header-text">
+    <!-- Top row: sits in the SAME horizontal band as the global seal logo
+         (top-left, fixed, returns to the landing page). Left padding
+         clears the logo's width so this row's own content starts to its
+         right, at the same vertical position, rather than stacking below
+         it. -->
+    <div class="apo-top-row">
+      <div class="apo-header-inline">
         <p class="apo-eyebrow">Field Guide · Offline Edition</p>
-        <h1 class="apo-title">Apo <em>Pinatubo</em></h1>
+        <h1 class="apo-title">Apung <em>Malyari</em></h1>
       </div>
-      <p class="apo-header-note">Ask about the eruption,<br>the lahars, the Aeta, or the recovery.</p>
-    </header>
-
-    <!-- Chat -->
-    <div class="apo-chat" #chatEl>
-
-      <div *ngFor="let msg of messages" class="apo-row" [class.apo-row-bot]="msg.role==='apo'" [class.apo-row-user]="msg.role==='user'">
-        <div *ngIf="msg.role==='apo'" class="apo-avatar">🌋</div>
-        <div class="apo-bubble" [class.apo-bubble-bot]="msg.role==='apo'" [class.apo-bubble-user]="msg.role==='user'">
-          <p *ngFor="let para of msg.paragraphs" [innerHTML]="para" class="apo-para"></p>
-          <div *ngIf="msg.pages && msg.pages.length" class="apo-page-tags">
-            <span *ngFor="let p of msg.pages" class="apo-page-tag">p.{{ p }}</span>
-          </div>
-          <div *ngIf="msg.followups && msg.followups.length" class="apo-followups">
-            <button *ngFor="let f of msg.followups" class="apo-followup-chip" (click)="askFollowup(f)">{{ f }}</button>
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="thinking" class="apo-row apo-row-bot">
-        <div class="apo-avatar">🌋</div>
-        <div class="apo-bubble apo-bubble-bot apo-thinking">
-          <div class="seismo">
-            <i></i><i></i><i></i><i></i><i></i>
-          </div>
-          <span>Searching the archive…</span>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Starter chips -->
-    <div class="apo-starters" *ngIf="messages.length < 4">
-      <button *ngFor="let q of starters" class="apo-chip" (click)="askStarter(q)">{{ q }}</button>
-    </div>
-
-    <!-- Input bar -->
-    <div class="apo-input-bar">
-      <div class="apo-input-wrap">
-        <input
-          #queryInput
-          class="apo-input"
-          type="text"
-          placeholder="Ask anything about Mt. Pinatubo…"
-          autocomplete="off"
-          [(ngModel)]="query"
-          (input)="onInput()"
-          (keydown)="onKeydown($event)"
-          aria-label="Your question"
-        />
-        <!-- Autocomplete -->
-        <div class="apo-autocomplete" *ngIf="acItems.length > 0">
-          <div
-            *ngFor="let item of acItems; let i = index"
-            class="apo-ac-item"
-            [class.apo-ac-active]="i === acIdx"
-            (mousedown)="selectAC(item)"
-            [innerHTML]="highlightAC(item)"
-          ></div>
-        </div>
-      </div>
-      <button class="apo-send-btn" (click)="handleAsk()" [disabled]="thinking" aria-label="Ask">
-        Ask
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M1 7H13M13 7L7.5 1.5M13 7L7.5 12.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
+      <button class="apo-back-btn" (click)="goBack()" aria-label="Back to menu">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M10 13L5 8L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
+        Back
       </button>
     </div>
 
-    <!-- Footer -->
-    <p class="apo-footnote">100% offline · Grounded in <em>"Pinatubo: The Saga of the Philippines' Forgotten Giant"</em> (HAU, 2011)</p>
+    <div class="apo-main">
 
-    <!-- Back button -->
-    <button class="apo-back-btn" (click)="goBack()">← Back to Menu</button>
+      <!-- Secondary line: offline status + description, sits just below
+           the logo/title band, above the divider that opens the chat. -->
+      <div class="apo-subheader">
+        <span class="apo-offline-tag"><i class="blip"></i>Offline</span>
+        <p class="apo-header-note">Ask about the eruption, the lahars, the Aeta, or the recovery.</p>
+      </div>
 
+      <!-- Chat -->
+      <div class="apo-chat" #chatEl>
+        <div *ngFor="let msg of messages()" class="apo-row" [class.apo-row-bot]="msg.role==='apo'" [class.apo-row-user]="msg.role==='user'">
+          <div *ngIf="msg.role==='apo'" class="apo-avatar"><img src="/assets/images/logos/mainlogo.png" alt="Apung Malyari" /></div>
+          <div class="apo-bubble" [class.apo-bubble-bot]="msg.role==='apo'" [class.apo-bubble-user]="msg.role==='user'">
+            <p *ngFor="let para of msg.paragraphs" [innerHTML]="para" class="apo-para"></p>
+            <div *ngIf="msg.pages && msg.pages.length" class="apo-page-tags">
+              <span *ngFor="let p of msg.pages" class="apo-page-tag">p.{{ p }}</span>
+            </div>
+            <div *ngIf="msg.followups && msg.followups.length" class="apo-followups">
+              <button *ngFor="let f of msg.followups" class="apo-followup-chip" (click)="askFollowup(f)">{{ f }}</button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="thinking()" class="apo-row apo-row-bot">
+          <div class="apo-avatar"><img src="/assets/images/logos/mainlogo.png" alt="Apung Malyari" /></div>
+          <div class="apo-bubble apo-bubble-bot apo-thinking">
+            <div class="seismo">
+              <i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <span>Searching the archive…</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Starter chips -->
+      <div class="apo-starters" *ngIf="messages().length < 4">
+        <button *ngFor="let q of starters" class="apo-chip" (click)="askStarter(q)">{{ q }}</button>
+      </div>
+
+      <!-- Input bar -->
+      <div class="apo-input-bar">
+        <div class="apo-input-wrap">
+          <input
+            #queryInput
+            class="apo-input"
+            type="text"
+            placeholder="Ask anything about Mt. Pinatubo…"
+            autocomplete="off"
+            [(ngModel)]="query"
+            (input)="onInput()"
+            (keydown)="onKeydown($event)"
+            aria-label="Your question"
+          />
+          <!-- Autocomplete -->
+          <div class="apo-autocomplete" *ngIf="acItems.length > 0">
+            <div
+              *ngFor="let item of acItems; let i = index"
+              class="apo-ac-item"
+              [class.apo-ac-active]="i === acIdx"
+              (mousedown)="selectAC(item)"
+              [innerHTML]="highlightAC(item)"
+            ></div>
+          </div>
+        </div>
+        <button class="apo-send-btn" (click)="handleAsk()" [disabled]="thinking()" aria-label="Ask">
+          Ask
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1 7H13M13 7L7.5 1.5M13 7L7.5 12.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <p class="apo-footnote">100% offline · Grounded in <em>"Pinatubo: The Saga of the Philippines' Forgotten Giant"</em> (HAU, 2011)</p>
+
+    </div>
   </div>
 </div>

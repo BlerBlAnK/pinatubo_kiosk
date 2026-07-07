@@ -1,6 +1,6 @@
 import {
   Component, OnInit, AfterViewChecked,
-  ViewChild, ElementRef, ChangeDetectorRef
+  ViewChild, ElementRef, signal
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,11 +27,21 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
   @ViewChild('queryInput') queryInputEl!: ElementRef<HTMLInputElement>;
 
   query = '';
-  messages: ChatMessage[] = [];
-  thinking = false;
   acItems: string[] = [];
   acIdx = -1;
   private shouldScroll = false;
+
+  // These two are signals, not plain fields, because they're the only
+  // state mutated from inside a setTimeout callback — code that runs
+  // completely outside anything Angular is watching in this zoneless
+  // (no zone.js) app. A plain field write there would sit in memory but
+  // never get painted to the screen until some unrelated event (like a
+  // click anywhere) happened to trigger Angular's next render pass. A
+  // signal write, by contrast, is tracked by Angular's own reactivity
+  // graph no matter where it happens, so the view updates immediately
+  // and automatically — no manual "please refresh now" call needed.
+  messages = signal<ChatMessage[]>([]);
+  thinking = signal(false);
 
   starters = [
     'When did Mt. Pinatubo erupt?',
@@ -42,11 +52,11 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
     'Who is Apu Namalyari?',
   ];
 
-  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.addBotMessage(
-      'Malaus ka! Welcome to the Apo Pinatubo Archive Guide.\n\n' +
+      'Malaus ka! Welcome to the Apung Malyari Archive Guide.\n\n' +
       'I am here to help you discover the story of Mt. Pinatubo — the eruption that changed Central Luzon forever, the people who survived it, and the mountain that still stands today.\n\n' +
       'Feel free to ask me anything. I am happy to help!',
       [], []
@@ -69,23 +79,23 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
   }
 
   private addBotMessage(text: string, pages: number[], followups: string[]): void {
-    this.messages.push({
+    this.messages.update(msgs => [...msgs, {
       role: 'apo',
       paragraphs: this.textToParagraphs(text),
       pages,
       followups,
-    });
+    }]);
     this.shouldScroll = true;
   }
 
   private addUserMessage(text: string): void {
-    this.messages.push({ role: 'user', paragraphs: [text] });
+    this.messages.update(msgs => [...msgs, { role: 'user', paragraphs: [text] }]);
     this.shouldScroll = true;
   }
 
   handleAsk(): void {
     const q = this.query.trim();
-    if (!q || this.thinking) return;
+    if (!q || this.thinking()) return;
     this.addUserMessage(q);
     this.query = '';
     this.acItems = [];
@@ -96,22 +106,14 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
     // (most answers resolve in under a millisecond).
     const THINKING_INDICATOR_DELAY = 120;
     const showThinkingTimer = setTimeout(() => {
-      this.thinking = true;
-      // This app runs zoneless Angular (no zone.js) — a plain setTimeout
-      // callback does not trigger a re-render on its own, so we have to
-      // ask Angular to update the view explicitly.
-      this.cdr.detectChanges();
+      this.thinking.set(true);
     }, THINKING_INDICATOR_DELAY);
 
     setTimeout(() => {
       const ans = buildAnswer(q);
       clearTimeout(showThinkingTimer);
-      this.thinking = false;
+      this.thinking.set(false);
       this.addBotMessage(ans.text, ans.pages, ans.followups);
-      // Same reason as above: without this, the computed answer sits in
-      // memory but never appears on screen until some unrelated click
-      // happens to trigger Angular's next change-detection pass.
-      this.cdr.detectChanges();
       setTimeout(() => this.queryInputEl?.nativeElement.focus(), 50);
     }, 0);
   }
@@ -181,6 +183,16 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
   }
 
   goBack(): void {
-    this.router.navigate(['/menu']);
+    // Uses the previous route tracked app-wide in sessionStorage (see
+    // app.ts) instead of the browser's native history.back() — kiosk
+    // browsers and embedded webviews don't always support that reliably.
+    // Falls back to the menu if there's no tracked previous page (e.g.
+    // this route was opened directly, with nothing recorded yet).
+    const previous = sessionStorage.getItem('kioskPreviousRoute');
+    if (previous && previous !== '/apo-pinatubo') {
+      this.router.navigateByUrl(previous);
+    } else {
+      this.router.navigate(['/menu']);
+    }
   }
 }

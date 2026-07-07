@@ -1,5 +1,17 @@
+.footer-bar {
+    /* Same reasoning as header.css: this bar is fixed and spans the full
+       width of the screen. Even with a transparent background, that
+       whole strip would otherwise capture clicks meant for whatever
+       sits underneath it (e.g. Apo Pinatubo's input bar or footnote
+       near the bottom of the screen). Turning off pointer events here
+       lets those clicks pass through, and the rule below turns them
+       back on for just the logo, so it keeps working exactly as before.
+    */
+    pointer-events: none;
+}
 
 .footer-logo{
     height:auto;
     width:200px;
+    pointer-events: auto;
 }
