@@ -3,6 +3,7 @@ import { WelcomePage } from './welcome-page/welcome-page';
 import { ButtonPage } from './button-page/button-page';
 import { VideoPage } from './video-page/video-page';
 import { ApoPinatubo } from './apo-pinatubo/apo-pinatubo';
+import { TimelinePage } from './timeline-page/timeline-page';
 
 export const routes: Routes = [
     { path: '', component: WelcomePage },
@@ -12,5 +13,6 @@ export const routes: Routes = [
     // Fallback for any unmapped route (e.g. the "Pinatubo Timeline" card
     // currently points at /timeline, which has no page built yet) so the
     // kiosk never gets stuck on a blank/broken screen.
+    { path: 'timeline', component: TimelinePage},
     { path: '**', redirectTo: 'menu' }
 ];

@@ -6,6 +6,7 @@ import { Footer } from './footer/footer';
 import { ButtonPage } from './button-page/button-page';
 
 
+
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, WelcomePage, Header, Footer, ButtonPage],

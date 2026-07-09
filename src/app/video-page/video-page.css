@@ -1,5 +1,6 @@
 /* Core Layout Container with Dark Volcanic Tone Background */
 .video-container {
+  position: relative; /* Setup absolute pinning point for back button */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,6 +14,46 @@
   overflow-x: hidden;
 }
 
+/* --- MUSEUM INTERACTIVE BACK BUTTON --- */
+.video-container .apo-back-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Fallback variable values inline */
+  border-radius: 999px;
+  color: #B0B3B8;
+  font-family: "Kinetika Regular", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s, color 0.15s, transform 0.15s, background 0.15s;
+}
+
+.video-container .apo-back-btn:hover {
+  color: #F3F4F4;
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.video-container .apo-back-btn:active { 
+  transform: translateY(0) scale(0.96); 
+}
+
+.video-container .apo-back-btn:focus-visible { 
+  outline: none; 
+  box-shadow: 0 0 0 3px rgba(213, 168, 34, 0.4); 
+}
+
+/* --- HEADERS --- */
 .header {
   font-family: "Cinzel Decorative", serif;
   font-size: 45px;
@@ -21,7 +62,7 @@
   letter-spacing: -1px;
   text-shadow: #1b1b1b 4px 4px;
   text-align: center;
-}   
+} 
 
 .sub-head {
   margin-top: 10px;
@@ -38,7 +79,7 @@
 .grid-content {
   display: grid;
   grid-template-columns: repeat(2, 1fr); 
-  gap: 4rem 2.5rem;                       
+  gap: 4rem 2.5rem;      
   width: 100%;
   max-width: 600px;                      
   padding: 0 2rem;
@@ -68,7 +109,7 @@
 
 /* Circular Avatar Structure Rules */
 .avatar-ring {
-  width: 160px;                         
+  width: 160px;                                 
   height: 160px;
   border-radius: 50%;
   border: 3px solid #3e3837;

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 
 interface Interviewee {
   id: number;
@@ -21,6 +22,21 @@ export class VideoPage {
 
   selectedPerson: Interviewee | null = null;
   videoUnavailable = false;
+  constructor(private router: Router) {}
+
+  goBack(): void {
+    // Uses the previous route tracked app-wide in sessionStorage (see
+    // app.ts) instead of the browser's native history.back() — kiosk
+    // browsers and embedded webviews don't always support that reliably.
+    // Falls back to the menu if there's no tracked previous page (e.g.
+    // this route was opened directly, with nothing recorded yet).
+    const previous = sessionStorage.getItem('kioskPreviousRoute');
+    if (previous && previous !== '/apo-pinatubo') {
+      this.router.navigateByUrl(previous);
+    } else {
+      this.router.navigate(['/menu']);
+    }
+  }
 
   // Storing information lists targeting your public folder assets directories
   interviewees: Interviewee[] = [

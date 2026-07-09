@@ -1,6 +1,6 @@
 import {
   Component, OnInit, AfterViewChecked,
-  ViewChild, ElementRef, ChangeDetectorRef
+  ViewChild, ElementRef, signal
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { buildAnswer, getAutocompleteMatches } from './pinatubo-engine';
 
 interface ChatMessage {
+citations: any;
   role: 'apo' | 'user';
   paragraphs: string[];
   pages?: number[];
@@ -27,11 +28,21 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
   @ViewChild('queryInput') queryInputEl!: ElementRef<HTMLInputElement>;
 
   query = '';
-  messages: ChatMessage[] = [];
-  thinking = false;
   acItems: string[] = [];
   acIdx = -1;
   private shouldScroll = false;
+
+  // These two are signals, not plain fields, because they're the only
+  // state mutated from inside a setTimeout callback — code that runs
+  // completely outside anything Angular is watching in this zoneless
+  // (no zone.js) app. A plain field write there would sit in memory but
+  // never get painted to the screen until some unrelated event (like a
+  // click anywhere) happened to trigger Angular's next render pass. A
+  // signal write, by contrast, is tracked by Angular's own reactivity
+  // graph no matter where it happens, so the view updates immediately
+  // and automatically — no manual "please refresh now" call needed.
+  messages = signal<ChatMessage[]>([]);
+  thinking = signal(false);
 
   starters = [
     'When did Mt. Pinatubo erupt?',
@@ -42,11 +53,11 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
     'Who is Apu Namalyari?',
   ];
 
-  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.addBotMessage(
-      'Malaus ka! Welcome to the Apo Pinatubo Archive Guide.\n\n' +
+      'Malaus ka! Welcome to the Apung Malyari Archive Guide.\n\n' +
       'I am here to help you discover the story of Mt. Pinatubo — the eruption that changed Central Luzon forever, the people who survived it, and the mountain that still stands today.\n\n' +
       'Feel free to ask me anything. I am happy to help!',
       [], []
@@ -69,51 +80,46 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
   }
 
   private addBotMessage(text: string, pages: number[], followups: string[]): void {
-    this.messages.push({
+    this.messages.update(msgs => [...msgs, {
       role: 'apo',
       paragraphs: this.textToParagraphs(text),
       pages,
       followups,
-    });
+      citations: undefined
+    }]);
     this.shouldScroll = true;
   }
 
   private addUserMessage(text: string): void {
-    this.messages.push({ role: 'user', paragraphs: [text] });
+    this.messages.update(msgs => [...msgs, {
+      role: 'user', paragraphs: [text],
+      citations: undefined
+    }]);
     this.shouldScroll = true;
   }
 
   handleAsk(): void {
     const q = this.query.trim();
-    if (!q || this.thinking) return;
+    if (!q || this.thinking()) return;
     this.addUserMessage(q);
     this.query = '';
     this.acItems = [];
     this.acIdx = -1;
     this.shouldScroll = true;
 
-    // Only show the "thinking" seismograph if the lookup is actually slow
-    // (most answers resolve in under a millisecond).
-    const THINKING_INDICATOR_DELAY = 120;
-    const showThinkingTimer = setTimeout(() => {
-      this.thinking = true;
-      // This app runs zoneless Angular (no zone.js) — a plain setTimeout
-      // callback does not trigger a re-render on its own, so we have to
-      // ask Angular to update the view explicitly.
-      this.cdr.detectChanges();
-    }, THINKING_INDICATOR_DELAY);
+    // Answer lookup itself is near-instant, so the "thinking" bubble is
+    // shown on a fixed timer instead of being tied to actual lookup time —
+    // this gives Apu Malyari a believable pause before responding rather
+    // than an answer that snaps in with no read time at all.
+    this.thinking.set(true);
 
+    const TYPING_BUBBLE_DURATION = 2500;
     setTimeout(() => {
       const ans = buildAnswer(q);
-      clearTimeout(showThinkingTimer);
-      this.thinking = false;
+      this.thinking.set(false);
       this.addBotMessage(ans.text, ans.pages, ans.followups);
-      // Same reason as above: without this, the computed answer sits in
-      // memory but never appears on screen until some unrelated click
-      // happens to trigger Angular's next change-detection pass.
-      this.cdr.detectChanges();
       setTimeout(() => this.queryInputEl?.nativeElement.focus(), 50);
-    }, 0);
+    }, TYPING_BUBBLE_DURATION);
   }
 
   askStarter(q: string): void {
@@ -181,6 +187,16 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
   }
 
   goBack(): void {
-    this.router.navigate(['/menu']);
+    // Uses the previous route tracked app-wide in sessionStorage (see
+    // app.ts) instead of the browser's native history.back() — kiosk
+    // browsers and embedded webviews don't always support that reliably.
+    // Falls back to the menu if there's no tracked previous page (e.g.
+    // this route was opened directly, with nothing recorded yet).
+    const previous = sessionStorage.getItem('kioskPreviousRoute');
+    if (previous && previous !== '/apo-pinatubo') {
+      this.router.navigateByUrl(previous);
+    } else {
+      this.router.navigate(['/menu']);
+    }
   }
 }

@@ -1,0 +1,405 @@
+:host {
+  --theme-gold: #c4a060;
+  --theme-bg-dark: #1a120b;
+  --theme-card-bg: rgba(43, 31, 19, 0.65);
+  --theme-border: rgba(196, 160, 96, 0.35);
+  --text-light: #ded6c9;
+  
+  display: block;
+  min-height: 100vh;
+  background-color: #0b0704;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* ── Fluid Outer Container ───────────────────────────────────────────────── */
+.kiosk-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+  background: url('/assets/images/tlbg.png') no-repeat center center/cover;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  min-height: 100vh;
+  position: relative; /* Context anchor for absolute UI elements */
+}
+
+/* --- TOP-RIGHT MAP SHELL BACK ACTION OVERLAY --- */
+.kiosk-container .apo-back-btn {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 50; /* Out-stacks map interfaces and interactive elements safely */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  color: #B0B3B8;
+  font-family: "Kinetika Regular", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s, color 0.15s, transform 0.15s, background 0.15s;
+}
+
+.kiosk-container .apo-back-btn:hover {
+  color: #F3F4F4;
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.kiosk-container .apo-back-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.kiosk-container .apo-back-btn:focus-visible {
+  outline: none;
+}
+/* ==========================================================================
+   ── GEOGRAPHIC MAP VIEWPORT & CANVAS ──────────────────────────────────────
+   ========================================================================== */
+
+/* The outer bounding container for the map framework */
+.map-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3; /* Maintains geographic proportions fluidly */
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--map-bg);
+  border: 1px solid var(--border);
+  cursor: grab;
+  touch-action: none;
+}
+
+.map-viewport:active {
+  cursor: grabbing;
+}
+
+/* The core SVG element containing the geography */
+.map-viewport svg,
+.pinatubo-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+/* ── SVG GEOGRAPHIC ELEMENT STYLING ──────────────────────────────────────── */
+
+/* Coordinate Grid Lines & Labels */
+.grid-line {
+  stroke: rgba(212, 184, 150, 0.08);
+  stroke-width: 0.8;
+}
+
+.grid-label {
+  font-size: 9px;
+  fill: rgba(212, 184, 150, 0.32);
+  font-family: 'Segoe UI', monospace;
+}
+
+.lon-label { text-anchor: start; }
+.lat-label { text-anchor: start; dominant-baseline: hanging; }
+
+/* Terrain Elevation Rings — Warm brown-gray concentric bands */
+.terrain-r5 { fill: #1a1610; stroke: #241f18; stroke-width: 0.6; pointer-events: none; }
+.terrain-r4 { fill: #221c16; stroke: #2e2820; stroke-width: 0.6; pointer-events: none; }
+.terrain-r3 { fill: #2a241c; stroke: #383028; stroke-width: 0.6; pointer-events: none; }
+.terrain-r2 { fill: #322c22; stroke: #423a2e; stroke-width: 0.6; pointer-events: none; }
+.terrain-r1 { fill: #3d3428; stroke: #4d4436; stroke-width: 0.6; pointer-events: none; }
+
+/* Regional/Era Land Zones & Connectors */
+.interactive-group {
+  cursor: pointer;
+  pointer-events: auto; /* Activates vector interaction shapes */
+}
+
+/* Base Era Overlay Polygon Styling */
+.interactive-group .era-zone {
+  fill: rgba(0, 0, 0, 0.0);
+  stroke: rgba(212, 184, 150, 0);
+  stroke-width: 1.5;
+  transition: fill 0.3s ease, stroke 0.3s ease, filter 0.3s ease;
+}
+
+/* Hover State: Applies evenly to all segments inside the grouped part */
+.interactive-group:hover .era-zone {
+  fill: rgba(184, 149, 106, 0.15);
+  stroke: var(--accent);
+}
+
+/* Specific Treatment for Lahar Flows on Hover */
+.interactive-group:hover .era-tendril {
+  fill: rgba(184, 149, 106, 0.3);
+  stroke: var(--accent-bright, #d4b896);
+  stroke-width: 1.8;
+}
+
+/* Active Selected State (Via Angular `.era-active` class alignment) */
+.interactive-group.era-active .era-zone {
+  fill: var(--era-active, rgba(184, 149, 106, 0.25));
+  stroke: var(--era-active-stroke, var(--theme-gold));
+  stroke-width: 2px;
+}
+
+.interactive-group.era-active .era-tendril {
+  fill: var(--era-active, rgba(184, 149, 106, 0.35));
+  stroke: var(--theme-gold);
+}
+
+/* Ensure child layers inside Present Day remain crisp during click states */
+.interactive-group .crater-lake {
+  transition: fill 0.4s ease, stroke 0.4s ease;
+}
+
+.caldera-void {
+  fill: var(--map-bg);
+  stroke: none;
+}
+
+/* Mountain Summit Peaks & Descriptive Labels */
+.summit-pin {
+  fill: #f5ead8;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.summit-label {
+  font-size: 9.5px;
+  fill: rgba(237, 228, 212, 0.65);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  letter-spacing: 0.3px;
+}
+/* Adjusts layout dynamically when space permits a side-by-side view */
+@media (min-width: 768px) {
+  .map-header {
+    grid-template-columns: 1fr 300px;
+  }
+}
+
+.key-facts-panel {
+  width: 100%;
+  position: absolute;
+  top:5%;
+  right: 3%;
+}
+
+@media (min-width: 768px) {
+  .key-facts-panel {
+    text-align: right;
+  }
+}
+
+.facts-title {
+  color: #D5A822;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  margin: 0 0 1rem 0;
+  font-family: "Kinetika Bold"
+}
+
+.facts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  font-family: "Kinetika Regular"
+}
+
+@media (min-width: 768px) {
+  .facts-list {
+    display: block;
+  }
+  .facts-list li {
+    margin-bottom: 1.25rem;
+  }
+}
+
+.facts-list li strong {
+  display: block;
+  color: #ffffff;
+  font-size: 1.5rem;
+}
+
+.facts-list li span {
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+/* ── 2. Middle Section: Dynamic Context Viewport ────────────────────────── */
+.viewer-display-card {
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: 20px;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+@media (min-width: 850px) {
+  .viewer-display-card {
+    grid-template-columns: 1fr 40%; /* Split textual details and photo framework */
+  }
+}
+
+.display-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.eyebrow-tag {
+  color: white;
+  font-size: 1.5rem;
+  letter-spacing: 3px;
+  font-family: "Kinetika Regular";
+}
+
+.display-era-title {
+  color: #D5A822;
+  font-size: 4rem;
+  font-family: 'Cinzel';
+  margin: 0.5rem 0 1rem 0;
+  font-weight: bold;
+}
+
+.display-description-scroll {
+  color: var(--text-light);
+  font-size: 1.5rem;
+  line-height: 1.6;
+  font-family: "Kinetika Regular"
+}
+
+.display-description {
+  margin: 0 0 1rem 0;
+}
+
+.display-media-frame {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.media-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── 3. Bottom Section: Timeline Controls ────────────────────────────────── */
+.timeline-control-center {
+  width: 100%;
+}
+
+.section-divider-title {
+  text-align: center;
+  color: #ffffff;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  font-family: "Kinetika Bold"
+}
+
+.timeline-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.timeline-card-btn {
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+
+.timeline-card-btn:hover {
+  border-color: #ffffff;
+  background: rgba(196, 160, 96, 0.15);
+}
+
+.timeline-card-btn.card-active {
+  border-color: var(--theme-gold);
+  box-shadow: 0 0 15px rgba(196, 160, 96, 0.3);
+  background: rgba(196, 160, 96, 0.1);
+}
+
+.card-title {
+  color: var(--theme-gold);
+  font-family: 'Georgia', serif;
+  font-size: 1.15rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.card-thumb-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-date {
+  color: var(--text-light);
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* ── 4. Global Brand Footer ─────────────────────────────────────────────── */
+.branding-footer {
+  width: 100%;
+  text-align: center;
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.footer-divider {
+  width: 80px;
+  height: 1px;
+  background-color: var(--theme-gold);
+  margin: 0 auto 1rem auto;
+}
+
+.center-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin: 0 0 0.25rem 0;
+}
+
+.sub-center-title {
+  color: var(--text-light);
+  font-size: 0.8rem;
+  margin: 0;
+  opacity: 0.7;
+}

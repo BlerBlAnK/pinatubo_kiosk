@@ -43,7 +43,7 @@ export class ButtonPage implements OnInit, OnDestroy {
     },
     {
       id: 3,
-      images: ['assets/images/pt3.jpg'],
+      images: ['assets/images/pt3.jpg'  ],
       currentImageIndex: 0,
       title: 'Pinatubo Caldera',
       captionTitle: 'Ask Apo Namalyari (AI)',
