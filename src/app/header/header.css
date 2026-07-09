@@ -1,10 +1,21 @@
 .nav-bar {
     height: 70px;
+    /* This bar is fixed and spans the full width of the screen. Its
+       background is transparent, but a div still captures clicks across
+       its whole box regardless of what's visible — so without this, it
+       silently blocks clicks on anything sitting underneath it, like the
+       Apo Pinatubo page's Back button, which was placed in this same
+       top band on purpose (beside the logo). Turning off pointer events
+       here lets clicks pass through to whatever is underneath, and the
+       rule below turns them back on for just the logo itself, so the
+       logo keeps working exactly as before. */
+    pointer-events: none;
 }
 
 .nav-logo {
-    height: auto;   
+    height: auto;
     width: 80px;
+    pointer-events: auto;
 }
 
 /* nav-container needs to be the positioning context for the back button */
@@ -35,4 +46,4 @@
 .back-btn a:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(235, 235, 235, 0.8);
-}   
+}
