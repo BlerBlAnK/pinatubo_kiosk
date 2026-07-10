@@ -7,6 +7,7 @@ interface Interviewee {
   name: string;
   avatar: string;
   videoSrc: string;
+  storyTitle?: string; // Added to populate the elegant subtitle quotation text
 }
 
 @Component({
@@ -22,14 +23,11 @@ export class VideoPage {
 
   selectedPerson: Interviewee | null = null;
   videoUnavailable = false;
+  
   constructor(private router: Router) {}
 
   goBack(): void {
-    // Uses the previous route tracked app-wide in sessionStorage (see
-    // app.ts) instead of the browser's native history.back() — kiosk
-    // browsers and embedded webviews don't always support that reliably.
-    // Falls back to the menu if there's no tracked previous page (e.g.
-    // this route was opened directly, with nothing recorded yet).
+    // Uses the previous route tracked app-wide in sessionStorage instead of the browser's native history.back()
     const previous = sessionStorage.getItem('kioskPreviousRoute');
     if (previous && previous !== '/apo-pinatubo') {
       this.router.navigateByUrl(previous);
@@ -43,38 +41,44 @@ export class VideoPage {
     {
       id: 1,
       name: 'ELISA FEDELINO',
-      avatar: '/assets/images/elisa.png',       
-      videoSrc: '/assets/videos/elisa.mp4'
+      avatar: '/assets/images/elisa.png',      
+      videoSrc: '/assets/videos/elisa.mp4',
+      storyTitle: 'The Day the Sky Turned to Ash'
     },
     {
       id: 2,
       name: 'RANDOLF GARCIA',
       avatar: '/assets/images/randolf.png',
-      videoSrc: '/assets/videos/randolf.mp4'
+      videoSrc: '/assets/videos/randolf.mp4',
+      storyTitle: 'Surviving the River of Mud'
     },
     {
       id: 3,
       name: 'VIOLY OCAMPO',
       avatar: '/assets/images/violy.png',
-      videoSrc: '/assets/videos/violy.mp4'
+      videoSrc: '/assets/videos/violy.mp4',
+      storyTitle: 'Echoes of Bakood'
     },
     {
       id: 4,
       name: 'ANTONIO SANCHEZ',
-      avatar: 'assets/images/antonio.jpg',
-      videoSrc: 'interviews/antonio_story.mp4'
+      avatar: '/assets/images/antonio.jpg',
+      videoSrc: '/assets/videos/antonio_story.mp4',
+      storyTitle: 'Guardians of the Dike'
     },
     {
       id: 5,
       name: 'ELENA MAGAT',
-      avatar: 'assets/images/elena.jpg',
-      videoSrc: 'interviews/elena_story.mp4'
+      avatar: '/assets/images/elena.jpg',
+      videoSrc: '/assets/videos/elena_story.mp4',
+      storyTitle: 'A Community Reborn'
     },
     {
       id: 6,
       name: 'LUZVIMINDA CRUZ',
-      avatar: 'assets/images/luzviminda.jpg',
-      videoSrc: 'interviews/luzviminda_story.mp4'
+      avatar: '/assets/images/luzviminda.jpg',
+      videoSrc: '/assets/videos/luzviminda_story.mp4',
+      storyTitle: 'Memories Across Generation'
     }
   ];
 

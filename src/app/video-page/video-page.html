@@ -1,6 +1,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
 
 <div class="video-container">
 
@@ -11,9 +11,12 @@
     Back
   </div>
   
-  <header class="header">Mga Tinig</header>
-  <div class="header">Saalon Ng Lahar</div>
-  <div class="sub-head">MT. PINATUBO MUSEUM STORIES</div>
+  <header class="hero-title">
+    <h1 class="header">Mga Tinig</h1>
+    <h1 class="header text-spacer">Saalon ng Lahar</h1>
+    <div class="title-divider"></div>
+    <div class="sub-head">MT. PINATUBO MUSEUM STORIES</div>
+  </header>
 
   <main class="grid-content">
     <div 
@@ -22,11 +25,13 @@
       (click)="openVideoModal(person)"
     >
       <div class="avatar-ring">
+        <div class="inner-glow-shield"></div>
         <img [src]="person.avatar" [alt]="person.name" (error)="onAvatarError($event)">
       </div>
       
       <div class="profile-meta">
         <h3>{{ person.name }}</h3>
+        <span class="tap-hint" *ngIf="person.storyTitle">“{{ person.storyTitle }}”</span>
       </div>
     </div>
   </main>
@@ -34,7 +39,10 @@
   <div class="video-modal" *ngIf="selectedPerson" (click)="closeVideoModal()">
     <div class="modal-box" (click)="$event.stopPropagation()">
       
-      <button class="close-modal-btn" (click)="closeVideoModal()">&times;</button>
+      <div class="modal-header-actions">
+        <span class="now-playing-tag">NOW PLAYING</span>
+        <button class="close-modal-btn" (click)="closeVideoModal()" aria-label="Close video player">&times;</button>
+      </div>
       
       <div class="player-surface">
         <video 
@@ -50,7 +58,10 @@
           Your browser does not support native video playback tracks.
         </video>
         <div class="video-unavailable" *ngIf="videoUnavailable">
-          This story's video isn't available on this kiosk yet.
+          <svg class="alert-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>This story's video isn't available on this kiosk yet.</p>
         </div>
       </div>
 

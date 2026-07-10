@@ -1,17 +1,45 @@
 /* Core Layout Container with Dark Volcanic Tone Background */
 .video-container {
-  position: relative; /* Setup absolute pinning point for back button */
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(transparent, rgba(18, 26, 33, 0.95)),
-              url('/assets/images/videos-bg2.png') no-repeat center center/cover;
   padding: 4rem 0;
   box-sizing: border-box;
   overflow-x: hidden;
+}
+
+/* Background Image - Enhanced Darkening Layer for Clean Contrast */
+.video-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      rgba(15, 23, 36, 0.45), 
+      rgba(15, 23, 36, 0.45)
+    ),
+    url('/assets/images/ptstories-bg.png') no-repeat center center/cover;
+  filter: grayscale(80%) contrast(1.15);
+  z-index: -2;
+}
+
+/* Vignette & Depth Gradient Overlay */
+.video-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(10, 15, 24, 0.30) 0%,
+      rgba(15, 22, 32, 0.65) 50%,
+      rgba(8, 12, 18, 0.90) 100%
+    );
+  z-index: -1;
 }
 
 /* --- MUSEUM INTERACTIVE BACK BUTTON --- */
@@ -24,70 +52,91 @@
   align-items: center;
   gap: 6px;
   padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15); /* Fallback variable values inline */
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 999px;
-  color: #B0B3B8;
+  color: #E2E4E9;
   font-family: "Kinetika Regular", sans-serif;
   font-weight: 600;
   font-size: 0.82rem;
   cursor: pointer;
   user-select: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: border-color 0.15s, color 0.15s, transform 0.15s, background 0.15s;
 }
 
 .video-container .apo-back-btn:hover {
-  color: #F3F4F4;
-  background: rgba(255, 255, 255, 0.18);
+  color: #FFF;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
 }
 
-.video-container .apo-back-btn:active { 
-  transform: translateY(0) scale(0.96); 
+.video-container .apo-back-btn:active {
+  transform: translateY(0) scale(0.96);
 }
 
-.video-container .apo-back-btn:focus-visible { 
-  outline: none; 
-  box-shadow: 0 0 0 3px rgba(213, 168, 34, 0.4); 
+.video-container .apo-back-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(223, 186, 115, 0.4);
 }
 
 /* --- HEADERS --- */
+.hero-title {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .header {
   font-family: "Cinzel Decorative", serif;
   font-size: 45px;
-  color: #F3F4F4;
+  color: #FFFFFF;
   font-weight: bold;
-  letter-spacing: -1px;
-  text-shadow: #1b1b1b 4px 4px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.95), 0 2px 4px rgba(0, 0, 0, 0.8);
   text-align: center;
-} 
-
-.sub-head {
-  margin-top: 10px;
-  margin-bottom: 4rem;
-  font-family: "Kinetika Regular";
-  color: #D5A822;
-  text-shadow: #1b1b1b 2px 2px;
-  font-size: 15px;
-  text-align: center;
-  letter-spacing: 1px;
 }
 
-/* Interviewee Grid Container Optimized for Portrait Layout Scales */
+.text-spacer {
+  margin-top: 5px;
+}
+
+.title-divider {
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #DFBA73 50%, transparent);
+  margin: 1.5rem 0 0.5rem 0;
+  filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.sub-head {
+  margin-top: 12px;
+  margin-bottom: 4rem;
+  font-family: "Kinetika Regular", sans-serif;
+  font-weight: 700;
+  color: #DFBA73; /* Premium Brilliant Champagne Gold */
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+  font-size: 14px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+/* --- INTERVIEWEE GRID --- */
 .grid-content {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 4rem 2.5rem;      
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5rem 3rem;
   width: 100%;
-  max-width: 600px;                      
+  max-width: 600px;
   padding: 0 2rem;
   box-sizing: border-box;
   margin: 3em 0 3em 0;
 }
 
-/* Individual Profile Touch Cards with Floating Animation */
 .profile-card {
   display: flex;
   flex-direction: column;
@@ -98,133 +147,180 @@
   animation: floatUpDown 4s ease-in-out infinite;
 }
 
-/* Offsetting floating timing rules */
-.profile-card:nth-child(2n) {
-  animation-delay: -1.5s;
-}
+.profile-card:nth-child(2n) { animation-delay: -1.5s; }
+.profile-card:nth-child(3n) { animation-delay: -3s; }
 
-.profile-card:nth-child(3n) {
-  animation-delay: -3s;
-}
-
-/* Circular Avatar Structure Rules */
+/* Circular Avatar Framework */
 .avatar-ring {
-  width: 160px;                                 
-  height: 160px;
+  position: relative;
+  width: 185px;
+  height: 185px;
   border-radius: 50%;
-  border: 3px solid #3e3837;
+  border: 3px solid #4a4443;
   overflow: hidden;
-  background-color: #1a1a1a;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  background-color: #11151c;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
   transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inner-glow-shield {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85);
+  z-index: 2;
+  pointer-events: none;
 }
 
 .avatar-ring img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
 }
 
-/* Labels Applied Directly Beneath the Profiles */
+/* Profile Names Text styling */
 .profile-meta h3 {
-  font-family: "Kinetika Regular", sans-serif;
-  color: #F3F4F4;
-  margin: 1rem 0 0 0;
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
+  color: #FFFFFF;
+  font-family: "Cinzel", serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-top: 1.2rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  transition: color 0.2s ease;
 }
 
-/* INTERACTIVE HOVER / TAP LIGHT UP SELECTION ANIMATIONS */
+.tap-hint {
+  display: block;
+  font-family: "Kinetika Regular", sans-serif;
+  font-size: 0.85rem;
+  color: #D1C4B0; /* Swapped dusty blue for readable neutral slate-champagne */
+  margin-top: 6px;
+  font-style: italic;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+/* INTERACTIVE ACTIVE STATE HOVERS */
 .profile-card:hover .avatar-ring {
-  border-color: #ebebeb;
+  border-color: #DFBA73;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85);
+}
+
+.profile-card:hover .profile-meta h3 {
+  color: #FFE0A3;
 }
 
 .profile-card:active {
-  animation-play-state: paused; /* Pauses floating instantly on touch pressure */
+  animation-play-state: paused;
 }
 
 .profile-card:active .avatar-ring {
-  transform: scale(0.93) !important;
-  border-color: #F3F4F4 !important; /* Fast high-contrast silver flash frame */
-  box-shadow: 0 0 25px rgba(213, 168, 34, 0.9); /* Deep immersive gold aura illumination */
-  filter: brightness(1.3); /* Lights up profile graphic face directly */
-  transition: transform 0.05s ease-out, border-color 0.05s ease-out;
+  transform: scale(0.94) !important;
+  border-color: #FFFFFF !important;
+  box-shadow: 0 0 30px rgba(223, 186, 115, 0.8) !important;
+  filter: brightness(1.2);
 }
 
-/* INTERACTIVE CINEMATIC PORTRAIT MODAL OVERLAY */
+/* --- THEATRICAL MODAL OVERLAY --- */
 .video-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(11, 16, 20, 0.94);
-  backdrop-filter: blur(10px);
+  background-color: rgba(6, 10, 15, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  animation: fadeInModal 0.2s ease-out;
 }
 
 .modal-box {
   position: relative;
-  width: 85%;                            /* Balanced narrow profile footprint */
-  max-width: 400px;                      /* True portrait form constraint bounding box */
-  background: #121a21;
-  border: 2px solid #3e3837;
-  border-radius: 8px;
+  width: 85%;
+  max-width: 400px;
+  background: #0d131a;
+  border: 2px solid #3d3736;
+  border-radius: 12px;
   padding: 1.25rem;
-  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.9);
   display: flex;
   flex-direction: column;
   max-height: 100vh;
 }
 
+.modal-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.now-playing-tag {
+  font-family: "Kinetika Regular", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #DFBA73;
+  letter-spacing: 2px;
+}
+
 .close-modal-btn {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #3e3837;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #fff;
-  font-size: 28px;
-  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  z-index: 1010;
+  transition: all 0.15s ease;
 }
 
-/* Portrait Video Surface Frame */
+.close-modal-btn:hover {
+  background: #3e3837;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
 .player-surface {
   width: 100%;
-  aspect-ratio: 9 / 16;                  /* Flipped to vertical portrait presentation */
+  aspect-ratio: 9 / 16;
   background-color: #000;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9);
 }
 
 .player-surface video {
   width: 100%;
   height: 100%;
-  object-fit: cover;                     /* Edge-to-edge video fill mapping configuration */
+  object-fit: cover;
 }
 
 .video-unavailable {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding: 1.5rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: "Kinetika Regular", sans-serif;
   font-size: 0.95rem;
+}
+
+.alert-icon {
+  margin-bottom: 12px;
+  color: #DFBA73;
 }
 
 .modal-descriptor h2 {
@@ -234,9 +330,10 @@
   font-size: 1.3rem;
   letter-spacing: 0.5px;
   text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* --- KEYFRAMES FOR NATURAL FLOATING PATHS --- */
+/* --- FLOATING & FADE KEYFRAMES --- */
 @keyframes floatUpDown {
   0%, 100% {
     transform: translateY(0);
@@ -244,4 +341,9 @@
   50% {
     transform: translateY(-8px);
   }
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
