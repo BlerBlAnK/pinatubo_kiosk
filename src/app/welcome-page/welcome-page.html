@@ -1,6 +1,11 @@
 <div class="welcome-wrapper" (click)="toggleColor()">
 
-  <div class="bg-layer" [class.colored]="isColored"></div>
+  <div class="bg-layer" [class.colored]="isColored">
+    <video #bgVideo autoplay loop muted playsinline class="video-background">
+    <source src="/assets/videos/ptvid.mp4" type="video/mp4">
+  </video>
+    <div class="gradient-overlay"></div>
+  </div>
 
   <section class="welcome-container flex justify-center items-center h-screen">
     <div class="heading text-center">
