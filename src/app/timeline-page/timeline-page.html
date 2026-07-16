@@ -1,26 +1,20 @@
-<div class="kiosk-container">
-  
-  <div class="apo-back-btn" (click)="goBack()" aria-label="Back to menu">
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-      <path d="M10 13L5 8L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    Back
+<div class="nav-bar fixed top-0 w-full bg-transparent z-20 pointer-events-none">
+      <div class="nav-container px-10 py-7 flex justify-between">
+          <div class="nav-logo">
+              <a href = ""><img src = "/assets/images/logos/mainlogo.png"></a>
+          </div>
+
+          <a (click)="goBack()" class="home pt-5 pointer-events-auto cursor-pointer" aria-label="Back to previous page">
+              <i class="fa-solid fa-circle-chevron-left text-7xl text-[#D5A822]"></i>
+          </a>
+      </div>
   </div>
+  
+<div class="kiosk-container">
 
   <div class="map-header-grid">
     
     <div class="map-viewport">
-      <div class="map-controls">
-        <button class="map-btn" (click)="zoomIn()"  title="Zoom in">＋</button>
-        <button class="map-btn" (click)="zoomOut()" title="Zoom out">－</button>
-        <button class="map-btn" (click)="resetZoom()" title="Reset zoom">⊙</button>
-        <span class="zoom-label">{{ zoomLevel() }}×</span>
-      </div>
-
-      <span class="compass-icon">
-        <span class="compass-n">N</span>▲
-      </span>
-
       <svg
         class="pinatubo-map"
         [attr.viewBox]="viewBoxStr()"

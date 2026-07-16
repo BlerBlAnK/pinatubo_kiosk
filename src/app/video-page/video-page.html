@@ -2,15 +2,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
 
-<div class="video-container">
+<div class="nav-bar fixed top-0 w-full bg-transparent z-20 pointer-events-none">
+    <div class="nav-container px-10 py-7 flex justify-between">
+        <div class="nav-logo">
+            <a href = ""><img src = "/assets/images/logos/mainlogo.png"></a>
+        </div>
 
-  <div class="apo-back-btn" (click)="goBack()" aria-label="Back to menu">
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-      <path d="M10 13L5 8L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    Back
-  </div>
-  
+        <a (click)="goBack()" class="home pt-5 pointer-events-auto cursor-pointer" aria-label="Back to previous page">
+            <i class="fa-solid fa-circle-chevron-left text-7xl text-[#D5A822]"></i>
+        </a>
+    </div>
+</div>
+
+<div class="video-container">
   <header class="header">Mga Tinig</header>
   <div class="header">Saalon Ng Lahar</div>
   <div class="sub-head">MT. PINATUBO MUSEUM STORIES</div>

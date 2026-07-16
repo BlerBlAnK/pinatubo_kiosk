@@ -21,6 +21,11 @@ interface TimelineSlide {
 })
 export class ButtonPage implements OnInit, OnDestroy {
   @ViewChild('sliderTrack') sliderTrack!: ElementRef;
+  @ViewChild('kioskVideoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
+
+  goBack(): void {
+    this.router.navigate(['']);
+}
 
   slides: TimelineSlide[] = [
     {
