@@ -8,10 +8,9 @@ import { Router } from '@angular/router';
 import { buildAnswer, getAutocompleteMatches } from './pinatubo-engine';
 
 interface ChatMessage {
-citations: any;
   role: 'apo' | 'user';
   paragraphs: string[];
-  pages?: number[];
+  citations?: string[];
   followups?: string[];
 }
 
@@ -79,22 +78,18 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
       .filter(p => p.length > 0);
   }
 
-  private addBotMessage(text: string, pages: number[], followups: string[]): void {
+  private addBotMessage(text: string, citations: string[], followups: string[]): void {
     this.messages.update(msgs => [...msgs, {
       role: 'apo',
       paragraphs: this.textToParagraphs(text),
-      pages,
+      citations,
       followups,
-      citations: undefined
     }]);
     this.shouldScroll = true;
   }
 
   private addUserMessage(text: string): void {
-    this.messages.update(msgs => [...msgs, {
-      role: 'user', paragraphs: [text],
-      citations: undefined
-    }]);
+    this.messages.update(msgs => [...msgs, { role: 'user', paragraphs: [text] }]);
     this.shouldScroll = true;
   }
 
@@ -117,7 +112,7 @@ export class ApoPinatubo implements OnInit, AfterViewChecked {
     setTimeout(() => {
       const ans = buildAnswer(q);
       this.thinking.set(false);
-      this.addBotMessage(ans.text, ans.pages, ans.followups);
+      this.addBotMessage(ans.text, ans.citations, ans.followups);
       setTimeout(() => this.queryInputEl?.nativeElement.focus(), 50);
     }, TYPING_BUBBLE_DURATION);
   }

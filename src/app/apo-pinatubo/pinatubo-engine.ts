@@ -245,7 +245,7 @@ function bm25Score(docIdx: number, queryTerms: string[]): number {
   return score;
 }
 
-function searchBM25(rawTerms: string[], topK: number): {entry:{page:number;text:string}; score:number}[] {
+function searchBM25(rawTerms: string[], topK: number): {entry:{page:number;text:string;source?:string}; score:number}[] {
   const queryTerms = expandTerms(rawTerms);
   if (!queryTerms.length) return [];
   const scores = KNOWLEDGE.map((_,idx) => ({idx, score:bm25Score(idx,queryTerms)}));
@@ -253,18 +253,27 @@ function searchBM25(rawTerms: string[], topK: number): {entry:{page:number;text:
   return scores.slice(0,topK).filter(s=>s.score>0.5).map(s=>({entry:KNOWLEDGE[s.idx],score:s.score}));
 }
 
-function synthesize(results: {entry:{page:number;text:string}; score:number}[], max: number): {text:string; pages:number[]} {
-  const chosen: {entry:{page:number;text:string}; score:number}[] = [];
+function synthesize(results: {entry:{page:number;text:string;source?:string}; score:number}[], max: number): {text:string; citations:string[]} {
+  const chosen: {entry:{page:number;text:string;source?:string}; score:number}[] = [];
   for (const r of results) {
     if (chosen.length >= max) break;
-    const sameCount = chosen.filter(c=>c.entry.page===r.entry.page).length;
+    const sameCount = chosen.filter(c=>c.entry.page===r.entry.page && c.entry.source===r.entry.source).length;
     if (sameCount >= 2) continue;
     chosen.push(r);
   }
   chosen.sort((a,b)=>a.entry.page-b.entry.page);
+  // Format each citation as "p.42" for the default (HAU) book, or
+  // "Fire and Mud, p.42" when a different source is tagged — so the
+  // little citation tags in the UI never imply the wrong book.
+  const seen = new Set<string>();
+  const citations: string[] = [];
+  for (const c of chosen) {
+    const label = c.entry.source ? `${c.entry.source.split(' (')[0]}, p.${c.entry.page}` : `p.${c.entry.page}`;
+    if (!seen.has(label)) { seen.add(label); citations.push(label); }
+  }
   return {
     text: chosen.map(c=>c.entry.text.trim()).join(' '),
-    pages: [...new Set(chosen.map(c=>c.entry.page))].sort((a,b)=>a-b)
+    citations
   };
 }
 
@@ -335,6 +344,7 @@ const FALLBACK_FACTS = [
   { keys: ["how long did the eruption last","duration of the eruption"], text: "The most violent, climactic phase of the eruption occurred over about nine hours on June 15, 1991, though related volcanic activity (smaller eruptions, then lahars) continued for weeks, months, and years afterward." },
   { keys: ["was mt pinatubo active before 1991","active before 1991","dormant before"], text: "Before 1991, Pinatubo had been dormant for centuries — so long that it wasn't widely recognized as an active volcano until scientists investigated unusual seismic activity in early 1991." },
   { keys: ["what caused mt pinatubo to erupt","what caused the eruption","why did pinatubo erupt"], text: "New magma rising from deep underground intruded into Pinatubo's shallow magma chamber (only about 6 km below the surface) and mixed with older magma there, building up pressure and gas until the chamber's roof gave way, triggering the explosive eruption." },
+  { keys: ["how many magma chambers","magma chamber size","how big is the magma chamber","total capacity magma","three magma chambers"], text: "Pinatubo's magma system has three connected chambers about 6 kilometers beneath the mountain: one under the ridge linking Pinatubo and Mount Negron, one beneath Mount Negron itself, and one beneath Pinatubo's northwest slope (under today's crater lake) — the chamber that fed the 1991 eruption. Together they hold roughly 125 cubic kilometers of magma." },
   { keys: ["what is magma","how did magma build up","magma chamber"], text: "Magma is molten rock from deep within the Earth. Beneath Pinatubo, magma pooled in a shallow chamber only about 6 kilometers down; as fresh, hotter magma intruded from below and mixed with the older magma, pressure built until it finally broke through." },
   { keys: ["what gases were released","gases released during"], text: "Sulfur dioxide and steam were the main gases released, along with volcanic ash. The large amount of sulfur dioxide is what later spread into the stratosphere and cooled global temperatures." },
   { keys: ["how much material did the volcano eject","material ejected","how much ash"], text: "Pinatubo ejected roughly 5 to 10 cubic kilometers of volcanic material during the 1991 eruption, making it one of the largest eruptions of the 20th century by volume." },
@@ -432,6 +442,23 @@ const FALLBACK_FACTS = [
   { keys: ["manila trench","philippine trench","ring of fire","tectonic plates"], text: "The Philippines sits between two subduction zones — the Manila Trench in the South China Sea and the Philippine Trench in the Pacific — making it one of the most geologically active spots on Earth. This tectonic setting is what gave rise to volcanoes like Mt. Pinatubo." },
   { keys: ["magsaysay","ramon magsaysay","plane crash","mount manunggal"], text: "President Ramon Magsaysay, who died in a plane crash on Mount Manunggal in Cebu in 1957, had actually named his presidential plane 'Mount Pinatubo' — the mountain where he hid and fought as a guerrilla during World War II. This caused widespread confusion about the crash location." },
   { keys: ["world war ii","japanese","guerrilla","camp sanchez wartime"], text: "During World War II, Mt. Pinatubo became a guerrilla haven. Gen. MacArthur authorized Lt. Col. Claude Thorpe to set up an observation post at Camp Sanchez to spy on Japanese planes at Clark, with Kapampangan volunteers including Col. Mario Pamintuan's family serving the resistance." },
+  { keys: ["how was mount pinatubo born","birth of a volcano","birth of pinatubo","how did pinatubo form"], text: "About 10 to 15 million years ago, the Manila Trench beneath the West Philippine Sea suddenly slipped and plunged roughly 100 kilometers deeper into the Earth's mantle, generating magma that eventually broke through the crust west of Pampanga — giving birth to Mount Pinatubo." },
+  { keys: ["mother of all pinatubo eruptions","mother of all eruptions","inararo eruptive period","inararo"], text: "Roughly 35,000 years ago, an eruption ten times larger than the 1991 eruption — sometimes called the 'mother of all Pinatubo eruptions' — destroyed the ancestral volcano and blanketed the region with about 325 feet of volcanic debris. Scientists call this the Inararo Eruptive Period." },
+  { keys: ["sacobia eruptive period","what is the sacobia eruptive period"], text: "About 17,000 years ago, Pinatubo erupted again in the Sacobia Eruptive Period, burying more of Pampanga and Tarlac. The pyroclastic-flow deposits from this eruption are still visible on the Bamban side of the Sacobia River, where villages like Calumpang now stand." },
+  { keys: ["did the spaniards know pinatubo was a volcano","spaniards volcano","spanish colonial period volcanic"], text: "No — when the Spanish arrived in Pampanga in 1571, the Buag Eruptive Period had already ended about 80 years earlier and the region's rivers had stabilized, so no volcanic activity was ever recorded during the entire Spanish colonial period." },
+  { keys: ["h.a. myers","capt myers","1925 expedition","myers expedition"], text: "In 1925, Capt. H. A. Myers of the U.S. 26th Cavalry led an expedition up Pinatubo and described its crater as 'beyond description,' with walls rising sheer from 500 to 2,000 feet — one of the earliest detailed American accounts of the mountain." },
+  { keys: ["camp sanchez","what was camp sanchez"], text: "Camp Sanchez, named for a Filipino officer in the U.S. Cavalry, was built as a base for American horseback expeditions to Pinatubo in the early 1900s, later expanding to include cottages, a golf course, and recreation facilities to take advantage of the mountain's cool climate." },
+  { keys: ["preliminary findings not related","phivolcs landslide","phivolcs said not volcanic","what did phivolcs say after the landslide"], text: "After a landslide and reports of smoke on Pinatubo's slope in August 1990, PHIVOLCS did only a quick helicopter survey and issued a memo stating 'Preliminary findings indicate that the phenomenon is not related with any volcanic activity.' No further monitoring happened until April 1991, just two months before the climactic eruption." },
+  { keys: ["1990 bases treaty negotiation","raul manglapus","richard armitage","bases rent negotiation"], text: "In late 1990, the Philippine panel (led by Raul Manglapus) sought $825 million a year for just a seven-year extension of the U.S. bases agreement, while the American panel (led by Richard Armitage) offered only $360 million a year for 10 to 12 years — talks that collapsed just as Pinatubo began stirring." },
+  { keys: ["boeing 747 ash cloud","plane engine damage ash","747 encountered ash","boeing 747","what happened to the boeing 747"], text: "On June 15, 1991, a Tokyo-bound Boeing 747 flying at 29,000 feet over the South China Sea flew through Pinatubo's ash cloud; all four engines were damaged beyond repair. A second 747 flying Narita to Singapore also hit ash and pumice and had to divert to Taipei." },
+  { keys: ["how much did pinatubo's summit height change","summit height change","how tall is pinatubo now","5725","4872","how tall did pinatubo used to be","tall pinatubo"], text: "The climactic eruption reduced Pinatubo's summit from 5,725 feet to 4,872 feet — a loss of 853 feet — and left behind a caldera about 3.5 kilometers wide that later filled with water to form today's Crater Lake." },
+  { keys: ["megadike","what is the megadike"], text: "The Megadike is actually a pair of parallel flood-control dikes built starting January 1996 — one protecting San Fernando, Angeles, Bacolor, Sto. Tomas, and Minalin, the other protecting Porac, Sta. Rita, Floridablanca, Lubao, Sasmuan, and Guagua — funded by roughly P1.4 billion in emergency releases after the deadly 1995 Cabalantian lahar." },
+  { keys: ["how many lahar episodes in 1992","62 lahar episodes","lahar episodes 1992"], text: "1992 alone saw 62 separate lahar episodes, mostly triggered by a string of strong typhoons (Asyang, Konsing, Ditang, and Gloring). By the end of that year's monsoon season, 67,600 of Porac's 68,000 residents had evacuated, and 70 percent of Bamban's population had resettled elsewhere." },
+  { keys: ["cabalantian 1995","cabalantian lahar","october 1995 lahar","typhoon mameng"], text: "Typhoon Mameng dumped 337 millimeters of rain on Pinatubo on October 1, 1995, triggering lahars that buried the barangay of Cabalantian and killed at least 550 residents, while the rest of its 13,000 people were trapped on rooftops for most of the day until helicopters rescued them." },
+  { keys: ["warn communities before cell phones","how did people warn each other lahar","firecrackers church bells"], text: "Before mobile phones existed, communities near Pinatubo's rivers could only be warned of an approaching lahar by exploding firecrackers and ringing church bells." },
+  { keys: ["pinatubo's petrified trees","petrified trees","fossilized tree trunks abacan"], text: "After lahars scoured the Abacan riverbed in 1991, Angeles City residents found two kinds of fossilized tree trunks: some still had organic wood and were carbon-dated to about 2,900 years old, while others had fully petrified into hard rock — a process that takes at least 1,000,000 years." },
+  { keys: ["compare pinatubo to mount st helens","pinatubo vs st helens","9 to 15 times stronger"], text: "USGS-PHIVOLCS scientists found Pinatubo's magma chamber measured 3 to 5 square kilometers, compared to just 1 square kilometer at Mount St. Helens — meaning Pinatubo's eruption had the potential to be 9 to 15 times stronger than the 1980 St. Helens eruption." },
+  { keys: ["world's largest volcanic eruptions","compare pinatubo to other eruptions","novarupta vs pinatubo","biggest eruptions ever"], text: "Pinatubo ranks as the world's second-biggest eruption of the 20th century, behind only Alaska's 1912 Novarupta eruption. It's comparable in scale to Krakatoa (1883) and Huaynaputina (1600), but is dwarfed by prehistoric giants like Yellowstone and Tambora, which were many times larger." },
 ];
 
 // Pre-tokenized fact keys, built once, so matching doesn't re-tokenize
@@ -561,12 +588,12 @@ export function getFollowups(): string[] {
 // ================================================================
 // MAIN ANSWER BUILDER
 // ================================================================
-export interface Answer { text: string; pages: number[]; followups: string[]; }
+export interface Answer { text: string; citations: string[]; followups: string[]; }
 
 export function buildAnswer(question: string): Answer {
   // Layer 1: social intent
   const social = matchSocial(question);
-  if (social) return { text: social.text, pages: [], followups: social.followups ? getFollowups() : [] };
+  if (social) return { text: social.text, citations: [], followups: social.followups ? getFollowups() : [] };
 
   // Make sure the vocabulary (built from both the book text and the
   // curated fact keys/answers) is ready before we try to typo-correct
@@ -577,23 +604,23 @@ export function buildAnswer(question: string): Answer {
 
   // Layer 2: curated facts (now typo-tolerant via correctedTokens)
   const fact = findFact(correctedTokens);
-  if (fact) return { text: fact, pages: [], followups: getFollowups() };
+  if (fact) return { text: fact, citations: [], followups: getFollowups() };
 
   // Layer 3: BM25 search
   const results = searchBM25(correctedTokens, 20);
   if (results.length && results[0].score > 1.5) {
-    const {text, pages} = synthesize(results, 3);
-    return { text, pages, followups: getFollowups() };
+    const {text, citations} = synthesize(results, 3);
+    return { text, citations, followups: getFollowups() };
   }
   if (results.length && results[0].score > 0.5) {
-    const {text, pages} = synthesize(results, 1);
-    return { text, pages, followups: getFollowups() };
+    const {text, citations} = synthesize(results, 1);
+    return { text, citations, followups: getFollowups() };
   }
 
   // Layer 4: no match
   return {
     text: "I don\'t have information on that. Try asking about the 1991 eruption, the Aeta, lahars, Clark Air Base, or the scientists who monitored Pinatubo.",
-    pages: [],
+    citations: [],
     followups: getFollowups()
   };
 }
