@@ -56,7 +56,7 @@ export class VideoPage {
       name: 'ELISA FEDELINO',
       avatar: '/assets/images/elisa.png',      
       videoSrc: '/assets/videos/elisa.mp4',
-      storyTitle: 'The Day the Sky Turned to Ash',
+      storyTitle: 'Lorem Ipsum',
       category: 'FILTER 1'
     },
     {
@@ -64,7 +64,7 @@ export class VideoPage {
       name: 'RANDOLF GARCIA',
       avatar: '/assets/images/randolf.png',
       videoSrc: '/assets/videos/randolf.mp4',
-      storyTitle: 'Surviving the River of Mud',
+      storyTitle: 'Lorem Ipsum',
       category: 'FILTER 1'
     },
     {
@@ -72,7 +72,7 @@ export class VideoPage {
       name: 'VIOLY OCAMPO',
       avatar: '/assets/images/violy.png',
       videoSrc: '/assets/videos/violy.mp4',
-      storyTitle: 'Echoes of Bakood',
+      storyTitle: 'Lorem Ipsum',
       category: 'FILTER 1'
     },
     {
@@ -80,7 +80,7 @@ export class VideoPage {
       name: 'ANTONIO SANCHEZ',
       avatar: '/assets/images/antonio.jpg',
       videoSrc: '/assets/videos/antonio_story.mp4',
-      storyTitle: 'Guardians of the Dike',
+      storyTitle: 'Lorem Ipsum',
       category: 'FILTER 3'
     },
     {
@@ -88,7 +88,7 @@ export class VideoPage {
       name: 'ELENA MAGAT',
       avatar: '/assets/images/elena.jpg',
       videoSrc: '/assets/videos/elena_story.mp4',
-      storyTitle: 'A Community Reborn',
+      storyTitle: 'Lorem Ipsum',
       category: 'FILTER 3'
     },
     {
@@ -96,8 +96,8 @@ export class VideoPage {
       name: 'LUZVIMINDA CRUZ',
       avatar: '/assets/images/luzviminda.jpg',
       videoSrc: '/assets/videos/luzviminda_story.mp4',
-      storyTitle: 'Memories Across Generation',
-      category: 'FILTER 2'
+      storyTitle: 'Lorem Ipsum',
+      category: 'FILTER 3'
     },
     // Mock profiles mapped for Filter 2/3 pagination & swipe testing
     {
@@ -105,7 +105,7 @@ export class VideoPage {
       name: 'JUSTIN CABE',
       avatar: '/assets/images/pinatubo.jpg',
       videoSrc: '/assets/videos/elisa.mp4',
-      storyTitle: 'The Ashes of Hope',
+      storyTitle: 'Lorem Ipsum',
       category: 'FILTER 2'
     },
     {
@@ -113,7 +113,7 @@ export class VideoPage {
       name: 'FRIENCH OCAMPO',
       avatar: '/assets/images/pinatubo.jpg',
       videoSrc: '/assets/videos/randolf.mp4',
-      storyTitle: 'Strength in Unity',
+      storyTitle: 'Lorem Ipsum',
       category: 'FILTER 2'
     },
     {
@@ -121,7 +121,7 @@ export class VideoPage {
       name: 'JAMES MANANQUIL',
       avatar: '/assets/images/pinatubo.jpg',
       videoSrc: '/assets/videos/violy.mp4',
-      storyTitle: 'Visions of Pinatubo',
+      storyTitle: 'Lorem Ipsum',
       category: 'FILTER 3'
     }
   ];
