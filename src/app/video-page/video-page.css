@@ -1,19 +1,3 @@
-.nav-bar {
-    height: 70px;
-    pointer-events: none;
-}
-
-.nav-logo {
-    height: auto;
-    width: 120px;
-    pointer-events: auto;
-}
-
-/* nav-container needs to be the positioning context for the back button */
-.nav-container {
-    position: relative;
-    height: 100%;
-}
 /* Core Layout Container with Dark Volcanic Tone Background */
 .video-container {
   position: relative;
@@ -25,15 +9,17 @@
   width: 1080px;
   padding: 6rem 0;
   box-sizing: border-box;
-  overflow: hidden;
-  margin: 0 auto; /* Keeps it perfectly centered if previewed on wider screens */
+  margin: 0 auto; /* Keeps it perfectly centered on wider testing monitors */
 }
 
-/* Background Image - Enhanced Darkening Layer for Clean Contrast */
+/* Background Image - Absolute Screen Cover to Avoid Any White Space */
 .video-container::before {
   content: "";
-  position: absolute;
-  inset: 0;
+  position: fixed; /* Changed to fixed so it stretches to cover the entire viewport */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background:
     linear-gradient(
       rgba(15, 23, 36, 0.45), 
@@ -44,11 +30,14 @@
   z-index: -2;
 }
 
-/* Vignette & Depth Gradient Overlay */
+/* Vignette & Depth Gradient Overlay spanning the full screen */
 .video-container::after {
   content: "";
-  position: absolute;
-  inset: 0;
+  position: fixed; /* Changed to fixed to guarantee a seamless gradient shadow edge-to-edge */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background:
     linear-gradient(
       to bottom,
@@ -102,6 +91,7 @@
 
 /* --- HEADERS --- */
 .hero-title {
+  width: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -144,10 +134,12 @@
   letter-spacing: 3px;
 }
 
-/* --- FILTER CONTROLS & PAGINATION INDICATORS --- */
+/* --- FILTER CONTROLS & PAGINATION --- */
 .filter-bar {
   display: flex;
   justify-content: center;
+  align-items: center;
+  width: 100%;
   gap: 2rem;
   margin-bottom: 2rem;
   z-index: 10;
@@ -181,10 +173,12 @@
   box-shadow: 0 6px 20px rgba(223, 186, 115, 0.35);
 }
 
-/* Dots Indicator Directly Below Filters */
+/* Dots Indicator Directly Below Filters - Stably Centered */
 .filter-pagination {
   display: flex;
   justify-content: center;
+  align-items: center;
+  width: 100%;
   gap: 1.25rem;
   margin-bottom: 4rem; /* More spacing before grid */
   z-index: 10;
@@ -215,7 +209,7 @@
 .gallery-wrapper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center; /* Ensures the wrapper context sits centered */
   width: 100%;
   max-width: 1020px; /* Expands to use full kiosk width safely */
   padding: 0 2rem;
@@ -223,9 +217,11 @@
   margin: 1rem 0 5rem 0;
 }
 
+/* Updated to Flexbox to handle odd card counts flawlessly on Filter switches */
 .grid-content {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Crucial: Centers cards when there's an odd number */
   gap: 6.5rem 5rem; /* Drastically increased gaps for 1080x1920 layout balance */
   width: 100%;
   max-width: 780px;
@@ -277,7 +273,7 @@
   box-shadow: none;
 }
 
-/* Base Profile Card */
+/* Base Profile Card - Flex child sized to perfectly fit two-column layout */
 .profile-card {
   display: flex;
   flex-direction: column;
@@ -285,6 +281,8 @@
   text-align: center;
   cursor: pointer;
   user-select: none;
+  width: calc(50% - 2.5rem); /* Ensures 2 items per row, subtracting half of the 5rem gap */
+  min-width: 320px; /* Prevents awkward wrapping on tiny components */
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
 }
 
@@ -321,20 +319,15 @@
   background-color: #11151c;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
   
-  /* Isolated Floating Animation */
-  animation: floatUpDown 4s ease-in-out infinite;
+  /* Floating Animation - Enabled globally and persistently across filters */
+  animation: floatUpDown 4s ease-in-out infinite !important;
   
   transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Non-synchronous stagger delay offsets for floating profile states */
-.profile-card:nth-child(2n) .avatar-ring { animation-delay: -1.5s; }
-.profile-card:nth-child(3n) .avatar-ring { animation-delay: -3s; }
-
-/* Pause floating animation on children loops when the container is swiping */
-.grid-content.transitioning .avatar-ring {
-  animation-play-state: paused;
-}
+.profile-card:nth-child(2n) .avatar-ring { animation-delay: -1.5s !important; }
+.profile-card:nth-child(3n) .avatar-ring { animation-delay: -3s !important; }
 
 .inner-glow-shield {
   position: absolute;
@@ -356,7 +349,7 @@
 .profile-meta h3 {
   color: #FFFFFF;
   font-family: "Cinzel", serif;
-  font-size: 1.6rem; /* Increased from 1.15rem for high eligibility */
+  font-size: 2rem; /* Increased from 1.15rem for high eligibility */
   font-weight: 600;
   letter-spacing: 1.5px;
   margin-top: 1.8rem;
@@ -367,7 +360,7 @@
 .tap-hint {
   display: block;
   font-family: "Kinetika Regular", sans-serif;
-  font-size: 1.1rem; /* Scaled up from 0.85rem */
+  font-size: 2rem; /* Scaled up from 0.85rem */
   color: #D1C4B0;
   margin-top: 10px;
   font-style: italic;
