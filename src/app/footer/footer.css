@@ -5,16 +5,27 @@
        sits underneath it (e.g. Apo Pinatubo's input bar or footnote
        near the bottom of the screen). Turning off pointer events here
        lets those clicks pass through, and the rule below turns them
-       back on for just the logo, so it keeps working exactly as before.
+       back on for just the interactive children, so it keeps working
+       exactly as before.
     */
     pointer-events: none;
 }
 
-.footer-logo{
-    height:auto;
-    width:350px;
-    pointer-events: auto;
+.footer-container {
+    /* Explicitly inherits pointer-events: none from .footer-bar.
+       Only .footer-logo and .info opt back in below — the empty
+       first column and any transparent gaps stay click-through. */
+    pointer-events: none;
 }
 
+.footer-logo {
+    height: 10px;
+    width: 360px;
+    pointer-events: auto;
+    margin-top: 10px;
+    margin-bottom: 100px;
+}
 
-
+.footer-container .info {
+    pointer-events: auto;
+}

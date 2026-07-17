@@ -13,6 +13,21 @@
      breathing pauses) when the visitor focuses the field.
    · Kiosk touch-only: the keyboard hint row (arrow/Enter/Esc)
      was removed from the autocomplete panel entirely.
+
+   Design notes (v5 — footer clearance fix):
+   · A separate, page-level fixed footer (logo + help button) sits
+     outside this component and overlaps the bottom of the viewport.
+     --safe-bottom raised from 96px to 220px so the input bar and
+     starter chips clear it. .apo-footer's own padding trimmed so
+     it doesn't add unnecessary extra height on top of that.
+
+   Design notes (v7 — ash, gray, falling):
+   · Replaced the earlier .apo-snowfall/.snow-flake and
+     .apo-ashfall/.ash-flake experiments with .apo-embers — the
+     confirmed recipe from the working ash-gray demo. Matches the
+     template's 10 <i> tags via nth-child, gray (#D2D0CC) specks
+     that fade in/out as they fall, drifting slightly right.
+     Sits at z-index 0, below .apo-shell-inner's z-index 1.
    ============================================================ */
 
 @property --apo-ring-angle {
@@ -48,9 +63,8 @@
   --font-sans:    var(--font-sans-premium, 'Segoe UI', system-ui, sans-serif);
 
   --logo-clear:   120px;
-  --safe-bottom:  96px;
+  --safe-bottom:  220px;
 
-  /* Spacing scale — keeps vertical rhythm consistent across sections */
   --sp-1:  4px;
   --sp-2:  8px;
   --sp-3:  12px;
@@ -59,7 +73,6 @@
   --sp-6:  32px;
   --sp-7:  48px;
 
-  /* Shared focus ring — one language for every interactive element */
   --focus-ring: 0 0 0 3px rgba(232, 138, 58, 0.45);
 
   display: flex;
@@ -82,12 +95,88 @@
   background-repeat: repeat, no-repeat, no-repeat;
 }
 
-/* Text selection keeps the volcanic identity */
 .apo-shell ::selection {
   background: rgba(217, 115, 36, 0.35);
   color: #fff8f0;
 }
 
+/* ---------- Ash (gray, falling) ----------
+   Matches the confirmed working demo exactly: gray specks
+   (#D2D0CC) with a soft matching glow, fading in as they enter,
+   fading out near the bottom, drifting slightly right as they
+   fall. 10 fixed positions/timings via nth-child, matching the
+   10 <i> tags in the template. Sits at z-index 0, below
+   .apo-shell-inner's z-index 1. */
+/* ---------- Ash (gray, falling) ----------
+   Matches the confirmed working demo: small gray specks (#D2D0CC)
+   with a soft matching glow, fading in as they enter, fading out
+   near the bottom, drifting slightly right as they fall. Sits at
+   z-index 0, below .apo-shell-inner's z-index 1 — behind your
+   chat content, not on top of it. */
+.apo-embers {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.apo-embers i {
+  position: absolute;
+  top: -8%;
+  left: var(--x);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: #D2D0CC;
+  box-shadow: 0 0 8px 1px rgba(210, 208, 204, 0.45);
+  filter: blur(var(--blur, 0px));
+  opacity: 0;
+  animation: ashFall var(--dur) linear infinite;
+  animation-delay: var(--delay);
+}
+
+.apo-embers i:nth-child(1)  { left: 3%;  width: 7px;  height: 7px;  animation-duration: 9s;  animation-delay: 0s; }
+.apo-embers i:nth-child(2)  { left: 7%;  width: 10px; height: 10px; animation-duration: 12s; animation-delay: 1.5s; }
+.apo-embers i:nth-child(3)  { left: 12%; width: 6px;  height: 6px;  animation-duration: 8s;  animation-delay: 3s; }
+.apo-embers i:nth-child(4)  { left: 17%; width: 8px;  height: 8px;  animation-duration: 11s; animation-delay: 0.8s; }
+.apo-embers i:nth-child(5)  { left: 22%; width: 6px;  height: 6px;  animation-duration: 10s; animation-delay: 4s; }
+.apo-embers i:nth-child(6)  { left: 27%; width: 10px; height: 10px; animation-duration: 13s; animation-delay: 2s; }
+.apo-embers i:nth-child(7)  { left: 32%; width: 6px;  height: 6px;  animation-duration: 9s;  animation-delay: 5s; }
+.apo-embers i:nth-child(8)  { left: 37%; width: 8px;  height: 8px;  animation-duration: 12s; animation-delay: 1s; }
+.apo-embers i:nth-child(9)  { left: 42%; width: 6px;  height: 6px;  animation-duration: 10s; animation-delay: 3.5s; }
+.apo-embers i:nth-child(10) { left: 47%; width: 8px;  height: 8px;  animation-duration: 14s; animation-delay: 6s; }
+.apo-embers i:nth-child(11) { left: 52%; width: 7px;  height: 7px;  animation-duration: 8.5s; animation-delay: 2.5s; }
+.apo-embers i:nth-child(12) { left: 57%; width: 9px;  height: 9px;  animation-duration: 11.5s; animation-delay: 0.3s; }
+.apo-embers i:nth-child(13) { left: 62%; width: 6px;  height: 6px;  animation-duration: 9.5s;  animation-delay: 4.5s; }
+.apo-embers i:nth-child(14) { left: 67%; width: 10px; height: 10px; animation-duration: 13.5s; animation-delay: 1.8s; }
+.apo-embers i:nth-child(15) { left: 72%; width: 6px;  height: 6px;  animation-duration: 8.2s;  animation-delay: 3.2s; }
+.apo-embers i:nth-child(16) { left: 77%; width: 8px;  height: 8px;  animation-duration: 12.2s; animation-delay: 0.6s; }
+.apo-embers i:nth-child(17) { left: 82%; width: 7px;  height: 7px;  animation-duration: 10.5s; animation-delay: 5.5s; }
+.apo-embers i:nth-child(18) { left: 87%; width: 9px;  height: 9px;  animation-duration: 14.5s; animation-delay: 2.2s; }
+.apo-embers i:nth-child(19) { left: 92%; width: 6px;  height: 6px;  animation-duration: 9.2s;  animation-delay: 4.2s; }
+.apo-embers i:nth-child(20) { left: 97%; width: 8px;  height: 8px;  animation-duration: 11.8s; animation-delay: 1.2s; }
+.apo-embers i:nth-child(21) { left: 10%; width: 7px;  height: 7px;  animation-duration: 10.8s; animation-delay: 6.5s; }
+.apo-embers i:nth-child(22) { left: 20%; width: 6px;  height: 6px;  animation-duration: 8.8s;  animation-delay: 3.8s; }
+.apo-embers i:nth-child(23) { left: 30%; width: 9px;  height: 9px;  animation-duration: 13.2s; animation-delay: 0.4s; }
+.apo-embers i:nth-child(24) { left: 40%; width: 6px;  height: 6px;  animation-duration: 9.8s;  animation-delay: 5.2s; }
+.apo-embers i:nth-child(25) { left: 50%; width: 8px;  height: 8px;  animation-duration: 12.8s; animation-delay: 2.8s; }
+.apo-embers i:nth-child(26) { left: 60%; width: 7px;  height: 7px;  animation-duration: 10.2s; animation-delay: 0.9s; }
+.apo-embers i:nth-child(27) { left: 70%; width: 6px;  height: 6px;  animation-duration: 8.6s;  animation-delay: 4.8s; }
+.apo-embers i:nth-child(28) { left: 80%; width: 9px;  height: 9px;  animation-duration: 13.8s; animation-delay: 1.6s; }
+.apo-embers i:nth-child(29) { left: 90%; width: 6px;  height: 6px;  animation-duration: 9.4s;  animation-delay: 3.6s; }
+.apo-embers i:nth-child(30) { left: 95%; width: 8px;  height: 8px;  animation-duration: 11.2s; animation-delay: 5.8s; }
+
+
+
+@keyframes ashFall {
+  0%   { transform: translate(0, 0) translateX(0);                    opacity: 0; }
+  8%   { opacity: var(--peak, 0.65); }
+  35%  { transform: translate(0, 38vh) translateX(calc(var(--drift) * 0.5)); }
+  65%  { transform: translate(0, 72vh) translateX(calc(var(--drift) * 0.2)); opacity: var(--peak, 0.65); }
+  85%  { opacity: calc(var(--peak, 0.65) * 0.5); }
+  100% { transform: translate(0, 115vh) translateX(var(--drift));      opacity: 0; }
+}
 .apo-shell-inner {
   position: relative;
   z-index: 1;
@@ -171,9 +260,6 @@
   text-wrap: balance;
 }
 
-/* Divider: a quiet seismic trace — ties the header to the
-   typing indicator and the input's focus pulse, so the
-   volcano's heartbeat is felt even when nothing is moving. */
 .apo-divider {
   flex-shrink: 0;
   height: 14px;
@@ -187,7 +273,6 @@
   opacity: 0.45;
 }
 
-/* ---------- Main Container ---------- */
 .apo-main {
   flex: 1;
   min-height: 0;
@@ -195,7 +280,6 @@
   flex-direction: column;
 }
 
-/* ---------- Chat Area ---------- */
 .apo-chat {
   flex: 1;
   min-height: 0;
@@ -207,7 +291,6 @@
   gap: 1.1rem;
   padding: 12px 2px 16px;
   -webkit-overflow-scrolling: touch;
-  /* Messages dissolve softly at the top edge instead of clipping hard */
   -webkit-mask-image: linear-gradient(180deg, transparent 0, black 18px);
   mask-image: linear-gradient(180deg, transparent 0, black 18px);
 }
@@ -272,7 +355,6 @@
 }
 
 .apo-bubble-bot {
-  /* Cap line length for comfortable reading on a wide kiosk */
   max-width: min(88%, 62ch);
   background: rgba(34, 32, 30, 0.78);
   backdrop-filter: blur(16px);
@@ -314,7 +396,6 @@
   color: var(--ink);
 }
 
-/* ---------- Source page tags ---------- */
 .apo-page-tags {
   display: flex;
   align-items: center;
@@ -336,7 +417,6 @@
   border-radius: 999px;
 }
 
-/* ---------- Follow-up suggestions ---------- */
 .apo-followups {
   display: flex;
   flex-wrap: wrap;
@@ -360,8 +440,6 @@
   text-align: left;
   transition: background 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.15s;
 }
-/* A small "continue the trail" marker, so follow-ups read as paths
-   deeper into the guide rather than as more source tags. */
 .apo-followup-chip::before {
   content: "↳";
   font-size: 0.9em;
@@ -376,7 +454,6 @@
 .apo-followup-chip:active { transform: translateY(0) scale(0.97); }
 .apo-followup-chip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
-/* ---------- Thinking / Seismograph Indicator ---------- */
 .apo-thinking {
   display: flex;
   align-items: center;
@@ -410,10 +487,9 @@
   50%     { transform: scaleY(1);   opacity: 1; }
 }
 
-/* ---------- Starter Questions ---------- */
 .apo-starters {
   flex-shrink: 0;
-  margin: var(--sp-1) 0 var(--sp-4);
+  margin: var(--sp-1) 0 var(--sp-5);
 }
 
 .apo-starters-label {
@@ -489,11 +565,6 @@
 .apo-chip:active { transform: translateY(0) scale(0.98); }
 .apo-chip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
-/* ---------- Input Bar (Molten Ring) ----------
-   A still ember ring that breathes very slowly at rest and
-   brightens when the visitor focuses the field — the mountain
-   noticing that someone has approached. No rotating layers,
-   no constant repaint of 200vmax surfaces. */
 .apo-input-bar {
   position: relative;
   flex-shrink: 0;
@@ -514,11 +585,6 @@
   animation: ringBreath 5s ease-in-out infinite alternate;
 }
 
-/* The actual moving color: an oversized *square* conic gradient
-   that rotates behind the ring. It must be a true square — sizing
-   it with inset:% on a wide pill stretches it into a rectangle,
-   which warps the conic wedges into an ellipse and makes the
-   rotation look skewed instead of a clean circular sweep. */
 .apo-input-gradient::before {
   content: "";
   position: absolute;
@@ -549,14 +615,11 @@
   to   { box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(217, 115, 36, 0.24); }
 }
 
-/* Spins the gradient layer around its own center, so the ember
-   colors travel continuously around the pill's outline. */
 @keyframes ringSpin {
   from { transform: translate(-50%, -50%) rotate(0deg); }
   to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-/* Focus: the ring wakes — brighter glow, faster spin, plus the shared focus ring */
 .apo-input-bar:focus-within .apo-input-gradient {
   animation-play-state: paused;
   box-shadow:
@@ -636,7 +699,6 @@
 .apo-send-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 .apo-send-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
-/* ---------- Autocomplete ---------- */
 .apo-autocomplete {
   position: absolute;
   bottom: calc(100% + 10px);
@@ -673,7 +735,6 @@
   background: var(--ember-soft);
   padding-left: 22px;
 }
-/* Ember edge on the keyboard-selected row — visible from kiosk distance */
 .apo-ac-item.apo-ac-active::before,
 .apo-ac-item:hover::before {
   content: "";
@@ -695,7 +756,7 @@
 .apo-footer {
   flex-shrink: 0;
   text-align: center;
-  padding: var(--sp-6) 0 var(--sp-2);
+  padding: var(--sp-3) 0 0;
 }
 
 .apo-footer-eyebrow {
@@ -767,7 +828,7 @@
   }
 
   .apo-footer {
-    padding: 0.8rem 0 0.3rem;
+    padding: 0.5rem 0 0;
   }
 
   .apo-footer-title {
@@ -800,7 +861,8 @@
   .apo-avatar::before,
   .seismo i,
   .apo-autocomplete,
-  .apo-input-gradient {
+  .apo-input-gradient,
+  .apo-embers i {
     animation: none !important;
   }
 
@@ -815,8 +877,8 @@
     transition: none !important;
   }
 
-  /* Static stand-ins so state is still communicated without motion */
   .seismo i { transform: scaleY(0.8); opacity: 0.9; }
+  .apo-embers i { opacity: 0.3 !important; }
 }
 
 @media (max-height: 700px) {
