@@ -1,3 +1,11 @@
+<div class="nav-bar fixed top-0 w-full bg-transparent z-10 pointer-events-none">
+    <div class="nav-container px-10 py-7  flex justify-between">
+        <div class="nav-logo">
+            <a href = ""><img src = "/assets/images/logos/mainlogo.png"></a>
+        </div>
+    </div>
+</div>
+
 <div class="welcome-wrapper" (click)="toggleColor()">
 
   <div class="bg-layer" [class.colored]="isColored">
@@ -7,11 +15,18 @@
     <div class="gradient-overlay"></div>
   </div>
 
-  <section class="welcome-container flex justify-center items-center h-screen">
-    <div class="heading text-center">
-      <h1 class="font-bold text-8xl text-[#D5A822] tracking-[-9%]">Pinatubo</h1>
-      <h2 class="font-semibold text-3xl text-white text-end">Museum</h2>
-    </div>
-  </section>
+  <section class="welcome-container flex h-screen items-center justify-center bg-cover bg-center" style="background-image: url('your-mountain-background.jpg');">
+  <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
+
+  <div class="heading relative flex flex-col items-end font-serif uppercase select-none">
+    <h1 class="text-[5rem] sm:text-[10rem] md:text-[10rem] font-bold text-[#D5A822] tracking-[-9%] leading-[0.85]">
+      Pinatubo
+    </h1>
+    
+    <h2 class="text-2xl sm:text-4xl md:text-5xl font-normal text-white mr-2 sm:mr-6 tracking-[-9%]">
+      Museum
+    </h2>
+  </div>
+</section>
 
 </div>

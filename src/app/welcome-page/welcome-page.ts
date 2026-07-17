@@ -16,11 +16,10 @@ export class WelcomePage implements AfterViewInit {
   isColored = false;
 
   constructor(private router: Router) {}
-
   // 2. Set the video speed once the view has fully initialized
   ngAfterViewInit(): void {
     if (this.videoRef) {
-      this.videoRef.nativeElement.playbackRate = 0.4; // Adjust this number to change speed (e.g., 0.4, 0.6)
+      this.videoRef.nativeElement.playbackRate = 0.35; // Adjust this number to change speed (e.g., 0.4, 0.6)
     }
   }
 

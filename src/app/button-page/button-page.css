@@ -1,3 +1,21 @@
+
+.nav-bar {
+    height: 70px;
+    pointer-events: none;
+}
+
+.nav-logo {
+    height: auto;
+    width: 120px;
+    pointer-events: auto;
+}
+
+/* nav-container needs to be the positioning context for the back button */
+.nav-container {
+    position: relative;
+    height: 100%;
+}
+
 /* Core Layout Container with Dark Volcanic Tone Background */
 .layout-container {
   display: flex;
@@ -17,9 +35,9 @@
 .slider-track {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2rem;
   width: 100%;
-  padding: 2rem 0;
+  padding: 3rem 0;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none; /* Hides horizontal bars on Firefox */
@@ -34,21 +52,13 @@
 .slider-track::before,
 .slider-track::after {
   content: '';
-  flex: 0 0 calc(50vw - 160px); /* 160px represents exactly half of your 320px polaroid width */
+  flex: 0 0 calc(50vw - 325px); /* 160px represents exactly half of your 320px polaroid width */
 }
 
 /* ==========================================================================
    CAROUSEL LAYOUT CONFIGURATION (UPDATED)
    ========================================================================== */
 
-/* Photo Container Constraint - Added relative positioning to anchor absolute child images */
-.image-inner {
-  position: relative; 
-  width: 100%;
-  height: 300px;
-  background-color: #1a1a1a;
-  overflow: hidden;
-}
 
 /* Stacks all images precisely on top of each other across all cards */
 .carousel-img {
@@ -77,10 +87,10 @@
 /* The Polaroid Board Styles */
 .polaroid-card {
   position: relative;
-  flex: 0 0 320px; 
+  flex: 0 0 650px; 
   background: rgba(255, 255, 255, 0.55); 
   backdrop-filter: blur(5px);
-  padding: 3rem 2rem;
+  padding: 5rem 3.5rem 5rem 3.5rem;
   box-sizing: border-box;
   scroll-snap-align: center;
   cursor: pointer;
@@ -92,22 +102,25 @@
               box-shadow 0.4s ease;
   border: 2px solid transparent;
   transform: scale(0.85); /* Slightly shrinks non-selected cards to emphasize the active one */
-  opacity: 0.6; /* Dims the background cards slightly so the center one pops */
+  opacity: 0.5; /* Dims the background cards slightly so the center one pops */
+  z-index: 1;
 }
 
 /* The Selected Center Highlight (Bigger Scale) */
 .polaroid-card.is-active {
   opacity: 1;
-  transform: scale(1.15); /* Increases size by 15% relative to normal, making it prominently larger */
+  transform: scale(1.1); /* Increases size by 15% relative to normal, making it prominently larger */
   background: rgba(255, 255, 255, 0.5);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7); /* Deep dramatic shadow to lift it forward */
-  z-index: 10; /* Ensures the larger selected card stays layered on top of adjacent cards */
+  z-index: 20; /* Ensures the larger selected card stays layered on top of adjacent cards */
+  overflow: visible;
 }
 
 /* Photo Container Constraint */
 .image-inner {
+  position: relative; 
   width: 100%;
-  height: 300px;
+  height: 660px;
   background-color: #1a1a1a;
   overflow: hidden;
 }
@@ -118,47 +131,34 @@
   object-fit: cover;
 }
 
-/* Dark Accent Text Box on the Bottom of Polaroid */
-.inner-label {
-  background-color: #3e3837;
-  color: #ebebeb;
-  text-align: center;
-  padding: 1rem 0.5rem;
-  margin-top: 1rem;
-  width: 100%;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.95rem;
-  letter-spacing: 1px;
-  box-sizing: border-box;
-}
 
 /* Ornamental Mount Rivets / Mechanical Pins */
 .pin {
   position: absolute;
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   background-color: #5c5552;
   border-radius: 50%;
   box-shadow: inset -1px -1px 3px rgba(0,0,0,0.5);
 }
-.top-l { top: 14px; left: 14px; }
-.top-r { top: 14px; right: 14px; }
-.bot-l { bottom: 14px; left: 14px; }
-.bot-r { bottom: 14px; right: 14px; }
+.top-l { top: 20px; left: 20px; }
+.top-r { top: 20px; right: 20px; }
+.bot-l { bottom: 20px; left: 20px; }
+.bot-r { bottom: 20px; right: 20px; }
 
 /* Lower Dynamic Caption Block */
+
 .caption-block {
   width: 100%;
-  max-width: 320px; /* Aligns visually with the column width of active card */
-  margin-top: 1.5rem;
-  text-align: left;
+  max-width: 650px; /* Aligns visually with the column width of active card */
+  margin-top: 2.5rem;
   align-self: center;
 }
 
 .caption-heading {
   font-family: 'Kinetika Bold';
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 3rem;
   color: #ffffff;
   margin: 0 0 0.5rem 0;
   letter-spacing: 0.5px;
@@ -166,7 +166,7 @@
 
 .caption-body {
   font-family: 'Kinetika Regular';
-  font-size: 0.95rem;
+  font-size: 1.75rem;
   line-height: 1.45;
   color: #dedede;
   margin: 0;
@@ -195,3 +195,4 @@
     filter: brightness(1.2);
   }
 }
+
