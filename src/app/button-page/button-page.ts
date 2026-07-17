@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { Router, RouterLink } from "@angular/router";
+import { Router } from "@angular/router";
 
 interface TimelineSlide {
   id: number;
@@ -15,7 +15,7 @@ interface TimelineSlide {
 @Component({
   selector: 'app-button-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './button-page.html',
   styleUrl: './button-page.css',
 })

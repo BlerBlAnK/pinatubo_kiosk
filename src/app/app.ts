@@ -1,16 +1,14 @@
 import { Component, signal } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { WelcomePage } from './welcome-page/welcome-page';
 import { Header } from './header/header';
 import { Footer } from './footer/footer';
-import { ButtonPage } from './button-page/button-page';
 
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, WelcomePage, Header, Footer, ButtonPage],
+  imports: [RouterOutlet, Header, Footer],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
