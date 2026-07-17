@@ -12,6 +12,8 @@ import {
   getAutocompleteMatches,
   initBM25
 } from './pinatubo-engine';
+import { Router } from "@angular/router";
+
 
 export interface ChatMessage {
   role: 'apo' | 'user';
@@ -40,6 +42,17 @@ export class ApoPinatubo implements OnInit {
   acIdx = signal<number>(-1);
 
   query = '';
+
+  constructor(private router: Router) {}
+
+  goBack(): void {
+    const previous = sessionStorage.getItem('kioskPreviousRoute');
+    if (previous && previous !== '/apo-pinatubo') {
+      this.router.navigateByUrl(previous);
+    } else {
+      this.router.navigate(['/menu']);
+    }
+  }
 
   starters: string[] = [
     "When did Mt. Pinatubo erupt?",

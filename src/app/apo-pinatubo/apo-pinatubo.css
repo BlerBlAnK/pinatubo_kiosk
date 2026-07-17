@@ -21,6 +21,23 @@
   initial-value: 0deg;
 }
 
+
+.nav-bar {
+    height: 70px;
+    pointer-events: none;
+}
+
+.nav-logo {
+    height: auto;
+    width: 120px;
+    pointer-events: auto;
+}
+
+/* nav-container needs to be the positioning context for the back button */
+.nav-container {
+    position: relative;
+    height: 100%;
+}
 :host {
   display: block;
   width: 100%;
