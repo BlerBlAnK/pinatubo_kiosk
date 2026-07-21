@@ -1,0 +1,17 @@
+<div class="page-wrap flex flex-col h-screen">
+  <div class="nav-bar w-full bg-transparent z-20 flex-shrink-0">
+    <div class="nav-container px-10 py-7 flex justify-between">
+      <div class="nav-logo">
+        <img src="/assets/images/logos/mainlogo.png">
+      </div>
+
+      <button (click)="goBack()" class="home cursor-pointer relative z-50 focus:outline-none bg-transparent border-none block" aria-label="Back to menu">
+        <i class="fa-solid fa-circle-chevron-left text-7xl text-[#D5A822]"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="game-host flex-1 min-h-0 w-full">
+    <iframe class="game-frame w-full h-full border-0 block" [src]="gameUrl"></iframe>
+  </div>
+</div>

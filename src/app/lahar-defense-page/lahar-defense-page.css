@@ -1,0 +1,9 @@
+.page-wrap {
+  background: #000; /* avoids a white flash behind the iframe while it loads */
+}
+.game-host {
+  position: relative;
+}
+.game-frame {
+  display: block;
+}

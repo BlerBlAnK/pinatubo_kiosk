@@ -55,6 +55,15 @@ export class ButtonPage implements OnInit, OnDestroy {
       description: 'Interact with our intelligent guide to explore the science, geology, and indigenous legends of the majestic caldera.',
       route: '/apo-pinatubo'
     },
+    {
+      id: 4,
+      images: ['assets/images/pt3.jpg'  ],
+      currentImageIndex: 0,
+      title: 'Pinatubo Game',
+      captionTitle: 'Lahar Defense',
+      description: 'Deploy sandbags, dikes, and evacuation plans to defend Bacolor, Porac, or Angeles from a simulated lahar flow.',
+      route: '/lahar-defense' // path 
+    }
   ];
 
   activeIndex: number = 1;
