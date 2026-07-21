@@ -4,6 +4,7 @@ import { ButtonPage } from './button-page/button-page';
 import { VideoPage } from './video-page/video-page';
 import { ApoPinatubo } from './apo-pinatubo/apo-pinatubo';
 import { TimelinePage } from './timeline-page/timeline-page';
+import { LaharDefensePage } from './lahar-defense-page/lahar-defense-page';
 
 export const routes: Routes = [
     { path: '', component: WelcomePage },
@@ -14,5 +15,6 @@ export const routes: Routes = [
     // currently points at /timeline, which has no page built yet) so the
     // kiosk never gets stuck on a blank/broken screen.
     { path: 'timeline', component: TimelinePage},
+    { path: 'lahar-defense', component: LaharDefensePage },
     { path: '**', redirectTo: 'menu' }
 ];

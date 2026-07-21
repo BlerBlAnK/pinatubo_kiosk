@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Save Bacolor — a lahar defense game set in the aftermath of Mt. Pinatubo's 1991 eruption. Deploy engineering tools to protect villages from volcanic mudflows.">
+  <title>Save Bacolor — Lahar Defense</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌋</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="gameWrap">
+      <canvas id="scene"></canvas>
+      <div id="dropLayer"></div>
+
+      <div class="hud-panel" id="budgetPanel" aria-label="Budget Panel">
+        <div class="label">Budget</div>
+        <div class="amount" id="budgetAmount">1200</div>
+        <div id="budgetBar"><div id="budgetBarFill"></div></div>
+      </div>
+
+      <div class="hud-panel" id="goalPanel" aria-label="Goal Panel">
+        <div class="label">Protect the Village</div>
+        <div id="houseDots"></div>
+      </div>
+
+      <div class="hud-panel" id="rainPanel" title="Click to start the storm">
+        <svg id="rainIcon" viewBox="0 0 40 40">
+          <ellipse cx="20" cy="14" rx="13" ry="9" fill="#e9eef2" stroke="#9fb0bd" stroke-width="1.5"/>
+          <g id="rainDrops">
+            <line x1="12" y1="26" x2="9" y2="34" stroke="#a5c3f5" stroke-width="2" stroke-linecap="round" />
+            <line x1="20" y1="28" x2="17" y2="36" stroke="#a5c3f5" stroke-width="2" stroke-linecap="round" />
+            <line x1="28" y1="26" x2="25" y2="34" stroke="#a5c3f5" stroke-width="2" stroke-linecap="round" />
+          </g>
+        </svg>
+        <div id="rainStatus">Tap to start</div>
+      </div>
+
+      <div id="overlay">
+        <div id="objectiveCard" class="screen-card">
+          <h1 style="background: linear-gradient(135deg, #fde68a 0%, #fbbf24 45%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🌋 Mission Objective</h1>
+          <div class="edu-content-box" style="text-align: left; line-height: 1.55; font-size: 19px; margin-bottom: 20px;">
+            <p style="margin: 0 0 10px 0;">Following Mt. Pinatubo's historic eruption, massive volcanic ash deposits remain resting on the high slopes.</p>
+            <p style="margin: 0;"><b>Your Task:</b> Heavy monsoon rains convert this loose ash into destructive mudflows called <b>lahar</b>. As the disaster response engineer, strategically deploy engineering tools along active channels to slow, absorb, or divert flows before they bury vital down-river communities.</p>
+          </div>
+          <div style="display: flex; gap: 10px; width: 100%;">
+            <button id="closeMenuBtn" class="btn-secondary" style="width: 40%; display: none;"><span class="btn-arrow">←</span> Return</button>
+            <button id="nextToTownBtn" class="btn-primary" style="width: 100%;">Proceed to Town Selection <span class="btn-arrow">→</span></button>
+          </div>
+        </div>
+
+        <div id="townCard" class="screen-card" style="display:none;">
+          <h1 style="background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 50%, #38bdf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">📍 Choose Municipality</h1>
+          <p style="font-size: 17px; text-align: left; margin-bottom: 15px; color: #94a3b8; line-height: 1.45;">Each municipality presents different topographical challenge factors, landmarks, and defensive layouts.</p>
+
+          <div id="townList" style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="town-card" data-town="bacolor">
+              <div class="town-preview">⛪</div>
+              <div class="town-info">
+                <h3>Bacolor</h3>
+                <p>Historic San Guillermo Church, highly exposed to central lahar channels.</p>
+                <button class="select-town-btn">Select</button>
+              </div>
+            </div>
+            <div class="town-card" data-town="porac">
+              <div class="town-preview">🤖</div>
+              <div class="town-info">
+                <h3>Porac</h3>
+                <p>Closer to the peak — protect the iconic Babo Robot over wide farm fields.</p>
+                <button class="select-town-btn">Select</button>
+              </div>
+            </div>
+            <div class="town-card" data-town="angeles">
+              <div class="town-preview">🌉</div>
+              <div class="town-info">
+                <h3>Angeles</h3>
+                <p>Dense riverside district crossed by the Abacan River — a vital evacuation route during the eruption.</p>
+                <button class="select-town-btn">Select</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button id="backToObjectiveBtn" class="btn-secondary" style="width: 40%;"><span class="btn-arrow">←</span> Back</button>
+            <button id="nextToDifficultyBtn" class="btn-primary" style="width: 60%;">Next <span class="btn-arrow">→</span></button>
+          </div>
+        </div>
+
+        <div id="difficultyCard" class="screen-card" style="display:none;">
+          <h1 style="background: linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">⚙️ Strategy Parameters</h1>
+          <p style="font-size: 17px; text-align: left; margin-bottom: 15px; color: #94a3b8; line-height: 1.45;">Set your weather severity variables. Higher difficulties limit municipal budget constraints and accelerate downstream flow speeds across independent channel segments.</p>
+          
+          <h2 style="font-size: 21px; margin: 15px 0 10px 0; text-align: left; color: #fff;">Select Severity Level</h2>
+          <div id="difficultySelector" style="margin-bottom: 25px;">
+            <label class="diff-btn active" data-diff="easy"><input type="radio" name="difficulty" value="easy" checked> Easy</label>
+            <label class="diff-btn" data-diff="medium"><input type="radio" name="difficulty" value="medium"> Medium <span class="diff-lock">🔒</span></label>
+            <label class="diff-btn" data-diff="hard"><input type="radio" name="difficulty" value="hard"> Hard <span class="diff-lock">🔒</span></label>
+          </div>
+          <p id="diffLockNote" style="font-size: 13px; color: #94a3b8; margin: -15px 0 15px 0; display: none;"></p>
+
+          <div style="display: flex; gap: 10px;">
+            <button id="backToTownBtn" class="btn-secondary" style="width: 40%;"><span class="btn-arrow">←</span> Back</button>
+            <button id="nextToInfoBtn" class="btn-primary" style="width: 60%;">Next <span class="btn-arrow">→</span></button>
+          </div>
+        </div>
+
+        <div id="infoCard" class="screen-card" style="display:none;">
+          <h1 id="infoCardTitle">Town Profile</h1>
+          <div class="edu-content-box" style="text-align:left; font-size:16px; line-height:1.55;">
+            <p id="infoCardText">Educational history loading...</p>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 12px 0;">
+            <div style="margin-bottom:10px; display:flex; align-items:center;">
+              <svg viewBox="0 0 40 40" width="24" height="24" style="margin-right:10px; flex-shrink:0;"><ellipse cx="20" cy="24" rx="15" ry="10" fill="#d9b56b"/><ellipse cx="20" cy="18" rx="9" ry="6" fill="#e6c98a"/></svg>
+              <span><b>Sandbags</b> — Cheap, quick barriers that intercept moving lahar fronts, but wear down fast under a heavy flow.</span>
+            </div>
+            <div style="margin-bottom:10px; display:flex; align-items:center;">
+              <svg viewBox="0 0 40 40" width="24" height="24" style="margin-right:10px; flex-shrink:0;"><rect x="5" y="10" width="30" height="22" fill="#c9c2b6" stroke="#847c6e" stroke-width="2"/><rect x="9" y="14" width="4" height="14" fill="#847c6e"/><rect x="18" y="14" width="4" height="14" fill="#847c6e"/><rect x="27" y="14" width="4" height="14" fill="#847c6e"/></svg>
+              <span><b>Dike</b> — A costlier, reinforced barrier with much higher strength and durability than a sandbag, built to hold against sustained heavy flow.</span>
+            </div>
+            <div style="margin-bottom:10px; display:flex; align-items:center;">
+              <svg viewBox="0 0 40 40" width="24" height="24" style="margin-right:10px; flex-shrink:0;"><rect x="18" y="6" width="4" height="22" fill="#8a5a2b"/><path d="M12 26 Q20 36 28 26 L26 30 Q20 38 14 30 Z" fill="#a9774a"/></svg>
+              <span><b>Shovels</b> — Cut a channel to redirect and slow the flow's speed directly.</span>
+            </div>
+            <div style="margin-bottom:10px; display:flex; align-items:center;">
+              <svg viewBox="0 0 40 40" width="24" height="24" style="margin-right:10px; flex-shrink:0;"><polygon points="20,4 28,18 24,18 30,28 10,28 16,18 12,18" fill="#4d9a55"/></svg>
+              <span><b>Reforestation</b> — High-budget trees that slow flow velocity permanently.</span>
+            </div>
+            <div style="display:flex; align-items:center;">
+              <svg viewBox="0 0 40 40" width="24" height="24" style="margin-right:10px; flex-shrink:0;"><ellipse cx="20" cy="24" rx="12" ry="10" fill="#c9a06a" stroke="#6e4c25" stroke-width="1.5"/><ellipse cx="20" cy="12" rx="4" ry="2.4" fill="#a4753f"/><line x1="15" y1="10" x2="23" y2="14" stroke="#4a3218" stroke-width="1.6" stroke-linecap="round"/><line x1="23" y1="10" x2="15" y2="14" stroke="#4a3218" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <span><b>💰 Falling Money Bags</b> — Tap sacks of pesos as they drift down to earn a bonus! Three tiers: ₱50 · ₱100 · ₱200 (rare gold sack).</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button id="backToDifficultyBtn" class="btn-secondary" style="width: 40%;"><span class="btn-arrow">←</span> Back</button>
+            <button id="confirmStartBtn" class="btn-success" style="width: 60%;">Start Game <span class="btn-arrow">→</span></button>
+          </div>
+        </div>
+
+        <div id="endCard" class="screen-card" style="display:none;">
+          <h1 id="endTitle">Game Over</h1>
+          <p id="endDesc"></p>
+          <div id="endScoreBlock">
+            <div id="endGradeBadge" class="grade-badge">–</div>
+            <div id="endScoreText">
+              <div id="endScoreLabel">Final Score</div>
+              <div id="endScoreValue">0</div>
+              <div id="endGradeLabel"></div>
+            </div>
+          </div>
+          <p id="endUnlockText" style="display:none; font-weight:800; color:#4ade80; font-size:15px; margin:8px 0 0 0;"></p>
+          <span id="endFactText"></span>
+          <div style="display:flex;gap:12px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
+            <!-- Only shown on a loss (toggled in endGame()) — quickly replays
+                 the same town + difficulty without going back through the menus. -->
+            <button id="tryAgainBtn" class="btn-primary" style="display:none;">↻ Try Again</button>
+            <!-- Always available — takes the player back through town/difficulty selection. -->
+            <button id="restartBtn" class="btn-secondary">Main Menu <span class="btn-arrow">→</span></button>
+          </div>
+        </div>
+
+        <div id="factTicker">
+          💡 <span id="factTickerText">Loading facts…</span>
+        </div>
+      </div>
+
+      <div id="toolbox" class="collapsed">
+        <div id="toolboxToggle">
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        <div id="toolItemsContainer"></div>
+      </div>
+
+      <img id="dragGhost" alt="Tool Ghost">
+      <button id="instructionsBtn" title="Return to menu">📋 Menu</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
