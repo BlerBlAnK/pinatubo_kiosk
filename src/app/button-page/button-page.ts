@@ -55,6 +55,15 @@ export class ButtonPage implements OnInit, OnDestroy {
       description: 'Interact with our intelligent guide to explore the science, geology, and indigenous legends of the majestic caldera.',
       route: '/apo-pinatubo'
     },
+    {
+      id: 4,
+      images: ['assets/images/pt3.jpg'  ],
+      currentImageIndex: 0,
+      title: 'AI GAME',
+      captionTitle: 'Pinatubo Game',
+      description: 'Interact with our intelligent guide to explore the science, geology, and indigenous legends of the majestic caldera.',
+      route: '/apo-pinatubo'
+    }
   ];
 
   activeIndex: number = 1;
