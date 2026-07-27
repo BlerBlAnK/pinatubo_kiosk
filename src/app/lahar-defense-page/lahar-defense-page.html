@@ -1,17 +1,38 @@
 <div class="page-wrap flex flex-col h-screen">
-  <div class="nav-bar w-full bg-transparent z-20 flex-shrink-0">
-    <div class="nav-container px-10 py-7 flex justify-between">
-      <div class="nav-logo">
-        <img src="/assets/images/logos/mainlogo.png">
+  <div class="game-host flex-1 min-h-0 w-full relative">
+    <div *ngIf="!gameStarted" class="welcome-overlay flex flex-col items-center justify-center h-full w-full text-center px-8 relative overflow-hidden">
+      <button (click)="goHome()" class="home-btn" aria-label="Back to menu">
+        <i class="fa-solid fa-house"></i>
+      </button>
+
+      <!-- Decorative background — pure CSS, no image assets needed -->
+      <div class="mountain-bg" aria-hidden="true"></div>
+      <div class="embers" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
       </div>
 
-      <button (click)="goBack()" class="home cursor-pointer relative z-50 focus:outline-none bg-transparent border-none block" aria-label="Back to menu">
-        <i class="fa-solid fa-circle-chevron-left text-7xl text-[#D5A822]"></i>
-      </button>
-    </div>
-  </div>
+      <div class="welcome-content">
+        <div class="welcome-icon">🌋</div>
+        <h1 class="welcome-title">Lahar Defense</h1>
+        <p class="welcome-subtitle">Sabo Engineering: Bacolor</p>
+        <p class="welcome-desc">
+          Deploy sandbags, dikes, and evacuation plans to protect Bacolor, Porac, or Angeles
+          from a simulated volcanic mudflow.
+        </p>
 
-  <div class="game-host flex-1 min-h-0 w-full">
-    <iframe class="game-frame w-full h-full border-0 block" [src]="gameUrl"></iframe>
+        <div class="welcome-steps">
+          <div class="step"><span class="step-icon">📍</span><span>Choose a municipality</span></div>
+          <div class="step"><span class="step-icon">⚙️</span><span>Set the difficulty</span></div>
+          <div class="step"><span class="step-icon">🛡️</span><span>Defend against the lahar</span></div>
+        </div>
+
+        <button (click)="startGame()" class="start-btn">
+          <span>Tap to Begin</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+    </div>
+
+    <iframe *ngIf="gameStarted" class="game-frame w-full h-full border-0 block" [src]="gameUrl"></iframe>
   </div>
 </div>
