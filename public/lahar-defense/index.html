@@ -43,19 +43,20 @@
       <div id="overlay">
         <div id="objectiveCard" class="screen-card">
           <h1 style="background: linear-gradient(135deg, #fde68a 0%, #fbbf24 45%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🌋 Mission Objective</h1>
-          <div class="edu-content-box" style="text-align: left; line-height: 1.55; font-size: 19px; margin-bottom: 20px;">
+          <div class="edu-content-box" style="text-align: left; line-height: 1.6; font-size: 22px; margin-bottom: 20px;">
             <p style="margin: 0 0 10px 0;">Following Mt. Pinatubo's historic eruption, massive volcanic ash deposits remain resting on the high slopes.</p>
             <p style="margin: 0;"><b>Your Task:</b> Heavy monsoon rains convert this loose ash into destructive mudflows called <b>lahar</b>. As the disaster response engineer, strategically deploy engineering tools along active channels to slow, absorb, or divert flows before they bury vital down-river communities.</p>
           </div>
-          <div style="display: flex; gap: 10px; width: 100%;">
+          <div style="display: flex; gap: 10px; width: 100%; flex-wrap: wrap;">
             <button id="closeMenuBtn" class="btn-secondary" style="width: 40%; display: none;"><span class="btn-arrow">←</span> Return</button>
+            <button id="exitToKioskBtn" class="btn-secondary" style="width: 40%;">Exit to Menu</button>
             <button id="nextToTownBtn" class="btn-primary" style="width: 100%;">Proceed to Town Selection <span class="btn-arrow">→</span></button>
           </div>
         </div>
 
         <div id="townCard" class="screen-card" style="display:none;">
           <h1 style="background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 50%, #38bdf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">📍 Choose Municipality</h1>
-          <p style="font-size: 17px; text-align: left; margin-bottom: 15px; color: #94a3b8; line-height: 1.45;">Each municipality presents different topographical challenge factors, landmarks, and defensive layouts.</p>
+          <p style="font-size: 19px; text-align: left; margin-bottom: 15px; color: #94a3b8; line-height: 1.48;">Each municipality presents different topographical challenge factors, landmarks, and defensive layouts.</p>
 
           <div id="townList" style="display: flex; flex-direction: column; gap: 12px;">
             <div class="town-card" data-town="bacolor">
@@ -92,9 +93,9 @@
 
         <div id="difficultyCard" class="screen-card" style="display:none;">
           <h1 style="background: linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">⚙️ Strategy Parameters</h1>
-          <p style="font-size: 17px; text-align: left; margin-bottom: 15px; color: #94a3b8; line-height: 1.45;">Set your weather severity variables. Higher difficulties limit municipal budget constraints and accelerate downstream flow speeds across independent channel segments.</p>
+          <p style="font-size: 19px; text-align: left; margin-bottom: 15px; color: #94a3b8; line-height: 1.48;">Set your weather severity variables. Higher difficulties limit municipal budget constraints and accelerate downstream flow speeds across independent channel segments.</p>
           
-          <h2 style="font-size: 21px; margin: 15px 0 10px 0; text-align: left; color: #fff;">Select Severity Level</h2>
+          <h2 style="font-size: 24px; margin: 15px 0 10px 0; text-align: left; color: #fff;">Select Severity Level</h2>
           <div id="difficultySelector" style="margin-bottom: 25px;">
             <label class="diff-btn active" data-diff="easy"><input type="radio" name="difficulty" value="easy" checked> Easy</label>
             <label class="diff-btn" data-diff="medium"><input type="radio" name="difficulty" value="medium"> Medium <span class="diff-lock">🔒</span></label>
@@ -110,7 +111,7 @@
 
         <div id="infoCard" class="screen-card" style="display:none;">
           <h1 id="infoCardTitle">Town Profile</h1>
-          <div class="edu-content-box" style="text-align:left; font-size:16px; line-height:1.55;">
+          <div class="edu-content-box" style="text-align:left; font-size:18px; line-height:1.6;">
             <p id="infoCardText">Educational history loading...</p>
             <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 12px 0;">
             <div style="margin-bottom:10px; display:flex; align-items:center;">

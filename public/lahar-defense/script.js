@@ -4049,6 +4049,17 @@ document.getElementById('closeMenuBtn').addEventListener('click', () => {
   state.running = pausedRunningState;
 });
 
+// Tells a hosting parent page (e.g. the Angular kiosk shell embedding
+// this game in an iframe) that the player wants to leave the game
+// entirely, as opposed to "Return" above which just closes this menu
+// and resumes the current round. Guarded so this is a harmless no-op
+// when the game is opened standalone (not inside an iframe) for testing.
+document.getElementById('exitToKioskBtn').addEventListener('click', () => {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage('exit-lahar-game', '*');
+  }
+});
+
 /* ---------------- EDUCATIONAL FACT TICKER ---------------- */
 // Rotates short lahar/Pinatubo facts in a small persistent banner across
 // the pre-game menu screens (objective, town, difficulty, info). Purely
