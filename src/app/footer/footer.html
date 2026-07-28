@@ -22,7 +22,7 @@
 <!-- Info Popup Modal -->
 <div *ngIf="isInfoOpen" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 pointer-events-auto">
     <!-- Enlarged Card Container matching the reference image proportions -->
-    <div class="bg-[#1c1c1c]/95 border border-neutral-700 text-white rounded-xl px-10 py-12 max-w-4xl w-full min-h-[60vh] flex flex-col justify-between shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+    <div class="bg-[#1c1c1c]/95 border border-neutral-700 text-white rounded-xl px-10 py-12 max-w-4xl w-full min-h-[60vh] flex flex-col  shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
         
         <!-- Top Section -->
         <div>
@@ -47,13 +47,31 @@
         </div>
 
         <!-- Bottom Links -->
-        <div class="info-link-font text-xl md:text-2xl text-neutral-200">
-            <div>
-                <h1>Reference</h1>
+        <div class="info-link-font text-4xl text-neutral-200 pt-5">
+            <div class = "flex flex-col gap-4 pt-15">
+                <div class = "text-center">
+                    <h1 class = "pb-3 font-bold">Reference</h1>
+                    <h2>Photo by Renz Meredor,  2024, via Pexels</h2>
+                    
+                </div>
+                <div class = "flex flex-col gap-3 pt-8">
+                    <h1 class = "text-center font-bold">Developers</h1>
+                    <div class="flex justify-between">
+                        <ul class = "flex flex-col gap-4">
+                            <li>Luis Aquino</li>
+                            <li>Justin Cabe</li>
+                            <li>Sebastian Canlas</li>
+                        </ul>
+                   
+                        <ul class = "flex flex-col gap-4 text-right">
+                            <li>Kevin Galang</li>
+                            <li>James Mananquil</li>
+                            <li>Friench Ocampo</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h1>Developers</h1>
-            </div>
+            
         </div>
 
     </div>

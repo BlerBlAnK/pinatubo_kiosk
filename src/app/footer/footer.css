@@ -1,11 +1,13 @@
 
 .info-title-font {
     font-family: 'Cinzel', serif;
+    font-weight: bold;
 }
 
 .info-body-font {
     font-family: 'Kinetika Regular', sans-serif;
     font-size: 2rem;
+    text-align: justify;
 }
 
 .info-link-font {
