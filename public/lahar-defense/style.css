@@ -324,22 +324,38 @@ canvas, #dropLayer {
 #overlay h1 { font-size: clamp(28px, 6.2vw, 42px); margin: 0 0 12px; text-align: center; white-space: nowrap; }
 #overlay p { font-size: 19px; max-width: 460px; margin: 0 0 12px; opacity: .88; line-height: 1.48; }
 #overlay button {
-  font-family: inherit; font-weight: 800; font-size: 18px;
-  padding: 12px 32px; border-radius: 30px; border: none; cursor: pointer;
+  font-family: inherit; font-weight: 800; font-size: 22px;
+  padding: 16px 38px; border-radius: 32px; border: none; cursor: pointer;
   background: var(--sun); color: #78350f;
-  box-shadow: 0 5px 0 #d97706;
+  box-shadow: 0 6px 0 #d97706;
   transition: transform .1s, filter 0.15s;
 }
 #overlay button:hover { filter: brightness(1.1); }
-#overlay button:active { transform: translateY(4px); box-shadow: 0 1px 0 #d97706; }
+#overlay button:active { transform: translateY(5px); box-shadow: 0 1px 0 #d97706; }
+
+/* Self-adjusting button row — used on the Mission Objective screen,
+   where the "Return" button only appears mid-round. .action-half items
+   grow to fill leftover space automatically when a sibling is hidden
+   (display:none removes it from the flex layout entirely), so the row
+   never ends up lopsided or overflowing regardless of which buttons are
+   actually showing. .action-full always forces its own row below. */
+.action-row {
+  display: flex; flex-wrap: wrap; gap: 14px; width: 100%;
+}
+.action-half {
+  flex: 1 1 calc(50% - 7px); min-width: 160px;
+}
+.action-full {
+  flex: 1 1 100%;
+}
 
 /* Primary button — amber with shimmer */
 #overlay button.btn-primary {
   position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
   background: linear-gradient(180deg, #ffe89c 0%, var(--sun) 55%, #f8c84e 100%);
   color: #78350f; letter-spacing: .3px;
-  box-shadow: 0 5px 0 #c96e00, 0 10px 24px rgba(217,119,6,0.4);
+  box-shadow: 0 6px 0 #c96e00, 0 12px 28px rgba(217,119,6,0.4);
   transition: transform .12s ease, box-shadow .12s ease, filter .15s;
 }
 #overlay button.btn-primary::after {
@@ -354,16 +370,16 @@ canvas, #dropLayer {
 #overlay button.btn-primary:hover {
   filter: brightness(1.07);
   transform: translateY(-2px);
-  box-shadow: 0 8px 0 #c96e00, 0 16px 28px rgba(217,119,6,0.45);
+  box-shadow: 0 9px 0 #c96e00, 0 18px 32px rgba(217,119,6,0.45);
 }
 #overlay button.btn-primary:active {
-  transform: translateY(3px);
+  transform: translateY(4px);
   box-shadow: 0 2px 0 #c96e00, 0 4px 10px rgba(217,119,6,0.3);
 }
 
 /* Secondary button */
 #overlay button.btn-secondary {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
   background: rgba(255,255,255,0.07);
   color: #e2e8f0;
   border: 2px solid rgba(255,255,255,0.25);
@@ -377,7 +393,7 @@ canvas, #dropLayer {
   transform: translateY(-1px);
 }
 #overlay button.btn-secondary:active {
-  transform: translateY(2px);
+  transform: translateY(3px);
   background: rgba(255,255,255,0.1);
   box-shadow: none;
 }
@@ -385,10 +401,10 @@ canvas, #dropLayer {
 /* Success button */
 #overlay button.btn-success {
   position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
   background: linear-gradient(180deg, #4ade80 0%, var(--budget-green) 55%, #15803d 100%);
   color: #fff; letter-spacing: .3px;
-  box-shadow: 0 5px 0 #166534, 0 10px 24px rgba(21,128,61,0.4);
+  box-shadow: 0 6px 0 #166534, 0 12px 28px rgba(21,128,61,0.4);
   transition: transform .12s ease, box-shadow .12s ease, filter .15s;
 }
 #overlay button.btn-success::after {
@@ -403,10 +419,10 @@ canvas, #dropLayer {
 #overlay button.btn-success:hover {
   filter: brightness(1.07);
   transform: translateY(-2px);
-  box-shadow: 0 8px 0 #166534, 0 16px 28px rgba(21,128,61,0.45);
+  box-shadow: 0 9px 0 #166534, 0 18px 32px rgba(21,128,61,0.45);
 }
 #overlay button.btn-success:active {
-  transform: translateY(3px);
+  transform: translateY(4px);
   box-shadow: 0 2px 0 #166534, 0 4px 10px rgba(21,128,61,0.3);
 }
 
