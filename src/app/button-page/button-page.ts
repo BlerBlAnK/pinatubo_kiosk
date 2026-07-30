@@ -22,6 +22,14 @@ interface TimelineSlide {
 export class ButtonPage implements OnInit, OnDestroy {
   @ViewChild('sliderTrack') sliderTrack!: ElementRef;
   @ViewChild('kioskVideoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
+  @ViewChild('bgVideo') bgVideo!: ElementRef<HTMLVideoElement>;
+
+  ngAfterViewInit(): void {
+    if (this.bgVideo && this.bgVideo.nativeElement) {
+      // Set desired playback speed (e.g., 0.5 for half-speed, 1.5 for 50% faster)
+      this.bgVideo.nativeElement.playbackRate = 0.45;
+    }
+  }
 
   goBack(): void {
     this.router.navigate(['']);
