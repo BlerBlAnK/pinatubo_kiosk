@@ -41,10 +41,10 @@ export class ButtonPage implements OnInit, OnDestroy {
       id: 2,
       images: ['assets/images/pttl1.jpg', 'assets/images/pttl2.jpg', 'assets/images/pttl3.jpg', 'assets/images/pttl4.jpg', 'assets/images/pttl5.jpg' ],
       currentImageIndex: 0,
-      title: 'Pinatubo Timeline',
-      captionTitle: 'Pinatubo Timeline',
+      title: 'Pinatubo Simulator',
+      captionTitle: 'Pinatubo Simulator',
       description: 'Journey through history to trace the critical hours of the eruption and the decades of recovery that followed.',
-      route: '/timeline'
+      route: '/simulator'
     },
     {
       id: 3,
