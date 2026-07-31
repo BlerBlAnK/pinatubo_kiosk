@@ -51,8 +51,8 @@ export class ButtonPage implements OnInit, OnDestroy {
       currentImageIndex: 0,
       title: 'Pinatubo Simulator',
       captionTitle: 'Pinatubo Simulator',
-      description: 'Journey through history to trace the critical hours of the eruption and the decades of recovery that followed.', //palitans
-      route: '/timeline' //palitans
+      description: 'Journey through history to trace the critical hours of the eruption and the decades of recovery that followed.',
+      route: '/simulator'
     },
     {
       id: 3,

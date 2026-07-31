@@ -1,0 +1,83 @@
+<div class="kiosk">
+  <header class="kiosk__header">
+    <h1>Recipe for Eruption</h1>
+    <p>Dial in the geology below, then press the trigger to see what the mountain does.</p>
+  </header>
+
+  <div class="kiosk__body">
+    <div class="canvas-wrap">
+      <canvas #canvas></canvas>
+      <div class="canvas-badge" *ngIf="isErupting">{{ phase | uppercase }}</div>
+    </div>
+
+    <section class="panel">
+      <div class="panel__unrest">
+        <div class="panel__unrest-label">
+          <span>Unrest Index</span>
+          <span class="panel__unrest-value">{{ unrestIndex }}</span>
+        </div>
+        <div class="panel__waveform" [style.--level]="unrestIndex">
+          <span *ngFor="let bar of bars" class="panel__bar"></span>
+        </div>
+      </div>
+
+      <div class="panel__sliders">
+        <div class="slider-group">
+          <label for="viscosity">01 · Magma Viscosity <span class="tag">{{ viscosityLabels[viscosity-1] }}</span></label>
+          <input id="viscosity" type="range" min="1" max="3" step="1"
+            [value]="viscosity" (input)="onSlide('viscosity', $event)" />
+          <div class="slider-scale"><span>{{ viscosityLabels[0] }}</span><span>{{ viscosityLabels[2] }}</span></div>
+        </div>
+        <div class="slider-group">
+          <label for="gas">02 · Gas Concentration <span class="tag">{{ gasLabels[gas-1] }}</span></label>
+          <input id="gas" type="range" min="1" max="3" step="1"
+            [value]="gas" (input)="onSlide('gas', $event)" />
+          <div class="slider-scale"><span>{{ gasLabels[0] }}</span><span>{{ gasLabels[2] }}</span></div>
+        </div>
+        <div class="slider-group">
+          <label for="water">03 · Groundwater <span class="tag">{{ waterLabels[water-1] }}</span></label>
+          <input id="water" type="range" min="1" max="3" step="1"
+            [value]="water" (input)="onSlide('water', $event)" />
+          <div class="slider-scale"><span>{{ waterLabels[0] }}</span><span>{{ waterLabels[2] }}</span></div>
+        </div>
+      </div>
+
+      <button class="panel__erupt" [class.panel__erupt--active]="isErupting"
+        [disabled]="isErupting" (click)="erupt()">
+        {{ isErupting ? phase : 'Erupt' }}
+      </button>
+    </section>
+
+    <section class="result">
+      <header class="result__header">
+        <span class="result__vei">{{ outcome.vei }}</span>
+        <h2>{{ outcome.title }}</h2>
+      </header>
+      <p class="result__narrative">{{ outcome.narrative }}</p>
+      <div class="result__grid">
+        <div class="metric" (mouseenter)="hoveredMetric='plume'" (mouseleave)="hoveredMetric=null">
+          <span class="metric__label">Plume Height</span>
+          <span class="metric__value">{{ displayedPlume }} km</span>
+          <span class="metric__hint" *ngIf="hoveredMetric==='plume'">Height the ash column reaches above the vent</span>
+        </div>
+        <div class="metric" (mouseenter)="hoveredMetric='pyro'" (mouseleave)="hoveredMetric=null">
+          <span class="metric__label">Pyroclastic Flows</span>
+          <span class="metric__value">{{ outcome.pyroclasticFlow ? 'Yes' : 'No' }}</span>
+          <span class="metric__hint" *ngIf="hoveredMetric==='pyro'">Fast-moving currents of hot gas and rock</span>
+        </div>
+        <div class="metric metric--wide">
+          <span class="metric__label">Gas Pressure</span>
+          <span class="metric__value metric__value--text">{{ outcome.pressureNote }}</span>
+        </div>
+        <div class="metric metric--wide">
+          <span class="metric__label">Water Interaction</span>
+          <span class="metric__value metric__value--text">{{ outcome.waterNote }}</span>
+        </div>
+        <div class="metric metric--wide">
+          <span class="metric__label">Viscosity Behavior</span>
+          <span class="metric__value metric__value--text">{{ outcome.viscosityNote }}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
