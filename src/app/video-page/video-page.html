@@ -1,0 +1,131 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+
+<div class="nav-bar fixed top-0 w-full bg-transparent z-20 pointer-events-none">
+    <div class="nav-container px-10 py-7 flex justify-between">
+        <div class="nav-logo">
+            <a href = ""><img src = "/assets/images/logos/mainlogo.png"></a>
+        </div>
+
+        <a (click)="goBack()" class="home pt-5 pointer-events-auto cursor-pointer" aria-label="Back to previous page">
+            <i class="fa-solid fa-circle-chevron-left text-7xl text-[#D5A822]"></i>
+        </a>
+    </div>
+</div>
+
+<div class="video-container">
+  <header class="header">Mga Tinig</header>
+  <div class="header">Saalon Ng Lahar</div>
+  <div class="sub-head">MT. PINATUBO MUSEUM STORIES</div>
+
+  <!-- PREMIUM FILTER CONTROL BAR -->
+  <nav class="filter-bar" aria-label="Story filters">
+    <button 
+      *ngFor="let filter of filters" 
+      class="filter-tab" 
+      [class.active]="selectedFilter === filter"
+      (click)="setFilter(filter)"
+    >
+      {{ filter }}
+    </button>
+  </nav>
+
+  <!-- PAGE INDICATOR DIRECTLY BELOW FILTERS -->
+  <div class="filter-pagination" *ngIf="totalPages > 1">
+    <button 
+      *ngFor="let page of [].constructor(totalPages); let idx = index"
+      class="indicator-dot"
+      [class.active]="currentPage === idx"
+      (click)="setPage(idx)"
+      [aria-label]="'Go to page ' + (idx + 1)"
+    ></button>
+  </div>
+
+  <!-- GALLERY WRAPPER WITH FLANKING NAVIGATION ARROWS -->
+  <div class="gallery-wrapper">
+    <!-- Left Navigation Arrow -->
+    <button 
+      class="nav-arrow prev-arrow" 
+      [disabled]="currentPage === 0" 
+      (click)="prevPage()" 
+      aria-label="Previous Page"
+      *ngIf="totalPages > 1"
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M15 19L8 12L15 5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <!-- INTERACTIVE GALLERY GRID (WITH SWIPE TRANSITION ANIMATION STATE) -->
+    <main class="grid-content" [attr.data-swipe-dir]="swipeDirection" [class.transitioning]="isTransitioning">
+      <div 
+        *ngFor="let person of pagedInterviewees; let idx = index" 
+        class="profile-card" 
+        [style.animation-delay]="getCardDelay(idx)"
+        (click)="openVideoModal(person)"
+      >
+        <div class="avatar-ring">
+          <div class="inner-glow-shield"></div>
+          <img [src]="person.avatar" [alt]="person.name" (error)="onAvatarError($event)">
+        </div>
+        
+        <div class="profile-meta">
+          <h3>{{ person.name }}</h3>
+          <span class="tap-hint" *ngIf="person.storyTitle">“{{ person.storyTitle }}”</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right Navigation Arrow -->
+    <button 
+      class="nav-arrow next-arrow" 
+      [disabled]="currentPage >= totalPages - 1" 
+      (click)="nextPage()" 
+      aria-label="Next Page"
+      *ngIf="totalPages > 1"
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- CINEMATIC PORTRAIT MODAL OVERLAY -->
+  <div class="video-modal" *ngIf="selectedPerson" (click)="closeVideoModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      
+      <div class="modal-header-actions">
+        <span class="now-playing-tag">NOW PLAYING</span>
+        <button class="close-modal-btn" (click)="closeVideoModal()" aria-label="Close video player">&times;</button>
+      </div>
+      
+      <div class="player-surface">
+        <video 
+          #kioskVideoPlayer
+          *ngIf="!videoUnavailable"
+          controls 
+          autoplay
+          controlsList="nodownload noremoteplayback"
+          disablePictureInPicture
+          [src]="selectedPerson.videoSrc"
+          (error)="onVideoError()"
+        >
+          Your browser does not support native video playback tracks.
+        </video>
+        <div class="video-unavailable" *ngIf="videoUnavailable">
+          <svg class="alert-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>This story's video isn't available on this kiosk yet.</p>
+        </div>
+      </div>
+
+      <div class="modal-descriptor">
+        <h2>{{ selectedPerson.name }}</h2>
+      </div>
+
+    </div>
+  </div>
+
+</div>

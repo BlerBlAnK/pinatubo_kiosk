@@ -1,0 +1,78 @@
+<footer class="footer-bar fixed bottom-0 left-0 bg-transparent w-full pointer-events-none z-50">
+    <div class="footer-container px-10 py-10 grid grid-cols-3 items-center w-full">
+
+        <div></div>
+
+        <div class="footer-logo justify-self-center">
+            <a href="/">
+                <img src="/assets/images/logos/2ndlogo.png" alt="Logo">
+            </a>
+        </div>
+
+        <!-- Info Button -->
+        <div class="justify-self-end">
+            <button (click)="toggleInfoModal()" class="info p-3 rounded-full bg-transparent outline outline-5 outline-white hover:scale-105 transition-transform duration-200 inline-flex items-center justify-center cursor-pointer focus:outline-none">
+                <i class="fa-solid fa-question text-3xl text-white"></i>
+            </button>
+        </div>
+
+    </div>
+</footer>
+
+<!-- Info Popup Modal -->
+<div *ngIf="isInfoOpen" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 pointer-events-auto">
+    <!-- Enlarged Card Container matching the reference image proportions -->
+    <div class="bg-[#1c1c1c]/95 border border-neutral-700 text-white rounded-xl px-10 py-12 max-w-4xl w-full min-h-[60vh] flex flex-col  shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+        
+        <!-- Top Section -->
+        <div>
+            <!-- Header (Icon + Title + X) -->
+            <div class="flex items-center justify-between pb-6 mb-8 border-b border-neutral-800">
+                <div class="flex items-center gap-4">
+                    <i class="fa-solid fa-circle-info text-4xl text-[#D5A822]"></i>
+                    <!-- Uses custom heading font class -->
+                    <h2 class="info-title-font text-3xl md:text-4xl tracking-widest uppercase">INFORMATION</h2>
+                </div>
+                <button (click)="toggleInfoModal()" class="text-neutral-300 hover:text-white text-3xl transition-colors focus:outline-none">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Body Text (Enlarged and styled with custom body font class) -->
+            <div class="info-body-font text-neutral-200 text-lg md:text-xl leading-relaxed space-y-6">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+            </div>
+        </div>
+
+        <!-- Bottom Links -->
+        <div class="info-link-font text-4xl text-neutral-200 pt-5">
+            <div class = "flex flex-col gap-4 pt-15">
+                <div class = "text-center">
+                    <h1 class = "pb-3 font-bold">Reference</h1>
+                    <h2>Photo by Renz Meredor,  2024, via Pexels</h2>
+                    
+                </div>
+                <div class = "flex flex-col gap-3 pt-8">
+                    <h1 class = "text-center font-bold">Developers</h1>
+                    <div class="flex justify-between">
+                        <ul class = "flex flex-col gap-4">
+                            <li>Luis Aquino</li>
+                            <li>Justin Cabe</li>
+                            <li>Sebastian Canlas</li>
+                        </ul>
+                   
+                        <ul class = "flex flex-col gap-4 text-right">
+                            <li>Kevin Galang</li>
+                            <li>James Mananquil</li>
+                            <li>Friench Ocampo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+</div>

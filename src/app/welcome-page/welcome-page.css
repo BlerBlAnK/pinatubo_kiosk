@@ -1,0 +1,67 @@
+
+.nav-bar {
+    height: 70px;
+    pointer-events: none;
+}
+
+.nav-logo {
+    height: auto;
+    width: 120px;
+    pointer-events: auto;
+}
+
+/* nav-container needs to be the positioning context for the back button */
+.nav-container {
+    position: relative;
+    height: 100%;
+}
+
+
+.welcome-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* Background container */
+.bg-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* The actual video styled to fill the background */
+.video-background {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(80%) grayscale(10%);
+  transition: filter 3s ease;
+}
+
+/* When active, remove the sepia filter from the video */
+.bg-layer.colored .video-background {
+  filter: sepia(0%) grayscale(0%);
+}
+
+/* The gradient overlay sitting on top of the video */
+.gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent, rgba(18, 26, 33, 0.95));
+  pointer-events: none; /* Allows clicks to pass through to the wrapper */
+}
+
+.welcome-container {
+  position: relative;
+  z-index: 1;
+}
+
+.heading {
+  font-family: Cinzel;
+}
+

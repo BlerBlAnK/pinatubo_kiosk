@@ -1,0 +1,23 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+@font-face {
+  font-family: 'Kinetika Bold';
+  src: url('/assets/fonts/kinetika-bold.ttf') format('woff2');
+  font-weight: bold;
+  font-display: swap; /* Shows fallback font until custom font loads */
+}
+
+@font-face {
+  font-family: 'Kinetika Regular';
+  src: url('/assets/fonts/kinetika-regular.ttf') format('woff2');
+  font-weight: normal;
+  font-display: swap; /* Shows fallback font until custom font loads */
+}
+
+body.hide-kiosk-chrome app-header,
+body.hide-kiosk-chrome app-footer {
+  display: none;
+}

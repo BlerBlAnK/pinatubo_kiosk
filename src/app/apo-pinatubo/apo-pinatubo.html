@@ -1,0 +1,145 @@
+<div class="nav-bar fixed top-0 w-full bg-transparent z-20 pointer-events-none">
+    <div class="nav-container px-10 py-7 flex justify-between">
+        <div class="nav-logo">
+            <a href = ""><img src = "/assets/images/logos/mainlogo.png"></a>
+        </div>
+
+        <a (click)="goBack()" class="home pt-5 pointer-events-auto cursor-pointer" aria-label="Back to previous page">
+            <i class="fa-solid fa-circle-chevron-left text-7xl text-[#D5A822]"></i>
+        </a>
+    </div>
+</div>
+
+<div class="apo-shell">
+<div class="apo-embers" aria-hidden="true">
+  <i style="--x:3%;  --size:8px;  --dur:11s; --delay:-2s;  --drift:24px;  --peak:.75; --blur:0px;"></i>
+  <i style="--x:9%;  --size:5px;  --dur:9s;  --delay:-6s;  --drift:-18px; --peak:.55; --blur:0.6px;"></i>
+  <i style="--x:16%; --size:9px;  --dur:13s; --delay:-3s;  --drift:20px;  --peak:.7;  --blur:0px;"></i>
+  <i style="--x:23%; --size:6px;  --dur:10s; --delay:-8s;  --drift:-15px; --peak:.6;  --blur:0.4px;"></i>
+  <i style="--x:30%; --size:10px; --dur:14s; --delay:-1s;  --drift:28px;  --peak:.65; --blur:0px;"></i>
+  <i style="--x:37%; --size:6px;  --dur:9.5s; --delay:-5s; --drift:-22px; --peak:.5;  --blur:0.6px;"></i>
+  <i style="--x:44%; --size:8px;  --dur:12s; --delay:-9s;  --drift:16px;  --peak:.7;  --blur:0.2px;"></i>
+  <i style="--x:51%; --size:7px;  --dur:10.5s; --delay:-4s; --drift:-20px; --peak:.6; --blur:0.3px;"></i>
+  <i style="--x:58%; --size:9px;  --dur:13.5s; --delay:-7s; --drift:26px;  --peak:.75; --blur:0px;"></i>
+  <i style="--x:64%; --size:5px;  --dur:9.2s; --delay:-2.5s; --drift:-14px; --peak:.5; --blur:0.6px;"></i>
+  <i style="--x:70%; --size:8px;  --dur:11.5s; --delay:-6.5s; --drift:22px; --peak:.65; --blur:0.2px;"></i>
+  <i style="--x:76%; --size:6px;  --dur:10.2s; --delay:-1.5s; --drift:-18px; --peak:.55; --blur:0.5px;"></i>
+  <i style="--x:82%; --size:10px; --dur:14.5s; --delay:-4.5s; --drift:30px;  --peak:.7;  --blur:0px;"></i>
+  <i style="--x:88%; --size:7px;  --dur:9.8s; --delay:-8.5s; --drift:-16px; --peak:.6;  --blur:0.4px;"></i>
+  <i style="--x:94%; --size:6px;  --dur:12.5s; --delay:-3.5s; --drift:20px; --peak:.55; --blur:0.5px;"></i>
+  <i style="--x:12%; --size:5px;  --dur:8.8s; --delay:-7.5s; --drift:-24px; --peak:.5;  --blur:0.6px;"></i>
+  <i style="--x:41%; --size:9px;  --dur:13.2s; --delay:-0.5s; --drift:18px; --peak:.7;  --blur:0.1px;"></i>
+  <i style="--x:67%; --size:6px;  --dur:10.8s; --delay:-5.5s; --drift:-20px; --peak:.55; --blur:0.4px;"></i>
+  <i style="--x:85%; --size:8px;  --dur:11.8s; --delay:-9.5s; --drift:24px;  --peak:.65; --blur:0.2px;"></i>
+  <i style="--x:97%; --size:5px;  --dur:9.4s; --delay:-2.8s;  --drift:-16px; --peak:.5;  --blur:0.6px;"></i>
+</div>
+  <div class="apo-shell-inner">
+
+    <header class="apo-header">
+      <div class="apo-header-text">
+        <p class="apo-eyebrow">Field Guide</p>
+        <h1 class="apo-title">Apo <em>Namalyari</em></h1>
+        <p class="apo-subtitle">Ask about the 1991 eruption, the lahars, the Aeta people, or the recovery.</p>
+      </div>
+    </header>
+
+    <div class="apo-divider" aria-hidden="true"></div>
+
+    <div class="apo-main">
+
+      <div class="apo-chat" #chatEl role="log" aria-live="polite" aria-label="Conversation with Apo Namalyari">
+        <div *ngFor="let msg of messages()" class="apo-row" [class.apo-row-bot]="msg.role==='apo'" [class.apo-row-user]="msg.role==='user'">
+          <div *ngIf="msg.role==='apo'" class="apo-avatar" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="28" cy="10" r="6" fill="#c9a06a"/>
+              <path d="M4 32 L14 18 L22 26 L30 14 L36 32 Z" fill="#b8956a"/>
+              <path d="M0 34 H40 V40 H0 Z" fill="#9a7d55"/>
+            </svg>
+          </div>
+          <div class="apo-bubble" [class.apo-bubble-bot]="msg.role==='apo'" [class.apo-bubble-user]="msg.role==='user'">
+            <p *ngFor="let para of msg.paragraphs" [innerHTML]="para" class="apo-para"></p>
+            <div *ngIf="msg.citations && msg.citations.length" class="apo-page-tags" aria-label="Source pages">
+              <span *ngFor="let c of msg.citations" class="apo-page-tag">{{ c }}</span>
+            </div>
+            <div *ngIf="msg.followups && msg.followups.length" class="apo-followups" aria-label="Related questions">
+              <button *ngFor="let f of msg.followups" type="button" class="apo-followup-chip" (click)="askFollowup(f)">{{ f }}</button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="thinking()" class="apo-row apo-row-bot">
+          <div class="apo-avatar" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="28" cy="10" r="6" fill="#c9a06a"/>
+              <path d="M4 32 L14 18 L22 26 L30 14 L36 32 Z" fill="#b8956a"/>
+              <path d="M0 34 H40 V40 H0 Z" fill="#9a7d55"/>
+            </svg>
+          </div>
+          <div class="apo-bubble apo-bubble-bot apo-thinking">
+            <div class="seismo" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <span>Apo Namalyari is typing…</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="apo-starters" *ngIf="messages().length < 4">
+        <p class="apo-starters-label" id="apo-starters-label">Suggested questions</p>
+        <div class="apo-starters-grid" role="group" aria-labelledby="apo-starters-label">
+          <button *ngFor="let q of starters" type="button" class="apo-chip" (click)="askStarter(q)">{{ q }}</button>
+        </div>
+      </div>
+
+      <div class="apo-input-bar">
+        <div
+          class="apo-autocomplete"
+          *ngIf="acItems().length > 0"
+          id="apo-ac-list"
+          role="listbox"
+          aria-label="Question suggestions"
+        >
+          <div
+            *ngFor="let item of acItems(); let i = index"
+            class="apo-ac-item"
+            role="option"
+            [id]="'apo-ac-option-' + i"
+            [attr.aria-selected]="i === acIdx()"
+            [class.apo-ac-active]="i === acIdx()"
+            (mousedown)="selectAC(item)"
+            [innerHTML]="highlightAC(item)"
+          ></div>
+        </div>
+        <div class="apo-input-gradient">
+          <div class="apo-input-inner">
+            <div class="apo-input-wrap">
+              <input
+                #queryInput
+                class="apo-input"
+                type="text"
+                placeholder="Ask anything about Mt. Pinatubo…"
+                autocomplete="off"
+                enterkeyhint="send"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-controls="apo-ac-list"
+                [attr.aria-expanded]="acItems().length > 0"
+                [attr.aria-activedescendant]="acIdx() >= 0 ? 'apo-ac-option-' + acIdx() : null"
+                [(ngModel)]="query"
+                (ngModelChange)="onInput()"
+                (keydown)="onKeydown($event)"
+                aria-label="Your question"
+              />
+            </div>
+            <button class="apo-send-btn" type="button" (click)="handleAsk()" [disabled]="thinking() || !query.trim()" aria-label="Ask">
+              Ask
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M1 7H13M13 7L7.5 1.5M13 7L7.5 12.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

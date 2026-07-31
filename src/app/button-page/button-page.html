@@ -1,0 +1,60 @@
+<div class="nav-bar fixed top-0 w-full bg-transparent z-20 pointer-events-none">
+  <div class="nav-container px-10 py-7 flex justify-between">
+    <div class="nav-logo">
+      <a href=""><img src="/assets/images/logos/mainlogo.png" alt="Main Logo"></a>
+    </div>
+
+    <button 
+      (click)="goBack()" 
+      class="home pt-5 pointer-events-auto cursor-pointer relative z-50 focus:outline-none bg-transparent border-none block" 
+      aria-label="Back to previous page"
+    >
+      <i class="fa-solid fa-circle-chevron-left text-7xl text-[#D5A822]"></i>
+    </button>
+  </div>
+</div>
+
+<div class="layout-container">
+  
+  <!-- Video Background Layer -->
+  <div class="bg-layer">
+    <video #bgVideo autoplay loop muted playsinline class="video-background">
+      <source src="/assets/videos/ptvid3.mp4" type="video/mp4">
+    </video>
+    <div class="gradient-overlay"></div>
+  </div>
+
+  <!-- Content Layer -->
+  <div #sliderTrack class="slider-track" (scroll)="onTrackScroll($event)">
+    <div 
+      *ngFor="let slide of slides; let i = index" 
+      class="polaroid-card"
+      [ngClass]="{'is-active': i === activeIndex}"
+      (click)="setActiveCard(i, slide.route, $event)"
+    >
+      <div class="pin top-l"></div>
+      <div class="pin top-r"></div>
+      
+      <div class="image-inner">
+        <img 
+          *ngFor="let imgPath of slide.images; let subIdx = index"
+          [src]="imgPath" 
+          [alt]="slide.title"
+          class="carousel-img"
+          [ngClass]="{
+            'visible': (i === activeIndex && subIdx === slide.currentImageIndex) || (i !== activeIndex && subIdx === 0)
+          }"
+        >
+      </div>
+
+      <div class="pin bot-l"></div>
+      <div class="pin bot-r"></div>
+    </div>
+  </div>
+
+  <div class="caption-block">
+    <h2 class="caption-heading">{{ slides[activeIndex]?.captionTitle }}</h2>
+    <p class="caption-body">{{ slides[activeIndex]?.description }}</p>
+  </div>
+
+</div>

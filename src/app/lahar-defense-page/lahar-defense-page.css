@@ -1,0 +1,186 @@
+.page-wrap {
+  background: #000;
+}
+.game-host {
+  position: relative;
+}
+.game-frame {
+  display: block;
+}
+
+/* ================= Welcome screen ================= */
+.welcome-overlay {
+  background: radial-gradient(ellipse at 50% 15%, #1a2a42 0%, #0b1220 55%, #060a12 100%);
+  color: #fff;
+  font-family: 'Trebuchet MS', sans-serif;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: welcomeFadeIn 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes welcomeFadeIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-icon {
+  font-size: clamp(84px, 13vw, 130px);
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 36px rgba(251, 191, 36, 0.45));
+  animation: iconPulse 3.2s ease-in-out infinite;
+}
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+
+.welcome-title {
+  font-size: clamp(56px, 9.5vw, 96px);
+  font-weight: 900;
+  margin: 0 0 10px;
+  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 45%, #f97316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.welcome-subtitle {
+  font-size: clamp(20px, 3vw, 28px);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin: 0 0 30px;
+}
+.welcome-desc {
+  max-width: 760px;
+  font-size: clamp(20px, 2.8vw, 27px);
+  line-height: 1.55;
+  opacity: 0.85;
+  margin: 0 0 38px;
+}
+
+.welcome-steps {
+  display: flex;
+  gap: 28px;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 44px;
+  padding: 16px 32px;
+  font-size: clamp(17px, 2.2vw, 21px);
+  opacity: 0.9;
+}
+.step-icon { font-size: 26px; }
+
+.start-btn {
+  font-family: inherit;
+  font-weight: 800;
+  font-size: clamp(25px, 3.2vw, 32px);
+  padding: 26px 70px;
+  border-radius: 48px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffe89c 0%, #fcd34d 55%, #f8c84e 100%);
+  color: #78350f;
+  box-shadow: 0 8px 0 #c96e00, 0 18px 40px rgba(217,119,6,0.45);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s;
+  animation: btnBreathe 2.6s ease-in-out infinite;
+}
+.start-btn::after {
+  content: '';
+  position: absolute; top: 0; left: -80%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.5s ease;
+}
+.start-btn:hover::after { left: 130%; }
+.start-btn:hover { filter: brightness(1.06); }
+.start-btn:active {
+  transform: translateY(7px);
+  box-shadow: 0 1px 0 #c96e00;
+  animation: none;
+}
+@keyframes btnBreathe {
+  0%, 100% { box-shadow: 0 8px 0 #c96e00, 0 18px 40px rgba(217,119,6,0.45); }
+  50%      { box-shadow: 0 8px 0 #c96e00, 0 18px 54px rgba(217,119,6,0.7); }
+}
+.btn-arrow { font-weight: 900; }
+
+/* Decorative mountain silhouette — pure CSS shape, no image asset */
+.mountain-bg {
+  position: absolute;
+  bottom: 0; left: 0; width: 100%; height: 42%;
+  z-index: 1;
+  clip-path: polygon(
+    0% 100%, 0% 70%, 8% 55%, 16% 66%, 24% 40%, 32% 58%,
+    40% 30%, 48% 20%, 52% 32%, 60% 15%, 68% 42%, 76% 28%,
+    84% 50%, 92% 38%, 100% 60%, 100% 100%
+  );
+  background-color: #10182a;
+  opacity: 0.85;
+}
+
+/* Drifting embers */
+.embers {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
+}
+.embers span {
+  position: absolute;
+  bottom: -10px;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 6px 2px rgba(251,191,36,0.6);
+  opacity: 0;
+  animation: emberRise 7s linear infinite;
+}
+.embers span:nth-child(1) { left: 12%; animation-delay: 0s;   }
+.embers span:nth-child(2) { left: 28%; animation-delay: 1.2s; }
+.embers span:nth-child(3) { left: 46%; animation-delay: 2.4s; }
+.embers span:nth-child(4) { left: 62%; animation-delay: 3.6s; }
+.embers span:nth-child(5) { left: 78%; animation-delay: 4.8s; }
+.embers span:nth-child(6) { left: 90%; animation-delay: 6s;   }
+@keyframes emberRise {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  10%  { opacity: 0.9; }
+  90%  { opacity: 0.3; }
+  100% { transform: translateY(-100vh) translateX(20px); opacity: 0; }
+}
+
+.home-btn {
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  z-index: 3;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: rgba(255,255,255,0.08);
+  color: #fcd34d;
+  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.12s;
+}
+.home-btn:hover { background: rgba(255,255,255,0.16); }
+.home-btn:active { transform: scale(0.94); }

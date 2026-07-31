@@ -1,0 +1,36 @@
+
+.info-title-font {
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+}
+
+.info-body-font {
+    font-family: 'Kinetika Regular', sans-serif;
+    font-size: 2rem;
+    text-align: justify;
+}
+
+.info-link-font {
+    font-family: 'Kinetika Light', sans-serif;
+}
+
+/* Base Footer Styles */
+.footer-bar {
+    pointer-events: none;
+}
+
+.footer-container {
+    pointer-events: none;
+}
+
+.footer-logo {
+    height: 10px;
+    width: 360px;
+    pointer-events: auto;
+    margin-top: 10px;
+    margin-bottom: 100px;
+}
+
+.footer-container .info {
+    pointer-events: auto;
+}
