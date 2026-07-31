@@ -5,6 +5,11 @@
   </header>
 
   <div class="kiosk__body">
+    <div class="canvas-wrap">
+      <canvas #canvas></canvas>
+      <div class="canvas-badge" *ngIf="isErupting">{{ phase | uppercase }}</div>
+    </div>
+
     <section class="panel">
       <div class="panel__unrest">
         <div class="panel__unrest-label">
@@ -43,43 +48,36 @@
       </button>
     </section>
 
-    <div class="kiosk__display">
-      <div class="canvas-wrap">
-        <canvas #canvas></canvas>
-        <div class="canvas-badge" *ngIf="isErupting">{{ phase | uppercase }}</div>
-      </div>
-
-      <section class="result">
-        <header class="result__header">
-          <span class="result__vei">{{ outcome.vei }}</span>
-          <h2>{{ outcome.title }}</h2>
-        </header>
-        <p class="result__narrative">{{ outcome.narrative }}</p>
-        <div class="result__grid">
-          <div class="metric" (mouseenter)="hoveredMetric='plume'" (mouseleave)="hoveredMetric=null">
-            <span class="metric__label">Plume Height</span>
-            <span class="metric__value">{{ displayedPlume }} km</span>
-            <span class="metric__hint" *ngIf="hoveredMetric==='plume'">Height the ash column reaches above the vent</span>
-          </div>
-          <div class="metric" (mouseenter)="hoveredMetric='pyro'" (mouseleave)="hoveredMetric=null">
-            <span class="metric__label">Pyroclastic Flows</span>
-            <span class="metric__value">{{ outcome.pyroclasticFlow ? 'Yes' : 'No' }}</span>
-            <span class="metric__hint" *ngIf="hoveredMetric==='pyro'">Fast-moving currents of hot gas and rock</span>
-          </div>
-          <div class="metric metric--wide">
-            <span class="metric__label">Gas Pressure</span>
-            <span class="metric__value metric__value--text">{{ outcome.pressureNote }}</span>
-          </div>
-          <div class="metric metric--wide">
-            <span class="metric__label">Water Interaction</span>
-            <span class="metric__value metric__value--text">{{ outcome.waterNote }}</span>
-          </div>
-          <div class="metric metric--wide">
-            <span class="metric__label">Viscosity Behavior</span>
-            <span class="metric__value metric__value--text">{{ outcome.viscosityNote }}</span>
-          </div>
+    <section class="result">
+      <header class="result__header">
+        <span class="result__vei">{{ outcome.vei }}</span>
+        <h2>{{ outcome.title }}</h2>
+      </header>
+      <p class="result__narrative">{{ outcome.narrative }}</p>
+      <div class="result__grid">
+        <div class="metric" (mouseenter)="hoveredMetric='plume'" (mouseleave)="hoveredMetric=null">
+          <span class="metric__label">Plume Height</span>
+          <span class="metric__value">{{ displayedPlume }} km</span>
+          <span class="metric__hint" *ngIf="hoveredMetric==='plume'">Height the ash column reaches above the vent</span>
         </div>
-      </section>
-    </div>
+        <div class="metric" (mouseenter)="hoveredMetric='pyro'" (mouseleave)="hoveredMetric=null">
+          <span class="metric__label">Pyroclastic Flows</span>
+          <span class="metric__value">{{ outcome.pyroclasticFlow ? 'Yes' : 'No' }}</span>
+          <span class="metric__hint" *ngIf="hoveredMetric==='pyro'">Fast-moving currents of hot gas and rock</span>
+        </div>
+        <div class="metric metric--wide">
+          <span class="metric__label">Gas Pressure</span>
+          <span class="metric__value metric__value--text">{{ outcome.pressureNote }}</span>
+        </div>
+        <div class="metric metric--wide">
+          <span class="metric__label">Water Interaction</span>
+          <span class="metric__value metric__value--text">{{ outcome.waterNote }}</span>
+        </div>
+        <div class="metric metric--wide">
+          <span class="metric__label">Viscosity Behavior</span>
+          <span class="metric__value metric__value--text">{{ outcome.viscosityNote }}</span>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
