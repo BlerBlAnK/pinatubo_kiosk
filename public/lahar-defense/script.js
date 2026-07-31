@@ -77,63 +77,24 @@ function playSound(type) {
   }
 }
 
-/* ---------------- TOWN & DIFFICULTY SELECTION STATE ---------------- */
+/* ---------------- TOWN & WAVE STATE ---------------- */
 const gameSettings = {
   town: 'bacolor',
   difficulty: 'easy'
 };
 
-/* ---------------- DIFFICULTY PROGRESSION LOCK ----------------
-   Medium unlocks only after winning on Easy; Hard unlocks only after
-   winning on Medium. Progress is persisted in localStorage so it
-   survives page reloads on the kiosk. Falls back to an in-memory-only
-   object (nothing unlocked) if localStorage is unavailable (e.g.
-   private browsing), so the game still works, it just won't remember
-   progress between sessions. */
-const PROGRESS_STORAGE_KEY = 'laharDefense.difficultyProgress';
-
-function loadDifficultyProgress() {
-  try {
-    const raw = localStorage.getItem(PROGRESS_STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      return { mediumUnlocked: !!parsed.mediumUnlocked, hardUnlocked: !!parsed.hardUnlocked };
-    }
-  } catch (e) { /* localStorage unavailable — fall through to defaults */ }
-  return { mediumUnlocked: false, hardUnlocked: false };
-}
-
-function saveDifficultyProgress() {
-  try {
-    localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(difficultyProgress));
-  } catch (e) { /* ignore — progress just won't persist this session */ }
-}
-
-let difficultyProgress = loadDifficultyProgress();
-
-function isDifficultyUnlocked(diff) {
-  if (diff === 'easy') return true;
-  if (diff === 'medium') return difficultyProgress.mediumUnlocked;
-  if (diff === 'hard') return difficultyProgress.hardUnlocked;
-  return false;
-}
-
-// Called from endGame() on a win — unlocks the next tier up, if any, and
-// returns the name of the newly-unlocked difficulty (or null) so the
-// caller can surface a toast/message about it.
-function unlockNextDifficultyOnWin(wonDifficulty) {
-  if (wonDifficulty === 'easy' && !difficultyProgress.mediumUnlocked) {
-    difficultyProgress.mediumUnlocked = true;
-    saveDifficultyProgress();
-    return 'medium';
-  }
-  if (wonDifficulty === 'medium' && !difficultyProgress.hardUnlocked) {
-    difficultyProgress.hardUnlocked = true;
-    saveDifficultyProgress();
-    return 'hard';
-  }
-  return null;
-}
+/* ---------------- 3-WAVE CAMPAIGN ----------------
+   Difficulty is no longer manually chosen — every playthrough runs all
+   three DIFFICULTY_SETTINGS tiers back-to-back, in order, as one
+   continuous campaign against the same town: Easy, then Medium, then
+   Hard. state.waveIndex tracks which of the three is currently active;
+   gameSettings.difficulty is kept in sync with it (see startWave())
+   purely so the rest of the file — loadDifficulty(), the rain-intensity/
+   lightning lookups in simulate(), etc. — can keep reading
+   DIFFICULTY_SETTINGS[gameSettings.difficulty] exactly as before without
+   needing to know waves exist at all. */
+const WAVE_ORDER = ['easy', 'medium', 'hard'];
+const WAVE_LABELS = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
 
 const TOWN_MAPS = {
   bacolor: {
@@ -309,6 +270,10 @@ let state = {
   carsFleeing: false, carsFleeStartAmbient: 0,
   // Falling sun collectibles
   fallingSuns: [], sunSpawnTimer: 6,
+  // 3-wave campaign: which wave (0=Easy,1=Medium,2=Hard) is active, and
+  // a >0 countdown (seconds remaining) during the between-wave prep
+  // pause — see beginWaveTransition()/startWave() below.
+  waveIndex: 0, prepCountdown: -1,
 };
 
 let channelPaths = [];
@@ -1192,7 +1157,6 @@ function showObjectiveSelection() {
   document.getElementById('overlay').classList.remove('hidden');
   document.getElementById('objectiveCard').style.display = 'block';
   document.getElementById('townCard').style.display = 'none';
-  document.getElementById('difficultyCard').style.display = 'none';
   document.getElementById('infoCard').style.display = 'none';
   document.getElementById('endCard').style.display = 'none';
   const tickerEl = document.getElementById('factTicker');
@@ -1202,7 +1166,6 @@ function showObjectiveSelection() {
 function showTownSelection() {
   document.getElementById('objectiveCard').style.display = 'none';
   document.getElementById('townCard').style.display = 'block';
-  document.getElementById('difficultyCard').style.display = 'none';
   document.getElementById('infoCard').style.display = 'none';
 
   document.querySelectorAll('.town-card').forEach(c => {
@@ -1210,46 +1173,11 @@ function showTownSelection() {
   });
 }
 
-function showDifficultySelection() {
-  document.getElementById('townCard').style.display = 'none';
-  document.getElementById('difficultyCard').style.display = 'block';
-  document.getElementById('infoCard').style.display = 'none';
-
-  // Safety net: if the currently-selected difficulty somehow points at a
-  // tier that isn't unlocked (e.g. stale state), fall back to the highest
-  // tier the player has actually earned.
-  if (!isDifficultyUnlocked(gameSettings.difficulty)) {
-    gameSettings.difficulty = difficultyProgress.hardUnlocked ? 'hard' : (difficultyProgress.mediumUnlocked ? 'medium' : 'easy');
-  }
-
-  document.querySelectorAll('#difficultySelector .diff-btn').forEach(btn => {
-    const diff = btn.dataset.diff;
-    const unlocked = isDifficultyUnlocked(diff);
-    btn.classList.toggle('locked', !unlocked);
-    btn.classList.toggle('active', diff === gameSettings.difficulty);
-    btn.querySelector('input').checked = (diff === gameSettings.difficulty);
-    btn.querySelector('input').disabled = !unlocked;
-  });
-
-  const noteEl = document.getElementById('diffLockNote');
-  if (noteEl) {
-    if (!difficultyProgress.mediumUnlocked) {
-      noteEl.textContent = '🔒 Win on Easy to unlock Medium.';
-      noteEl.style.display = 'block';
-    } else if (!difficultyProgress.hardUnlocked) {
-      noteEl.textContent = '🔒 Win on Medium to unlock Hard.';
-      noteEl.style.display = 'block';
-    } else {
-      noteEl.style.display = 'none';
-    }
-  }
-}
-
 function showTownInfo() {
   const townData = TOWN_MAPS[gameSettings.town];
   if (!townData) return;
 
-  document.getElementById('difficultyCard').style.display = 'none';
+  document.getElementById('townCard').style.display = 'none';
   document.getElementById('infoCard').style.display = 'block';
   
   document.getElementById('infoCardTitle').textContent = `📍 Profile: ${townData.name}`;
@@ -1835,9 +1763,13 @@ function simulate(dt) {
   if (state.stormOver && (state.postStormTimer >= 60 || laharHasStopped)) {
     const lostCount = state.houses.filter(h => h.lost).length;
     if (lostCount >= 4) {
-      endGame(false, `The storm passed, but ${lostCount} houses in ${TOWN_MAPS[gameSettings.town].name} were lost to the lahar.`);
+      endGame(false, `The storm passed, but ${lostCount} houses in ${TOWN_MAPS[gameSettings.town].name} were lost across the campaign. The village could not be saved.`);
+    } else if (state.waveIndex < WAVE_ORDER.length - 1) {
+      // This wave is survived, but more waves remain — hand off to the
+      // prep-countdown transition instead of ending the game here.
+      beginWaveTransition(state.waveIndex + 1);
     } else {
-      endGame(true, `Your defenses held! Only ${lostCount} house${lostCount === 1 ? '' : 's'} lost across ${TOWN_MAPS[gameSettings.town].name} — the village is saved!`);
+      endGame(true, `Your defenses held through all three waves! Only ${lostCount} house${lostCount === 1 ? '' : 's'} lost across ${TOWN_MAPS[gameSettings.town].name} — the village is saved!`);
     }
   }
 
@@ -2009,37 +1941,17 @@ function endGame(won, text) {
   document.getElementById('overlay').classList.remove('hidden');
   document.getElementById('objectiveCard').style.display = 'none';
   document.getElementById('townCard').style.display = 'none';
-  document.getElementById('difficultyCard').style.display = 'none';
   document.getElementById('infoCard').style.display = 'none';
   document.getElementById('endCard').style.display = 'block';
   document.getElementById('endTitle').textContent = won ? "🎉 Village Saved!" : "❌ Village Lost";
   document.getElementById('endTitle').style.color = won ? '#4ade80' : '#f87171';
   document.getElementById('endDesc').textContent = text;
 
-  // "Try Again" only makes sense after a loss — a win already ends the
-  // round cleanly, so that button stays hidden and only "Main Menu" (which
-  // flows back through town/difficulty selection) is shown.
+  // "Try Again" only makes sense after a loss — a win means the full
+  // 3-wave campaign is already complete, so that button stays hidden and
+  // only "Exit Game" is shown.
   const tryAgainBtn = document.getElementById('tryAgainBtn');
   if (tryAgainBtn) tryAgainBtn.style.display = won ? 'none' : 'inline-flex';
-
-  // Difficulty progression: winning on Easy unlocks Medium, winning on
-  // Medium unlocks Hard. Surfaces a small congratulatory line on the end
-  // card when a new tier opens up.
-  const unlockEl = document.getElementById('endUnlockText');
-  if (unlockEl) {
-    if (won) {
-      const newlyUnlocked = unlockNextDifficultyOnWin(gameSettings.difficulty);
-      if (newlyUnlocked) {
-        const label = newlyUnlocked === 'medium' ? 'Medium' : 'Hard';
-        unlockEl.textContent = `🔓 ${label} difficulty unlocked!`;
-        unlockEl.style.display = 'block';
-      } else {
-        unlockEl.style.display = 'none';
-      }
-    } else {
-      unlockEl.style.display = 'none';
-    }
-  }
 
   // Final score, letter grade, and a random educational fact — gives the
   // end screen replay value (a number to beat) plus a last bit of teaching
@@ -3810,19 +3722,53 @@ function render() {
   drawSplashes(ctx);
   drawRipples(ctx);
 
-  ctx.save(); ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'; roundRectCtx(ctx, 16, 190, 22, 180, 8); ctx.fill();
-  ctx.fillStyle = '#ffffff'; ctx.font = 'bold 13px Trebuchet MS'; ctx.textAlign = 'center';
-  ctx.save(); ctx.translate(15, 300); ctx.rotate(-Math.PI / 2); ctx.fillText('LAHAR INTENSITY', 0, 0); ctx.restore();
+  // ---- Horizontal 3-wave storm progress bar, top-middle ----
+  // Sits in the gap between the budget/goal HUD panels (which occupy the
+  // top-left/top-right corners). Fill represents overall progress through
+  // the whole 3-wave campaign, not just the current storm: waveIndex
+  // contributes a full third each, and the active wave's own elapsed-
+  // time fraction fills the remainder of its third — so the bar visibly
+  // continues from where the previous wave left off instead of resetting.
+  ctx.save();
+  const waveBarW = 160, waveBarH = 10, waveBarX = (W - waveBarW) / 2, waveBarY = 30;
 
-  const barHeightMax = 140, barX = 23, barYStart = 220; 
-  roundRectCtx(ctx, barX, barYStart, 8, barHeightMax, 4); ctx.fillStyle = '#e6dcc0'; ctx.fill();
-  const currentFillHeight = barHeightMax * (state.laharVolume / 100);
-  const fillY = barYStart + (barHeightMax - currentFillHeight);
-  if (currentFillHeight > 0) {
-    roundRectCtx(ctx, barX, fillY, 8, currentFillHeight, 4);
-    ctx.fillStyle = state.laharVolume > 70 ? '#ef4444' : (state.laharVolume > 35 ? '#fbbf24' : '#22c55e'); ctx.fill();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+  roundRectCtx(ctx, waveBarX - 14, 4, waveBarW + 28, 56, 10);
+  ctx.fill();
+
+  ctx.fillStyle = '#1e293b'; ctx.font = 'bold 9px Trebuchet MS'; ctx.textAlign = 'center';
+  ctx.fillText('STORM PROGRESS', waveBarX + waveBarW / 2, 14);
+
+  roundRectCtx(ctx, waveBarX, waveBarY, waveBarW, waveBarH, 5);
+  ctx.fillStyle = '#e6dcc0'; ctx.fill();
+
+  const withinWaveFrac = state.raining ? Math.min(1, state.stormTime / STORM_DUR) : 0;
+  const overallProgress = Math.min(1, (state.waveIndex + withinWaveFrac) / WAVE_ORDER.length);
+  const waveFillW = waveBarW * overallProgress;
+  if (waveFillW > 1) {
+    roundRectCtx(ctx, waveBarX, waveBarY, waveFillW, waveBarH, 5);
+    ctx.fillStyle = overallProgress > 0.66 ? '#ef4444' : (overallProgress > 0.33 ? '#fbbf24' : '#22c55e');
+    ctx.fill();
   }
-  ctx.restore();  
+
+  // Checkpoint flags at the end of each wave's third — planted right at
+  // the point the bar reaches when that wave is completed.
+  const flagColors = ['#22c55e', '#fbbf24', '#ef4444'];
+  const flagLabels = ['EASY', 'MED', 'HARD'];
+  for (let f = 0; f < 3; f++) {
+    const fx = waveBarX + waveBarW * ((f + 1) / 3);
+    ctx.strokeStyle = '#3a3226'; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(fx, waveBarY); ctx.lineTo(fx, waveBarY - 10); ctx.stroke();
+    ctx.fillStyle = flagColors[f];
+    ctx.beginPath();
+    ctx.moveTo(fx, waveBarY - 10);
+    ctx.lineTo(fx + 8, waveBarY - 7.5);
+    ctx.lineTo(fx, waveBarY - 5);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#3a3226'; ctx.font = 'bold 7px Trebuchet MS'; ctx.textAlign = 'center';
+    ctx.fillText(flagLabels[f], fx, waveBarY + waveBarH + 12);
+  }
+  ctx.restore();
 
   if (state.raining) {
     ctx.save();
@@ -3857,6 +3803,30 @@ function render() {
   // Always drawn last so the placement guide stays visible above every
   // other layer (weather, buildings, lahar) while a tool is being dragged.
   drawDragPreview(ctx);
+
+  // Between-wave prep countdown — shown for 5 seconds after a wave is
+  // survived, before the next one auto-starts (see beginWaveTransition()).
+  // Drawn last of all so it sits above every gameplay layer.
+  if (state.prepCountdown > 0) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(8, 14, 26, 0.55)';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#fcd34d';
+    ctx.font = 'bold 22px Trebuchet MS';
+    ctx.fillText('Get Ready —', W / 2, H / 2 - 70);
+    ctx.fillText(`${WAVE_LABELS[WAVE_ORDER[state.waveIndex + 1]] || ''} Wave Incoming`, W / 2, H / 2 - 42);
+
+    const pulse = 1 + Math.sin(ambientTime * 6) * 0.06;
+    ctx.font = `bold ${Math.round(90 * pulse)}px Trebuchet MS`;
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(252,211,77,0.7)';
+    ctx.shadowBlur = 24;
+    ctx.fillText(String(state.prepCountdown), W / 2, H / 2 + 40);
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
 
   ctx.restore(); 
 }
@@ -3920,6 +3890,13 @@ function resetState() {
   laharRainTrack.pause();
   laharRainTrack.currentTime = 0;
 
+  // A fresh campaign always begins on wave 0 (Easy) — see startWave() for
+  // the lighter-weight transition used between waves 1→2 and 2→3, which
+  // does NOT call this function (it deliberately keeps house/structure
+  // damage carried over, where this full reset intentionally does not).
+  state.waveIndex = 0;
+  gameSettings.difficulty = WAVE_ORDER[0];
+
   // Look up the active difficulty's channel count BEFORE generating paths,
   // so Easy/Medium/Hard produce 3/4/5 independent lahar channels respectively.
   const diffSettings = DIFFICULTY_SETTINGS[gameSettings.difficulty || 'easy'];
@@ -3939,11 +3916,71 @@ function resetState() {
     birdsFleeing: false, birdsFleeStartAmbient: 0,
     carsFleeing: false, carsFleeStartAmbient: 0,
     fallingSuns: [], sunSpawnTimer: 6,
+    waveIndex: 0, prepCountdown: -1,
   };
   
   document.getElementById('rainPanel').classList.remove('active');
   document.getElementById('rainStatus').textContent = 'Tap to start'; 
   buildToolbox();
+}
+
+// ---------------- WAVE TRANSITIONS ----------------
+// Lighter-weight reset used ONLY when advancing from one wave to the
+// next (Easy→Medium, Medium→Hard) — unlike resetState() above, this
+// deliberately does NOT call loadTownMap(), so houses/church/school/
+// robot/monument/bridge keep whatever HP/lost state they ended the
+// previous wave with. Only storm-specific state and defenses reset —
+// new channels, fresh budget for the new tier, and a clean toolbox.
+function startWave(waveIndex) {
+  state.waveIndex = waveIndex;
+  gameSettings.difficulty = WAVE_ORDER[waveIndex];
+
+  const diffSettings = DIFFICULTY_SETTINGS[gameSettings.difficulty];
+  generateRandomPaths(diffSettings.channelCount);
+  loadDifficulty();
+
+  state = {
+    ...state,
+    running: true, raining: true, gameOver: false, won: false,
+    time: 0, rainAmount: 0, stormTime: 0, stormOver: false, postStormTimer: 0, laharVolume: 0,
+    skyTransition: 0, screenShake: 0, lightningFlash: 0,
+    lightningPath: [], laharProgresses: new Array(channelPaths.length).fill(0),
+    placedItems: [], particles: [], flowParticles: [], ripples: [],
+    debris: [], splashes: [],
+    comboCount: 0, lastPlacementTime: -999,
+    birdsFleeing: true, birdsFleeStartAmbient: ambientTime,
+    carsFleeing: true, carsFleeStartAmbient: ambientTime,
+    fallingSuns: [], sunSpawnTimer: 6,
+    prepCountdown: -1,
+  };
+
+  buildToolbox();
+  document.getElementById('rainPanel').classList.add('active');
+  document.getElementById('rainStatus').textContent = 'Storm Active';
+  playSound('storm');
+  laharRainTrack.play().catch(err => console.log("Audio blocked: ", err));
+  showToast(`${WAVE_LABELS[gameSettings.difficulty]} wave begins!`);
+}
+
+// Called when a wave is survived and at least one wave still remains.
+// Pauses the simulation, shows a "get ready" countdown for 5 seconds,
+// then automatically starts the next wave via startWave() above — no
+// extra tap required, matching a boss-rush-style wave progression.
+function beginWaveTransition(nextWaveIndex) {
+  state.running = false;
+  state.prepCountdown = 5;
+  showToast(`Wave survived! Preparing the ${WAVE_LABELS[WAVE_ORDER[nextWaveIndex]]} wave...`, 4000);
+
+  const tick = () => {
+    if (state.prepCountdown <= 1) {
+      state.prepCountdown = -1;
+      startWave(nextWaveIndex);
+      return;
+    }
+    state.prepCountdown -= 1;
+    setTimeout(tick, 1000);
+  };
+  setTimeout(tick, 1000);
 }
 
 let gameStarted = false;
@@ -3971,21 +4008,6 @@ document.querySelectorAll('.town-card .select-town-btn').forEach(btn => {
   });
 });
 
-document.querySelectorAll('#difficultySelector .diff-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const diff = btn.dataset.diff;
-    if (!isDifficultyUnlocked(diff)) {
-      playSound('error');
-      const label = diff === 'medium' ? 'Easy' : 'Medium';
-      showToast(`🔒 Win on ${label} first to unlock this!`);
-      return;
-    }
-    document.querySelectorAll('#difficultySelector .diff-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    gameSettings.difficulty = diff;
-  });
-});
-
 document.getElementById('nextToTownBtn').addEventListener('click', () => {
   showTownSelection();
 });
@@ -3994,45 +4016,51 @@ document.getElementById('backToObjectiveBtn').addEventListener('click', () => {
   showObjectiveSelection();
 });
 
-document.getElementById('nextToDifficultyBtn').addEventListener('click', () => {
+document.getElementById('nextToInfoFromTownBtn').addEventListener('click', () => {
   if (!gameSettings.town) {
     showToast("Please select a town first!");
     return;
   }
-  showDifficultySelection();
-});
-
-document.getElementById('backToTownBtn').addEventListener('click', () => {
-  showTownSelection();
-});
-
-document.getElementById('nextToInfoBtn').addEventListener('click', () => {
-  const checkedRadio = document.querySelector('input[name="difficulty"]:checked');
-  gameSettings.difficulty = checkedRadio ? checkedRadio.value : 'easy';
   showTownInfo();
 });
 
-document.getElementById('backToDifficultyBtn').addEventListener('click', () => {
-  showDifficultySelection();
+document.getElementById('backToTownFromInfoBtn').addEventListener('click', () => {
+  showTownSelection();
 });
 
 document.getElementById('confirmStartBtn').addEventListener('click', () => {
   startGame();
 });
 
-document.getElementById('restartBtn').addEventListener('click', () => { 
-  showObjectiveSelection();
+// "Exit Game" — posts an exit message to a hosting parent page (e.g. the
+// Angular kiosk shell), same bridge as exitToKioskBtn on the Mission
+// Objective screen. Falls back to this game's own start screen when
+// there's no parent to hand off to (e.g. testing index.html standalone).
+document.getElementById('restartBtn').addEventListener('click', () => {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage('exit-lahar-game', '*');
+  } else {
+    showObjectiveSelection();
+  }
 });
 
-// "Try Again" — only visible after a loss (toggled in endGame()). Reuses
-// whatever town + difficulty is already sitting in gameSettings and jumps
-// straight back into gameplay via startGame()/resetState(), skipping the
-// objective/town/difficulty/info screens entirely for a fast retry.
+// "Try Again" — only visible after a loss (toggled in endGame()). Calls
+// startGame()/resetState(), which resets state.waveIndex back to 0 — so
+// this restarts the full 3-wave campaign (Easy → Medium → Hard) from the
+// beginning, on the same town, skipping the objective/town/info screens
+// entirely for a fast retry.
 document.getElementById('tryAgainBtn').addEventListener('click', () => {
   startGame();
 });
 
 document.getElementById('instructionsBtn').addEventListener('click', () => {
+  // The prep countdown auto-starts the next wave on its own timer,
+  // independent of this menu's pause/resume state — opening the menu
+  // mid-countdown and then hitting "Return" could stomp state.running
+  // back to false right after startWave() already set it true. Simplest
+  // fix: the Menu button just does nothing during that ~5s window.
+  if (state.prepCountdown > 0) return;
+
   const closeMenuBtn = document.getElementById('closeMenuBtn');
   if (gameStarted && !state.gameOver) {
     pausedRunningState = state.running;

@@ -547,44 +547,6 @@ canvas, #dropLayer {
 #toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
 /* ================================================================
-   DIFFICULTY RADIO BUTTONS
-   ================================================================ */
-#difficultySelector { display: flex; justify-content: center; gap: 12px; margin: 18px 0; }
-
-.diff-btn {
-  background: rgba(255,255,255,0.07);
-  border: 2px solid rgba(255,255,255,0.2);
-  padding: 13px 26px; border-radius: 24px;
-  font-size: 19px; font-weight: 700; cursor: pointer;
-  transition: transform .12s ease, background .15s, border-color .15s, box-shadow .15s;
-  user-select: none;
-}
-.diff-btn input { display: none; }
-.diff-btn:hover {
-  background: rgba(255,255,255,0.16);
-  border-color: rgba(255,255,255,0.42);
-  transform: translateY(-1px);
-}
-.diff-btn:active { transform: translateY(1px); }
-.diff-btn.active {
-  background: linear-gradient(180deg, #ffe89c 0%, var(--sun) 60%, #f8c84e 100%);
-  color: #78350f; border-color: #c96e00;
-  box-shadow: 0 4px 0 #c96e00, 0 8px 18px rgba(217,119,6,0.38);
-  transform: translateY(-1px);
-}
-.diff-btn.locked {
-  opacity: 0.5; cursor: not-allowed;
-  background: rgba(255,255,255,0.04);
-}
-.diff-btn.locked:hover {
-  background: rgba(255,255,255,0.04);
-  border-color: rgba(255,255,255,0.2);
-  transform: none;
-}
-.diff-lock { font-size: 0.85em; margin-left: 2px; display: none; }
-.diff-btn.locked .diff-lock { display: inline; }
-
-/* ================================================================
    TOWN SELECTION CARDS
    ================================================================ */
 .subtitle { font-size: 13px; opacity: 0.78; margin-bottom: 20px; }
