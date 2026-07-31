@@ -1,0 +1,38 @@
+<div class="layout-container">
+  
+  <div #sliderTrack class="slider-track" (scroll)="onTrackScroll($event)">
+    
+    <div 
+      *ngFor="let slide of slides; let i = index" 
+      class="polaroid-card"
+      [ngClass]="{'is-active': i === activeIndex}"
+      (click)="setActiveCard(i, slide.route, $event)"
+    >
+      <div class="pin top-l"></div>
+      <div class="pin top-r"></div>
+      
+      <div class="image-inner">
+        <!-- Evaluates the child loop perfectly -->
+        <img 
+          *ngFor="let imgPath of slide.images; let subIdx = index"
+          [src]="imgPath" 
+          [alt]="slide.title"
+          class="carousel-img"
+          [ngClass]="{
+            'visible': (i === activeIndex && subIdx === slide.currentImageIndex) || (i !== activeIndex && subIdx === 0)
+          }"
+        >
+      </div>
+
+      <div class="pin bot-l"></div>
+      <div class="pin bot-r"></div>
+    </div>
+
+  </div>
+
+  <div class="caption-block">
+    <h2 class="caption-heading">{{ slides[activeIndex].captionTitle }}</h2>
+    <p class="caption-body">{{ slides[activeIndex].description }}</p>
+  </div>
+
+</div>

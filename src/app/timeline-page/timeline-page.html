@@ -1,0 +1,207 @@
+<div class="kiosk-container">
+
+  <div class="apo-back-btn" (click)="goBack()" aria-label="Back to menu">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+      <path d="M10 13L5 8L10 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Back
+  </div>
+
+  <div class="map-header-grid">
+
+    <div class="map-viewport">
+
+      <!-- Google-Maps-style zoom controls -->
+      <div class="map-controls">
+        <button class="map-btn" (click)="zoomIn()" title="Zoom in">＋</button>
+        <button class="map-btn" (click)="zoomOut()" title="Zoom out">－</button>
+        <button class="map-btn" (click)="resetZoom()" title="Reset zoom">⊙</button>
+        <span class="zoom-label">{{ zoomLevel() }}×</span>
+      </div>
+
+      <span class="compass-icon">
+        <span class="compass-n">N</span>▲
+      </span>
+
+      <!--
+        REAL TRACED LUZON+VISAYAS SILHOUETTE — GEOREFERENCED against the
+        source map's actual bounding box (N 18.94°, S 12.23°, W 119.44°,
+        E 124.49°, equirectangular projection), extracted via raster mask
+        extraction + contour tracing + Douglas-Peucker simplification.
+        Mt. Pinatubo and the three province markers below are placed by
+        converting their real lat/lon into this same pixel space with
+        the same formula — not eyeballed — and each was verified to land
+        on the traced landmass (see conversation for the check).
+
+        Now supports Google-Maps-style navigation: scroll/pinch to zoom
+        (toward the cursor/pinch center), drag to pan freely across the
+        whole map (not just the initial crop), buttons for +/-/reset.
+        This navigation is purely a viewing aid — it never changes which
+        timeline era is active. Era switching remains exclusively the
+        timeline buttons below the fold.
+
+        preserveAspectRatio="xMidYMid slice" keeps the map filling the
+        box edge-to-edge with no side letterboxing at any zoom level.
+      -->
+      <svg
+        class="luzon-base"
+        [attr.viewBox]="viewBoxStr()"
+        preserveAspectRatio="xMidYMid slice"
+        xmlns="http://www.w3.org/2000/svg"
+        (wheel)="onWheel($event)"
+        (pointerdown)="onPointerDown($event)"
+        (touchstart)="onTouchStart($event)"
+        (touchmove)="onTouchMove($event)"
+        (touchend)="onTouchEnd($event)"
+        (touchcancel)="onTouchEnd($event)"
+      >
+        <defs>
+          <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="6" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+
+          <!-- Grid-line texture painted onto the dark box behind the map,
+               purely decorative (kiosk "designed instrument panel" feel) -->
+          <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M40,0 L0,0 L0,40" fill="none" stroke="rgba(196,160,96,0.09)" stroke-width="1"/>
+          </pattern>
+          <pattern id="gridPatternMajor" width="200" height="200" patternUnits="userSpaceOnUse">
+            <path d="M200,0 L0,0 L0,200" fill="none" stroke="rgba(196,160,96,0.16)" stroke-width="1.2"/>
+          </pattern>
+        </defs>
+
+        <!-- Everything below is wrapped in this <g> so a live drag can be
+             previewed via a cheap transform (translate) instead of
+             mutating viewBox every frame — mutating viewBox forces the
+             browser to re-layout/repaint the huge landmass path on every
+             pointermove, which was the cause of the pan shake/stagger.
+             The transform resets to identity and viewBox is updated for
+             real exactly once, on pointer-up (see timeline-page.ts). -->
+        <g [attr.transform]="dragTransform()">
+
+        <!-- Grid texture backdrop, sized generously so it stays covered while panning -->
+        <rect x="-1000" y="-1000" width="4000" height="4000" fill="url(#gridPattern)" pointer-events="none"/>
+        <rect x="-1000" y="-1000" width="4000" height="4000" fill="url(#gridPatternMajor)" pointer-events="none"/>
+        <!-- Base landmass silhouette (static backdrop, never recolored) —
+             traced from the user-supplied reference photo. -->
+        <g class="landmass-base" pointer-events="none">
+          <path class="luzon-outline"
+            d="M878.0,1232.5 L864.0,1232.5 L856.5,1226.0 L853.5,1217.0 L841.5,1210.0 L835.5,1197.0 L832.0,1169.5 L818.0,1169.5 L814.0,1173.5 L811.0,1165.5 L798.0,1164.5 L797.0,1168.5 L794.0,1164.5 L788.0,1163.5 L787.5,1159.0 L781.0,1154.5 L774.0,1154.5 L754.0,1135.5 L745.0,1135.5 L742.0,1139.5 L734.0,1141.5 L729.5,1133.0 L733.5,1101.0 L720.5,1089.0 L713.5,1076.0 L711.5,1062.0 L685.0,1047.5 L670.0,1044.5 L665.0,1038.5 L654.0,1033.5 L642.5,1021.0 L644.5,1004.0 L633.0,997.5 L625.0,987.5 L609.0,986.5 L606.5,975.0 L594.0,971.5 L591.0,966.5 L571.0,966.5 L570.5,975.0 L580.5,989.0 L582.5,1003.0 L575.5,1004.0 L577.5,1021.0 L592.0,1038.5 L597.0,1038.5 L603.5,1044.0 L601.5,1054.0 L611.5,1071.0 L612.5,1094.0 L616.5,1102.0 L599.0,1112.5 L593.0,1110.5 L581.5,1098.0 L584.5,1080.0 L577.5,1066.0 L559.0,1042.5 L550.0,1038.5 L547.0,1031.5 L537.0,1033.5 L536.0,1028.5 L525.0,1028.5 L522.5,1020.0 L503.0,994.5 L482.0,989.5 L480.0,982.5 L467.0,979.5 L462.0,972.5 L456.0,970.5 L441.0,969.5 L436.0,972.5 L437.0,958.5 L428.0,958.5 L426.0,966.5 L414.0,968.5 L382.0,984.5 L377.5,991.0 L377.5,1004.0 L379.5,1011.0 L383.5,1012.0 L377.0,1017.5 L363.0,1017.5 L349.0,1029.5 L332.0,1020.5 L311.0,1024.5 L304.0,1022.5 L306.5,1003.0 L305.5,998.0 L299.0,994.5 L289.0,994.5 L276.5,1011.0 L276.5,1019.0 L282.0,1022.5 L275.0,1023.5 L265.0,1018.5 L273.5,1016.0 L272.5,1007.0 L281.5,1000.0 L280.5,977.0 L272.0,969.5 L242.0,964.5 L238.5,968.0 L241.5,981.0 L231.5,982.0 L231.0,995.5 L225.5,989.0 L225.5,935.0 L224.5,930.0 L219.5,927.0 L219.5,912.0 L225.5,910.0 L226.0,902.5 L231.0,899.5 L242.0,899.5 L245.0,893.5 L251.0,891.5 L275.5,867.0 L276.0,858.5 L277.0,865.5 L290.5,864.0 L294.5,858.0 L294.5,845.0 L288.5,838.0 L284.5,817.0 L271.0,812.5 L266.0,806.5 L231.0,804.5 L225.0,795.5 L209.0,793.5 L207.5,821.0 L215.5,829.0 L220.5,853.0 L219.5,863.0 L212.0,871.5 L198.0,869.5 L197.0,872.5 L191.0,866.5 L180.5,863.0 L179.5,836.0 L167.0,830.5 L153.5,819.0 L154.5,807.0 L159.5,804.0 L157.5,789.0 L144.5,789.0 L142.5,804.0 L139.0,808.5 L132.0,806.5 L130.0,801.5 L123.5,801.0 L122.5,788.0 L117.5,781.0 L116.5,773.0 L118.5,747.0 L108.5,716.0 L108.5,707.0 L100.5,693.0 L86.5,678.0 L89.0,669.5 L97.5,669.0 L97.5,655.0 L96.0,651.5 L90.5,651.0 L89.5,644.0 L93.5,626.0 L87.0,624.5 L82.5,619.0 L86.5,617.0 L87.5,592.0 L80.0,575.5 L71.0,575.5 L68.0,581.5 L63.0,581.5 L59.5,575.0 L63.5,547.0 L61.5,532.0 L66.5,506.0 L74.0,498.5 L89.0,494.5 L90.0,487.5 L96.5,493.0 L96.5,502.0 L103.0,503.5 L106.5,509.0 L105.5,532.0 L123.5,539.0 L124.5,557.0 L133.0,562.5 L153.0,562.5 L170.0,556.5 L186.5,538.0 L186.5,528.0 L182.5,519.0 L171.5,511.0 L170.5,481.0 L165.5,471.0 L167.5,457.0 L163.5,452.0 L170.5,439.0 L169.5,409.0 L180.5,402.0 L191.5,380.0 L188.5,346.0 L184.5,335.0 L187.5,313.0 L193.5,307.0 L193.5,295.0 L188.5,288.0 L185.5,275.0 L175.0,272.5 L170.5,265.0 L176.5,246.0 L186.5,237.0 L186.5,225.0 L182.5,224.0 L190.5,219.0 L188.5,201.0 L196.5,194.0 L198.5,188.0 L196.5,168.0 L204.5,158.0 L205.5,146.0 L219.5,123.0 L220.5,106.0 L213.5,89.0 L224.0,79.5 L248.0,82.5 L254.5,77.0 L255.5,64.0 L266.0,59.5 L279.0,76.5 L291.0,75.5 L294.0,69.5 L302.0,65.5 L323.0,63.5 L410.0,114.5 L464.0,132.5 L487.0,129.5 L504.0,112.5 L508.0,112.5 L514.0,84.5 L528.0,84.5 L530.5,97.0 L545.5,113.0 L547.5,124.0 L544.5,135.0 L534.5,150.0 L526.0,153.5 L517.5,162.0 L519.5,201.0 L515.5,205.0 L515.5,213.0 L511.5,220.0 L511.5,235.0 L519.5,279.0 L529.5,296.0 L530.5,306.0 L538.0,307.5 L539.0,311.5 L553.0,311.5 L554.0,308.5 L561.0,311.5 L566.5,320.0 L563.5,321.0 L562.5,349.0 L569.0,354.5 L582.5,352.0 L580.5,368.0 L574.5,375.0 L571.5,400.0 L540.5,462.0 L530.5,470.0 L524.5,482.0 L527.5,497.0 L520.5,504.0 L520.5,512.0 L526.5,513.0 L522.5,517.0 L522.5,522.0 L501.0,541.5 L500.0,533.5 L486.0,533.5 L476.0,541.5 L460.0,543.5 L445.0,553.5 L436.0,553.5 L418.5,568.0 L417.0,573.5 L413.0,573.5 L400.5,585.0 L397.5,592.0 L398.5,608.0 L403.0,615.5 L413.0,616.5 L415.5,621.0 L409.5,624.0 L410.5,635.0 L387.5,660.0 L384.5,679.0 L375.0,687.5 L368.5,688.0 L365.5,703.0 L372.5,721.0 L385.5,726.0 L389.5,749.0 L401.5,767.0 L404.5,782.0 L409.5,788.0 L409.5,796.0 L431.5,817.0 L412.0,820.5 L409.5,838.0 L418.5,876.0 L432.5,892.0 L433.5,903.0 L438.5,907.0 L434.5,923.0 L469.0,953.5 L503.0,968.5 L523.0,968.5 L523.5,960.0 L520.0,954.5 L531.0,959.5 L541.5,959.0 L539.5,945.0 L523.0,935.5 L516.5,927.0 L525.0,917.5 L531.5,917.0 L533.0,907.5 L535.5,907.0 L534.5,927.0 L548.0,927.5 L548.5,918.0 L553.5,916.0 L554.5,905.0 L564.0,894.5 L582.0,887.5 L595.0,892.5 L598.0,897.5 L612.0,898.5 L613.0,888.5 L630.0,892.5 L634.0,899.5 L644.0,899.5 L671.0,930.5 L681.5,935.0 L679.5,948.0 L688.5,956.0 L690.5,969.0 L690.5,974.0 L684.5,978.0 L681.5,997.0 L695.0,1005.5 L719.0,1005.5 L734.5,993.0 L734.5,983.0 L728.5,973.0 L728.5,965.0 L718.5,957.0 L724.5,951.0 L724.5,940.0 L732.5,939.0 L733.0,931.5 L734.0,937.5 L740.5,938.0 L740.5,948.0 L746.5,949.0 L752.0,961.5 L762.0,961.5 L767.0,967.5 L779.0,967.5 L780.0,960.5 L781.0,963.5 L799.0,960.5 L795.5,966.0 L796.0,974.5 L807.0,975.5 L811.0,968.5 L815.5,978.0 L828.0,987.5 L838.0,987.5 L843.0,992.5 L851.5,994.0 L856.0,1004.5 L837.0,1003.5 L829.0,1011.5 L816.0,1007.5 L783.0,1005.5 L774.5,1022.0 L774.5,1030.0 L776.0,1038.5 L782.0,1038.5 L793.0,1052.5 L801.5,1054.0 L815.0,1084.5 L823.0,1089.5 L833.0,1089.5 L832.5,1079.0 L836.0,1078.5 L847.0,1082.5 L848.0,1090.5 L876.5,1095.0 L876.0,1100.5 L866.0,1102.5 L852.0,1097.5 L844.0,1097.5 L841.0,1100.5 L821.0,1099.5 L816.5,1108.0 L817.5,1121.0 L821.5,1122.0 L818.5,1127.0 L819.0,1135.5 L828.0,1135.5 L833.5,1130.0 L833.5,1125.0 L841.0,1118.5 L861.0,1127.5 L867.0,1135.5 L875.0,1139.5 L883.0,1139.5 L888.0,1131.5 L898.5,1133.0 L898.5,1142.0 L892.5,1143.0 L887.5,1157.0 L892.5,1180.0 L888.5,1209.0 L882.5,1213.0 L881.5,1229.0 L878.0,1232.5 Z M342.0,1289.5 L301.5,1289.0 L304.0,1281.5 L313.5,1281.0 L313.5,1273.0 L303.0,1267.5 L281.5,1241.0 L281.5,1219.0 L268.5,1199.0 L266.0,1196.5 L256.5,1197.0 L250.5,1143.0 L228.0,1107.5 L220.0,1106.5 L217.0,1101.5 L206.0,1100.5 L205.5,1095.0 L197.5,1090.0 L193.0,1064.5 L178.0,1065.5 L177.0,1071.5 L167.5,1068.0 L162.5,1061.0 L172.0,1047.5 L186.0,1044.5 L192.0,1048.5 L232.0,1051.5 L245.0,1056.5 L254.0,1056.5 L280.0,1047.5 L302.0,1066.5 L325.0,1066.5 L331.0,1063.5 L350.5,1079.0 L366.0,1099.5 L372.0,1099.5 L377.5,1104.0 L378.0,1118.5 L392.0,1117.5 L398.5,1123.0 L398.5,1127.0 L391.0,1131.5 L385.5,1140.0 L387.5,1157.0 L384.5,1178.0 L384.5,1191.0 L394.5,1202.0 L398.5,1219.0 L391.5,1224.0 L386.0,1233.5 L375.5,1237.0 L375.5,1245.0 L371.5,1250.0 L371.5,1262.0 L375.5,1266.0 L366.5,1267.0 L366.5,1278.0 L347.0,1280.5 L342.0,1289.5 Z M901.0,1044.5 L888.0,1033.5 L875.0,1027.5 L868.5,1018.0 L881.5,1009.0 L887.5,998.0 L887.5,976.0 L890.5,972.0 L887.5,943.0 L897.0,941.5 L901.0,934.5 L913.5,952.0 L914.5,963.0 L923.0,963.5 L924.5,959.0 L926.5,960.0 L928.5,970.0 L937.5,978.0 L940.5,992.0 L935.5,1003.0 L935.5,1012.0 L938.5,1016.0 L926.5,1020.0 L923.5,1037.0 L921.0,1029.5 L906.0,1030.5 L901.5,1036.0 L901.0,1044.5 Z M813.0,1289.5 L716.0,1288.5 L722.5,1276.0 L722.5,1267.0 L717.5,1266.0 L723.0,1265.5 L726.5,1261.0 L725.5,1249.0 L721.5,1248.0 L718.5,1224.0 L735.0,1229.5 L739.0,1239.5 L754.0,1237.5 L770.0,1249.5 L778.0,1249.5 L784.5,1265.0 L792.0,1265.5 L795.0,1271.5 L802.0,1272.5 L813.0,1289.5 Z M489.0,1105.5 L480.0,1103.5 L474.0,1095.5 L459.0,1089.5 L450.5,1078.0 L449.5,1057.0 L457.5,1046.0 L458.0,1036.5 L463.0,1042.5 L487.0,1042.5 L490.0,1046.5 L498.0,1046.5 L506.5,1059.0 L509.5,1074.0 L492.5,1091.0 L492.5,1100.0 L489.0,1105.5 Z M474.0,830.5 L469.0,829.5 L466.5,824.0 L466.5,818.0 L471.5,817.0 L468.5,800.0 L461.5,792.0 L456.5,775.0 L447.5,772.0 L454.0,754.5 L464.0,755.5 L476.0,750.5 L491.5,762.0 L484.5,763.0 L486.5,775.0 L476.5,777.0 L478.5,791.0 L486.5,793.0 L488.5,816.0 L474.0,830.5 Z M493.0,1289.5 L478.0,1286.5 L469.5,1277.0 L474.5,1261.0 L481.0,1260.5 L485.5,1252.0 L484.5,1224.0 L510.0,1210.5 L513.5,1214.0 L507.5,1215.0 L508.5,1233.0 L504.5,1237.0 L500.5,1270.0 L493.0,1289.5 Z M602.0,1282.5 L590.0,1276.5 L585.0,1266.5 L566.5,1258.0 L564.5,1252.0 L572.0,1243.5 L587.0,1241.5 L607.5,1246.0 L614.5,1261.0 L611.5,1274.0 L602.0,1282.5 Z M725.0,1179.5 L720.0,1174.5 L711.0,1174.5 L707.0,1167.5 L687.5,1151.0 L686.0,1145.5 L671.0,1142.5 L667.5,1139.0 L661.5,1124.0 L665.5,1122.0 L666.0,1117.5 L680.5,1120.0 L704.5,1160.0 L724.5,1167.0 L725.0,1179.5 Z M822.0,1270.5 L803.5,1248.0 L789.5,1220.0 L785.5,1218.0 L788.0,1206.5 L791.0,1205.5 L810.5,1221.0 L818.5,1246.0 L822.0,1270.5 Z M155.0,1012.5 L153.0,1008.5 L125.0,992.5 L120.5,980.0 L129.0,980.5 L136.0,986.5 L147.0,988.5 L149.0,993.5 L155.0,993.5 L157.5,1011.0 L155.0,1012.5 Z M518.0,951.5 L510.0,949.5 L490.0,933.5 L483.0,931.5 L469.5,911.0 L471.0,909.5 L491.0,927.5 L506.0,936.5 L518.0,951.5 Z M457.0,25.5 L453.5,24.0 L452.5,17.0 L457.5,15.0 L457.5,5.0 L474.0,3.5 L474.5,8.0 L463.5,15.0 L457.0,25.5 Z M359.0,20.5 L341.5,17.0 L369.0,10.5 L382.5,15.0 L359.0,20.5 Z M531.0,811.5 L526.0,806.5 L505.0,797.5 L503.5,793.0 L519.0,792.5 L521.0,799.5 L531.5,802.0 L531.0,811.5 Z M542.0,1243.5 L538.0,1243.5 L533.5,1237.0 L532.5,1228.0 L537.0,1218.5 L544.5,1235.0 L542.0,1243.5 Z" />
+        </g>
+
+        <!--
+          VOLCANO SYMBOL for Mount Pinatubo — a twin-peak glyph with a
+          crater notch and summit dot, not just a plain circle. Glows
+          during eruption/lahar eras. Matched by the legend below.
+        -->
+       <!-- Radar-style halo: radius grows per era (see pinatuboHaloRadius()
+             in timeline-page.ts) so it visibly reaches further out toward
+             the provinces as the impact spreads across timeline periods. -->
+        <circle class="summit-halo" [attr.cx]="pinatuboX" [attr.cy]="pinatuboY" [attr.r]="pinatuboHaloRadius()"
+          [class.halo-active]="pinatuboGlowActive"
+          [attr.filter]="pinatuboGlowActive ? 'url(#glow)' : null" />
+        <g class="volcano-symbol" [attr.transform]="'translate(' + pinatuboX + ',' + pinatuboY + ')'">
+          <path class="volcano-glyph"
+            d="M-20,13 L-6,-16 L0,-7 L6,-16 L20,13 Z" />
+          <circle class="volcano-crater" cx="0" cy="-11" r="3.6"/>
+        </g>
+        <!-- Label pushed further above the (now larger) halo/glyph so it
+             can never sit on top of the marker itself. -->
+        <text [attr.x]="pinatuboX" [attr.y]="pinatuboY - 34" class="summit-label" text-anchor="middle">Mt. Pinatubo</text>
+        <!--
+          INTERACTIVE PROVINCE MARKERS — hover/focus-only, information-scoped.
+          Color/size intensity is data-driven per era via getRegionIntensity();
+          interacting reveals a tooltip with that era's specific impact note.
+          These never change the active timeline era.
+        -->
+        @for (marker of provinceMarkers; track marker.id) {
+          <g class="province-marker"
+             [class]="'intensity-' + getRegionIntensity(marker.id)"
+             (mouseenter)="setHoveredProvince(marker.id)"
+             (mouseleave)="setHoveredProvince(null)"
+             (focus)="setHoveredProvince(marker.id)"
+             (blur)="setHoveredProvince(null)"
+             tabindex="0"
+             role="button"
+             [attr.aria-label]="marker.label + ' impact detail'">
+          <circle [attr.cx]="marker.x" [attr.cy]="marker.y" r="9" class="marker-dot"/>
+            <!-- Label pushed further above the (now larger) halo/dot so it
+                 can never sit on top of the marker itself. -->
+            <text [attr.x]="marker.x" [attr.y]="marker.y - 26" class="marker-label" text-anchor="middle">
+              {{ marker.label }}
+            </text>
+          </g>
+        }
+        </g>
+      </svg>
+
+      <!-- HTML overlay tooltip (positioned via CSS, content driven by hover state) -->
+      @if (hoveredProvince()) {
+        <div class="map-tooltip">
+          <strong>{{ hoveredProvince() | uppercase }}</strong>
+          <span>{{ getRegionLabel(hoveredProvince()!) || 'No significant impact recorded for this period.' }}</span>
+        </div>
+      }
+
+      <div class="map-legend">
+        <span class="legend-volcano-icon" aria-hidden="true">
+          <svg viewBox="-16 -14 32 26" width="16" height="14">
+            <path d="M-13,9 L-4,-11 L0,-5 L4,-11 L13,9 Z" fill="#f5ead8" stroke="#c4a060" stroke-width="1"/>
+            <circle cx="0" cy="-7.5" r="2.4" fill="#b0432f"/>
+          </svg>
+        </span>
+        <span class="legend-text">Mt. Pinatubo</span>
+
+        <span class="legend-swatch intensity-severe"></span><span class="legend-text">Severe</span>
+        <span class="legend-swatch intensity-moderate"></span><span class="legend-text">Moderate</span>
+        <span class="legend-swatch intensity-light"></span><span class="legend-text">Light / Recovering</span>
+        <span class="legend-hint">Scroll/drag to explore · Hover a province for details</span>
+      </div>
+    </div>
+
+  </div>
+
+  <main class="viewer-display-card">
+    <div class="display-details">
+      <span class="eyebrow-tag">{{ activeEvent().subtitle | uppercase }}</span>
+      <h2 class="display-era-title">{{ activeEvent().title | uppercase }}</h2>
+
+      <div class="display-description-scroll">
+        @for (para of activeEvent().paragraphs; track para) {
+          <p class="display-description">{{ para }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="display-media-frame">
+      @if (activeFigures().length > 0) {
+        <img [src]="activeFigures()[activeSlideIndex()].imageUrl" [alt]="activeFigures()[activeSlideIndex()].caption" class="media-element" />
+      } @else {
+        <img [src]="activeEvent().imageUrl" [alt]="activeEvent().title" class="media-element" />
+      }
+    </div>
+  </main>
+
+  <section class="timeline-control-center">
+    <h3 class="section-divider-title">SELECT A TIME PERIOD</h3>
+
+    <div class="timeline-cards-grid">
+      @for (event of timelineEvents; track event.id) {
+        <button
+          class="timeline-card-btn"
+          [class.card-active]="isActive(event.id)"
+          (click)="setActiveEvent(event.id)">
+          <span class="card-title">{{ event.badge }}</span>
+          <div class="card-thumb-wrap">
+            <img [src]="event.imageUrl" [alt]="event.title" class="card-thumb" />
+          </div>
+          <span class="card-date">{{ event.navDate || event.year }}</span>
+        </button>
+      }
+    </div>
+  </section>
+</div>

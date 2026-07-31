@@ -1,0 +1,526 @@
+:host {
+  --theme-gold: #c4a060;
+  --theme-bg-dark: #1a120b;
+  --theme-card-bg: rgba(43, 31, 19, 0.65);
+  --theme-border: rgba(196, 160, 96, 0.35);
+  --text-light: #ded6c9;
+  --severe: #b0432f;
+  --moderate: #d4923f;
+  --light: #c4a060;
+
+  display: block;
+  min-height: 100vh;
+  background-color: #0b0704;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* ── Fluid Outer Container ───────────────────────────────────────────────── */
+.kiosk-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+  background: url('/assets/images/tlbg.png') no-repeat center center/cover;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- TOP-RIGHT MAP SHELL BACK ACTION OVERLAY --- */
+.kiosk-container .apo-back-btn {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  color: #B0B3B8;
+  font-family: "Kinetika Regular", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s, color 0.15s, transform 0.15s, background 0.15s;
+}
+
+.kiosk-container .apo-back-btn:hover {
+  color: #F3F4F4;
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.kiosk-container .apo-back-btn:active { transform: translateY(0) scale(0.96); }
+.kiosk-container .apo-back-btn:focus-visible { outline: none; }
+
+/* ==========================================================================
+   ── LUZON MAP VIEWPORT — full-bleed, no side letterboxing ────────────────
+   ========================================================================== */
+
+/*
+  Previously this was capped at max-width: 460px with a portrait
+  aspect-ratio (960/1267), which left empty dark bars on the left and
+  right on wide kiosk screens. Now:
+  - No max-width — the box stretches to fill the full width of
+    .map-header-grid.
+  - A wide aspect-ratio (21/9) instead of the source image's tall
+    portrait ratio.
+  - The <svg> uses preserveAspectRatio="xMidYMid slice" (set in the
+    template), so the traced Luzon shape scales to COVER this wide box
+    — cropping some of the northern/southern extremities rather than
+    shrinking to fit with side padding. Central Luzon (where Pinatubo,
+    Zambales, Tarlac, and Pampanga all sit) stays fully in frame.
+*/
+.map-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at center, rgba(90, 74, 56, 0.22) 0%, rgba(10, 7, 4, 0.0) 55%),
+    repeating-linear-gradient(115deg, rgba(120, 100, 75, 0.05) 0px, rgba(120, 100, 75, 0.05) 2px, transparent 2px, transparent 6px),
+    #100b07;
+  border: 1px solid var(--theme-border);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.75);
+  cursor: grab;
+  touch-action: none;
+}
+
+.map-viewport:active {
+  cursor: grabbing;
+}
+
+/* Google-Maps-style zoom controls */
+.map-controls {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 11, 7, 0.75);
+  border: 1px solid var(--theme-border);
+  border-radius: 10px;
+  padding: 6px;
+  backdrop-filter: blur(6px);
+}
+
+.map-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid rgba(196, 160, 96, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-light);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.map-btn:hover {
+  background: rgba(196, 160, 96, 0.2);
+}
+
+.map-btn:active {
+  transform: scale(0.92);
+}
+
+.zoom-label {
+  font-size: 0.68rem;
+  color: rgba(222, 214, 201, 0.7);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.map-viewport svg,
+.luzon-base {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Static landmass silhouette — never recolored per era */
+.luzon-outline {
+  fill: #3a2f22;
+  stroke: rgba(212, 184, 150, 0.4);
+  stroke-width: 1.5;
+}
+
+/* Province boundary lines (Zambales / Tarlac / Pampanga only) — thin
+   outline strokes, no fill, sitting on top of the landmass like a
+   thematic-map overlay. */
+.province-line {
+  fill: none;
+  stroke: rgba(196, 160, 96, 0.55);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Summit marker — always visible, glows during eruption/lahar eras */
+.summit-halo {
+  fill: transparent;
+  stroke: transparent;
+  /* transition on r added so switching eras visibly "expands"/"recedes"
+     the radar reach instead of snapping instantly */
+  transition: fill 0.5s ease, stroke 0.5s ease, r 0.6s ease-in-out;
+}
+.summit-halo.halo-active {
+  fill: rgba(217, 106, 77, 0.3);
+  stroke: rgba(217, 106, 77, 0.75);
+  stroke-width: 1.5;
+  animation: summitPulse 2.6s ease-in-out infinite;
+}
+@keyframes summitPulse {
+  0%, 100% { opacity: 0.75; }
+  50%      { opacity: 1; }
+}
+
+.summit-pin {
+  fill: #f5ead8;
+  stroke: var(--theme-gold);
+  stroke-width: 2;
+}
+
+/* Volcano symbol — twin-peak glyph with crater notch, replaces a plain dot */
+.volcano-glyph {
+  fill: #f5ead8;
+  stroke: var(--theme-gold);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  transition: fill 0.4s ease;
+}
+.volcano-crater {
+  fill: #6b5b48;
+  transition: fill 0.4s ease;
+}
+.halo-active ~ .volcano-symbol .volcano-glyph { fill: #ffe9d1; }
+.halo-active ~ .volcano-symbol .volcano-crater { fill: var(--severe); }
+
+.summit-label {
+  font-size: 15px;
+  font-weight: 600;
+  fill: rgba(237, 228, 212, 0.9);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  letter-spacing: 0.3px;
+  paint-order: stroke;
+  stroke: rgba(0, 0, 0, 0.6);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+/* ── Interactive province markers ────────────────────────────────────────
+   Hover/focus-only — never change the active era, only reveal a tooltip.
+   Color + halo scale with data-driven intensity for the active era. */
+.province-marker {
+  cursor: pointer;
+  outline: none;
+}
+
+.marker-dot {
+  fill: var(--theme-gold);
+  stroke: #100b07;
+  stroke-width: 1.5;
+  transition: fill 0.4s ease, r 0.4s ease;
+}
+
+
+
+.marker-label {
+  font-size: 14px;
+  font-weight: 600;
+  fill: rgba(237, 228, 212, 0.92);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  letter-spacing: 0.4px;
+  paint-order: stroke;
+  stroke: rgba(0, 0, 0, 0.65);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+.province-marker.intensity-none .marker-dot { fill: rgba(196, 160, 96, 0.35); }
+
+.province-marker.intensity-light .marker-dot { fill: var(--light); }
+
+.province-marker.intensity-moderate .marker-dot { fill: var(--moderate); r: 10; }
+
+.province-marker.intensity-severe .marker-dot { fill: var(--severe); r: 11; }
+
+.province-marker:hover .marker-dot,
+.province-marker:focus .marker-dot {
+  r: 12;
+  filter: brightness(1.25);
+}
+
+/* ── HTML tooltip overlay ─────────────────────────────────────────────── */
+.map-tooltip {
+  position: absolute;
+  bottom: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(90%, 420px);
+  background: rgba(20, 14, 8, 0.92);
+  border: 1px solid var(--theme-border);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+}
+
+.map-tooltip strong {
+  color: var(--theme-gold);
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+}
+
+.map-tooltip span {
+  color: var(--text-light);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+/* Compass */
+.compass-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgba(237, 228, 212, 0.7);
+  font-size: 0.7rem;
+  z-index: 5;
+  pointer-events: none;
+}
+.compass-n { font-weight: 700; margin-bottom: 2px; }
+
+/* Legend */
+.map-legend {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  z-index: 5;
+}
+
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.legend-swatch.intensity-severe   { background: var(--severe); }
+.legend-swatch.intensity-moderate { background: var(--moderate); }
+.legend-swatch.intensity-light    { background: var(--light); opacity: 0.8; }
+
+.legend-volcano-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.legend-text {
+  color: var(--text-light);
+  font-size: 0.72rem;
+  margin-right: 0.5rem;
+}
+
+.legend-hint {
+  color: rgba(222, 214, 201, 0.55);
+  font-size: 0.68rem;
+  font-style: italic;
+  margin-left: auto;
+}
+
+/* ── 2. Middle Section: Dynamic Context Viewport ────────────────────────── */
+.viewer-display-card {
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: 20px;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+@media (min-width: 850px) {
+  .viewer-display-card {
+    grid-template-columns: 1fr 40%;
+  }
+}
+
+.display-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.eyebrow-tag {
+  color: white;
+  font-size: 1.5rem;
+  letter-spacing: 3px;
+  font-family: "Kinetika Regular";
+}
+
+.display-era-title {
+  color: #D5A822;
+  font-size: 4rem;
+  font-family: 'Cinzel';
+  margin: 0.5rem 0 1rem 0;
+  font-weight: bold;
+}
+
+.display-description-scroll {
+  color: var(--text-light);
+  font-size: 1.5rem;
+  line-height: 1.6;
+  font-family: "Kinetika Regular"
+}
+
+.display-description {
+  margin: 0 0 1rem 0;
+}
+
+.display-media-frame {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.media-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── 3. Bottom Section: Timeline Controls ────────────────────────────────── */
+.timeline-control-center {
+  width: 100%;
+}
+
+.section-divider-title {
+  text-align: center;
+  color: #ffffff;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  font-family: "Kinetika Bold"
+}
+
+.timeline-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.timeline-card-btn {
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+
+.timeline-card-btn:hover {
+  border-color: #ffffff;
+  background: rgba(196, 160, 96, 0.15);
+}
+
+.timeline-card-btn.card-active {
+  border-color: var(--theme-gold);
+  box-shadow: 0 0 15px rgba(196, 160, 96, 0.3);
+  background: rgba(196, 160, 96, 0.1);
+}
+
+.card-title {
+  color: var(--theme-gold);
+  font-family: 'Georgia', serif;
+  font-size: 1.15rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.card-thumb-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-date {
+  color: var(--text-light);
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* ── 4. Global Brand Footer ─────────────────────────────────────────────── */
+.branding-footer {
+  width: 100%;
+  text-align: center;
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.footer-divider {
+  width: 80px;
+  height: 1px;
+  background-color: var(--theme-gold);
+  margin: 0 auto 1rem auto;
+}
+
+.center-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin: 0 0 0.25rem 0;
+}
+
+.sub-center-title {
+  color: var(--text-light);
+  font-size: 0.8rem;
+  margin: 0;
+  opacity: 0.7;
+}

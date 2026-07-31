@@ -1,0 +1,349 @@
+/* Core Layout Container with Dark Volcanic Tone Background */
+.video-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  padding: 4rem 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Background Image - Enhanced Darkening Layer for Clean Contrast */
+.video-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      rgba(15, 23, 36, 0.45), 
+      rgba(15, 23, 36, 0.45)
+    ),
+    url('/assets/images/ptstories-bg.png') no-repeat center center/cover;
+  filter: grayscale(80%) contrast(1.15);
+  z-index: -2;
+}
+
+/* Vignette & Depth Gradient Overlay */
+.video-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(10, 15, 24, 0.30) 0%,
+      rgba(15, 22, 32, 0.65) 50%,
+      rgba(8, 12, 18, 0.90) 100%
+    );
+  z-index: -1;
+}
+
+/* --- MUSEUM INTERACTIVE BACK BUTTON --- */
+.video-container .apo-back-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  color: #E2E4E9;
+  font-family: "Kinetika Regular", sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.15s, color 0.15s, transform 0.15s, background 0.15s;
+}
+
+.video-container .apo-back-btn:hover {
+  color: #FFF;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.video-container .apo-back-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.video-container .apo-back-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(223, 186, 115, 0.4);
+}
+
+/* --- HEADERS --- */
+.hero-title {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  font-family: "Cinzel Decorative", serif;
+  font-size: 45px;
+  color: #FFFFFF;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.95), 0 2px 4px rgba(0, 0, 0, 0.8);
+  text-align: center;
+}
+
+.text-spacer {
+  margin-top: 5px;
+}
+
+.title-divider {
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #DFBA73 50%, transparent);
+  margin: 1.5rem 0 0.5rem 0;
+  filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.sub-head {
+  margin-top: 12px;
+  margin-bottom: 4rem;
+  font-family: "Kinetika Regular", sans-serif;
+  font-weight: 700;
+  color: #DFBA73; /* Premium Brilliant Champagne Gold */
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+  font-size: 14px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+/* --- INTERVIEWEE GRID --- */
+.grid-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5rem 3rem;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 2rem;
+  box-sizing: border-box;
+  margin: 3em 0 3em 0;
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  animation: floatUpDown 4s ease-in-out infinite;
+}
+
+.profile-card:nth-child(2n) { animation-delay: -1.5s; }
+.profile-card:nth-child(3n) { animation-delay: -3s; }
+
+/* Circular Avatar Framework */
+.avatar-ring {
+  position: relative;
+  width: 185px;
+  height: 185px;
+  border-radius: 50%;
+  border: 3px solid #4a4443;
+  overflow: hidden;
+  background-color: #11151c;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
+  transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inner-glow-shield {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.avatar-ring img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Profile Names Text styling */
+.profile-meta h3 {
+  color: #FFFFFF;
+  font-family: "Cinzel", serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-top: 1.2rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  transition: color 0.2s ease;
+}
+
+.tap-hint {
+  display: block;
+  font-family: "Kinetika Regular", sans-serif;
+  font-size: 0.85rem;
+  color: #D1C4B0; /* Swapped dusty blue for readable neutral slate-champagne */
+  margin-top: 6px;
+  font-style: italic;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+/* INTERACTIVE ACTIVE STATE HOVERS */
+.profile-card:hover .avatar-ring {
+  border-color: #DFBA73;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85);
+}
+
+.profile-card:hover .profile-meta h3 {
+  color: #FFE0A3;
+}
+
+.profile-card:active {
+  animation-play-state: paused;
+}
+
+.profile-card:active .avatar-ring {
+  transform: scale(0.94) !important;
+  border-color: #FFFFFF !important;
+  box-shadow: 0 0 30px rgba(223, 186, 115, 0.8) !important;
+  filter: brightness(1.2);
+}
+
+/* --- THEATRICAL MODAL OVERLAY --- */
+.video-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(6, 10, 15, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+.modal-box {
+  position: relative;
+  width: 85%;
+  max-width: 400px;
+  background: #0d131a;
+  border: 2px solid #3d3736;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+}
+
+.modal-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.now-playing-tag {
+  font-family: "Kinetika Regular", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #DFBA73;
+  letter-spacing: 2px;
+}
+
+.close-modal-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.close-modal-btn:hover {
+  background: #3e3837;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.player-surface {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  background-color: #000;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9);
+}
+
+.player-surface video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-unavailable {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: "Kinetika Regular", sans-serif;
+  font-size: 0.95rem;
+}
+
+.alert-icon {
+  margin-bottom: 12px;
+  color: #DFBA73;
+}
+
+.modal-descriptor h2 {
+  font-family: "Cinzel Decorative", serif;
+  color: #fff;
+  margin: 1.25rem 0 0 0;
+  font-size: 1.3rem;
+  letter-spacing: 0.5px;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* --- FLOATING & FADE KEYFRAMES --- */
+@keyframes floatUpDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
