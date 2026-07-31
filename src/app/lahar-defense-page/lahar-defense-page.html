@@ -5,8 +5,13 @@
         <i class="fa-solid fa-house"></i>
       </button>
 
-      <!-- Decorative background — pure CSS, no image assets needed -->
+      <!-- Decorative background layers — pure CSS, no image assets needed -->
+      <div class="mountain-bg-far" aria-hidden="true"></div>
       <div class="mountain-bg" aria-hidden="true"></div>
+      <div class="rain" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
       <div class="embers" aria-hidden="true">
         <span></span><span></span><span></span><span></span><span></span><span></span>
       </div>
@@ -22,9 +27,26 @@
 
         <div class="welcome-steps">
           <div class="step"><span class="step-icon">📍</span><span>Choose a municipality</span></div>
-          <div class="step"><span class="step-icon">⚙️</span><span>Set the difficulty</span></div>
           <div class="step"><span class="step-icon">🛡️</span><span>Defend against the lahar</span></div>
         </div>
+
+        <div class="wave-preview" aria-hidden="true">
+          <div class="wave-node">
+            <span class="wave-dot wave-dot-easy"></span>
+            <span class="wave-node-label">Easy</span>
+          </div>
+          <div class="wave-connector"></div>
+          <div class="wave-node">
+            <span class="wave-dot wave-dot-medium"></span>
+            <span class="wave-node-label">Medium</span>
+          </div>
+          <div class="wave-connector"></div>
+          <div class="wave-node">
+            <span class="wave-dot wave-dot-hard"></span>
+            <span class="wave-node-label">Hard</span>
+          </div>
+        </div>
+        <p class="wave-preview-caption">Face three escalating storm waves in one run</p>
 
         <button (click)="startGame()" class="start-btn">
           <span>Tap to Begin</span>
