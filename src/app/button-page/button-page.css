@@ -1,38 +1,86 @@
-
 .nav-bar {
-    height: 70px;
-    pointer-events: none;
+  height: 70px;
+  pointer-events: none;
 }
 
 .nav-logo {
-    height: auto;
-    width: 120px;
-    pointer-events: auto;
+  height: auto;
+  width: 120px;
+  pointer-events: auto;
 }
 
-/* nav-container needs to be the positioning context for the back button */
 .nav-container {
-    position: relative;
-    height: 100%;
+  position: relative;
+  height: 100%;
 }
 
-/* Core Layout Container with Dark Volcanic Tone Background */
+/* ==========================================================================
+   LAYOUT CONTAINER & VIDEO BACKGROUND
+   ========================================================================== */
+
 .layout-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(transparent, rgba(18, 26, 33, 0.95)),
-              url('/assets/images/pinatubo.jpg') no-repeat center center/cover;
   padding: 4rem 0;
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
-/* Horizontal Track Configured for Center Snap Behavior */
+/* Fixed background container layer */
+.bg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Video fill scaling */
+.video-background {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Dark gradient overlay over the video */
+.gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom, 
+    rgba(18, 26, 33, 0.4) 0%, 
+    rgba(18, 26, 33, 0.85) 100%
+  );
+  pointer-events: none;
+}
+
+/* Optional conditional tinting handler */
+.bg-layer.colored .gradient-overlay {
+  background: linear-gradient(
+    to bottom, 
+    rgba(213, 168, 34, 0.15) 0%, 
+    rgba(18, 26, 33, 0.9) 100%
+  );
+}
+
+/* ==========================================================================
+   CAROUSEL SLIDER TRACK & CARDS
+   ========================================================================== */
+
 .slider-track {
+  position: relative;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 2rem;
@@ -40,27 +88,21 @@
   padding: 3rem 0;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Hides horizontal bars on Firefox */
-  -webkit-overflow-scrolling: touch; /* Kinetic scrolling touch support */
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .slider-track::-webkit-scrollbar {
-  display: none; /* Hides scrollbars on Chrome/Safari/Edge */
+  display: none;
 }
 
-/* Updated Spacing: Ensures first and last items can align perfectly in viewport center */
+/* Correct padding calculation to center active card in viewport */
 .slider-track::before,
 .slider-track::after {
   content: '';
-  flex: 0 0 calc(50vw - 325px); /* 160px represents exactly half of your 320px polaroid width */
+  flex: 0 0 calc(50vw - 325px);
 }
 
-/* ==========================================================================
-   CAROUSEL LAYOUT CONFIGURATION (UPDATED)
-   ========================================================================== */
-
-
-/* Stacks all images precisely on top of each other across all cards */
 .carousel-img {
   position: absolute;
   top: 0;
@@ -68,23 +110,18 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  
-  /* Start completely hidden and out of the layout layer flow */
   opacity: 0;
   visibility: hidden;
-  
-  /* Fine-tuned 0.6s hardware-accelerated transition for smooth kiosk crossfades */
   transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
   will-change: opacity;
 }
 
-/* Brings only the current looping frame into full view */
 .carousel-img.visible {
   opacity: 1;
   visibility: visible;
-  z-index: 2; /* Lifts it above hidden background frames */
+  z-index: 2;
 }
-/* The Polaroid Board Styles */
+
 .polaroid-card {
   position: relative;
   flex: 0 0 650px; 
@@ -94,29 +131,25 @@
   box-sizing: border-box;
   scroll-snap-align: center;
   cursor: pointer;
-  
-  /* Responsive cubic-bezier curve provides crisp scaling animations as elements pass by */
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
               background-color 0.4s ease, 
               opacity 0.4s ease,
               box-shadow 0.4s ease;
   border: 2px solid transparent;
-  transform: scale(0.85); /* Slightly shrinks non-selected cards to emphasize the active one */
-  opacity: 0.5; /* Dims the background cards slightly so the center one pops */
+  transform: scale(0.85);
+  opacity: 0.5;
   z-index: 1;
 }
 
-/* The Selected Center Highlight (Bigger Scale) */
 .polaroid-card.is-active {
   opacity: 1;
-  transform: scale(1.1); /* Increases size by 15% relative to normal, making it prominently larger */
+  transform: scale(1.1);
   background: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7); /* Deep dramatic shadow to lift it forward */
-  z-index: 20; /* Ensures the larger selected card stays layered on top of adjacent cards */
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+  z-index: 20;
   overflow: visible;
 }
 
-/* Photo Container Constraint */
 .image-inner {
   position: relative; 
   width: 100%;
@@ -131,8 +164,7 @@
   object-fit: cover;
 }
 
-
-/* Ornamental Mount Rivets / Mechanical Pins */
+/* Mechanical Pin Aesthetics */
 .pin {
   position: absolute;
   width: 18px;
@@ -146,17 +178,21 @@
 .bot-l { bottom: 20px; left: 20px; }
 .bot-r { bottom: 20px; right: 20px; }
 
-/* Lower Dynamic Caption Block */
+/* ==========================================================================
+   DYNAMIC CAPTION BLOCK
+   ========================================================================== */
 
 .caption-block {
+  position: relative;
+  z-index: 10;
   width: 100%;
-  max-width: 650px; /* Aligns visually with the column width of active card */
+  max-width: 650px;
   margin-top: 2.5rem;
   align-self: center;
 }
 
 .caption-heading {
-  font-family: 'Kinetika Bold';
+  font-family: 'Kinetika Bold', sans-serif;
   font-weight: 700;
   font-size: 3rem;
   color: #ffffff;
@@ -165,7 +201,7 @@
 }
 
 .caption-body {
-  font-family: 'Kinetika Regular';
+  font-family: 'Kinetika Regular', sans-serif;
   font-size: 1.75rem;
   line-height: 1.45;
   color: #dedede;
@@ -174,10 +210,10 @@
   text-align: justify;
 }
 
-/* KIOSK FLASH-CLICK TRANSITION */
+/* Kiosk Click Animation */
 .polaroid-card.clicked-flash {
   animation: dynamicPulse 0.2s ease-out forwards;
-  z-index: 99; /* Forces card forward over other elements during execution */
+  z-index: 99;
 }
 
 @keyframes dynamicPulse {
@@ -186,13 +222,12 @@
     filter: brightness(1);
   }
   40% {
-    transform: scale(0.95); /* Quickly shrinks layout down */
-    filter: brightness(1.7); /* Explodes into a vibrant flash */
-    box-shadow: 0 5px 25px rgba(255, 204, 0, 0.7); /* Golden highlight burst */
+    transform: scale(0.95);
+    filter: brightness(1.7);
+    box-shadow: 0 5px 25px rgba(255, 204, 0, 0.7);
   }
   100% {
     transform: scale(1.0);
     filter: brightness(1.2);
   }
 }
-

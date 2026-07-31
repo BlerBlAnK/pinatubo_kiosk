@@ -19,7 +19,7 @@ export class WelcomePage implements AfterViewInit {
   // 2. Set the video speed once the view has fully initialized
   ngAfterViewInit(): void {
     if (this.videoRef) {
-      this.videoRef.nativeElement.playbackRate = 0.35; // Adjust this number to change speed (e.g., 0.4, 0.6)
+      this.videoRef.nativeElement.playbackRate = 0.45; // Adjust this number to change speed (e.g., 0.4, 0.6)
     }
   }
 
@@ -30,6 +30,6 @@ export class WelcomePage implements AfterViewInit {
     this.isColored = true;
     setTimeout(() => {
       this.router.navigate(['/menu']);
-    }, 2000);
+    }, 3000);
   }
 }

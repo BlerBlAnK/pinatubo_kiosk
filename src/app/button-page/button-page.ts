@@ -22,6 +22,14 @@ interface TimelineSlide {
 export class ButtonPage implements OnInit, OnDestroy {
   @ViewChild('sliderTrack') sliderTrack!: ElementRef;
   @ViewChild('kioskVideoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
+  @ViewChild('bgVideo') bgVideo!: ElementRef<HTMLVideoElement>;
+
+  ngAfterViewInit(): void {
+    if (this.bgVideo && this.bgVideo.nativeElement) {
+      // Set desired playback speed (e.g., 0.5 for half-speed, 1.5 for 50% faster)
+      this.bgVideo.nativeElement.playbackRate = 0.45;
+    }
+  }
 
   goBack(): void {
     this.router.navigate(['']);
@@ -30,7 +38,7 @@ export class ButtonPage implements OnInit, OnDestroy {
   slides: TimelineSlide[] = [
     {
       id: 1,
-      images: ['assets/images/ptstories.jpg', 'assets/images/ptstories2.jpg', 'assets/images/ptstories3.jpg', 'assets/images/ptstories4.jpeg', 'assets/images/ptstories5.jpg'],
+      images: ['assets/images/ptst1.jpg', 'assets/images/ptst2.JPG', 'assets/images/ptst3.jpg', 'assets/images/ptst4.jpg', 'assets/images/ptst5.jpg', 'assets/images/ptst6.jpg', 'assets/images/ptst7.jpg', 'assets/images/ptst8.jpg', 'assets/images/ptst9.jpg', 'assets/images/ptst10.jpg', 'assets/images/ptst11.jpg', 'assets/images/ptst12.jpg', 'assets/images/ptst13.jpg', 'assets/images/ptst14.jpg', 'assets/images/ptst15.jpg', 'assets/images/ptst16.jpg', 'assets/images/ptst17.jpg', 'assets/images/ptst18.jpg', 'assets/images/ptst19.jpg', 'assets/images/ptst20.jpg'],
       currentImageIndex: 0,
       title: 'Mt. Pinatubo Stories',
       captionTitle: 'Pinatubo Stories',

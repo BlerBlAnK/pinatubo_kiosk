@@ -46,6 +46,7 @@
           <div class="edu-content-box" style="text-align: left; line-height: 1.6; font-size: 22px; margin-bottom: 20px;">
             <p style="margin: 0 0 10px 0;">Following Mt. Pinatubo's historic eruption, massive volcanic ash deposits remain resting on the high slopes.</p>
             <p style="margin: 0;"><b>Your Task:</b> Heavy monsoon rains convert this loose ash into destructive mudflows called <b>lahar</b>. As the disaster response engineer, strategically deploy engineering tools along active channels to slow, absorb, or divert flows before they bury vital down-river communities.</p>
+            <p style="margin: 10px 0 0 0;">The village must weather <b>three escalating storm waves</b> — Easy, then Medium, then Hard — back to back. Damage carries over between waves, so early losses make later waves harder to survive.</p>
           </div>
           <div class="action-row">
             <button id="closeMenuBtn" class="btn-secondary action-half" style="display: none;"><span class="btn-arrow">←</span> Return</button>
@@ -87,25 +88,7 @@
 
           <div style="display: flex; gap: 14px; margin-top: 20px;">
             <button id="backToObjectiveBtn" class="btn-secondary" style="width: 40%;"><span class="btn-arrow">←</span> Back</button>
-            <button id="nextToDifficultyBtn" class="btn-primary" style="width: 60%;">Next <span class="btn-arrow">→</span></button>
-          </div>
-        </div>
-
-        <div id="difficultyCard" class="screen-card" style="display:none;">
-          <h1 style="background: linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">⚙️ Strategy Parameters</h1>
-          <p style="font-size: 19px; text-align: left; margin-bottom: 15px; color: #94a3b8; line-height: 1.48;">Set your weather severity variables. Higher difficulties limit municipal budget constraints and accelerate downstream flow speeds across independent channel segments.</p>
-          
-          <h2 style="font-size: 24px; margin: 15px 0 10px 0; text-align: left; color: #fff;">Select Severity Level</h2>
-          <div id="difficultySelector" style="margin-bottom: 25px;">
-            <label class="diff-btn active" data-diff="easy"><input type="radio" name="difficulty" value="easy" checked> Easy</label>
-            <label class="diff-btn" data-diff="medium"><input type="radio" name="difficulty" value="medium"> Medium <span class="diff-lock">🔒</span></label>
-            <label class="diff-btn" data-diff="hard"><input type="radio" name="difficulty" value="hard"> Hard <span class="diff-lock">🔒</span></label>
-          </div>
-          <p id="diffLockNote" style="font-size: 13px; color: #94a3b8; margin: -15px 0 15px 0; display: none;"></p>
-
-          <div style="display: flex; gap: 14px;">
-            <button id="backToTownBtn" class="btn-secondary" style="width: 40%;"><span class="btn-arrow">←</span> Back</button>
-            <button id="nextToInfoBtn" class="btn-primary" style="width: 60%;">Next <span class="btn-arrow">→</span></button>
+            <button id="nextToInfoFromTownBtn" class="btn-primary" style="width: 60%;">Next <span class="btn-arrow">→</span></button>
           </div>
         </div>
 
@@ -136,7 +119,7 @@
             </div>
           </div>
           <div style="display: flex; gap: 14px; margin-top: 15px;">
-            <button id="backToDifficultyBtn" class="btn-secondary" style="width: 40%;"><span class="btn-arrow">←</span> Back</button>
+            <button id="backToTownFromInfoBtn" class="btn-secondary" style="width: 40%;"><span class="btn-arrow">←</span> Back</button>
             <button id="confirmStartBtn" class="btn-success" style="width: 60%;">Start Game <span class="btn-arrow">→</span></button>
           </div>
         </div>
@@ -152,14 +135,15 @@
               <div id="endGradeLabel"></div>
             </div>
           </div>
-          <p id="endUnlockText" style="display:none; font-weight:800; color:#4ade80; font-size:15px; margin:8px 0 0 0;"></p>
           <span id="endFactText"></span>
           <div style="display:flex;gap:12px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
-            <!-- Only shown on a loss (toggled in endGame()) — quickly replays
-                 the same town + difficulty without going back through the menus. -->
+            <!-- Only shown on a loss (toggled in endGame()) — restarts the
+                 whole 3-wave campaign from Easy, on the same town. -->
             <button id="tryAgainBtn" class="btn-primary" style="display:none;">↻ Try Again</button>
-            <!-- Always available — takes the player back through town/difficulty selection. -->
-            <button id="restartBtn" class="btn-secondary">Main Menu <span class="btn-arrow">→</span></button>
+            <!-- Always available. Posts an exit message to a hosting parent
+                 page (e.g. an Angular kiosk shell) if there is one; falls
+                 back to this game's own start screen when played standalone. -->
+            <button id="restartBtn" class="btn-secondary">Exit Game</button>
           </div>
         </div>
 
