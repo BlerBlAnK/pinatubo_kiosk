@@ -38,7 +38,7 @@ export class ButtonPage implements OnInit, OnDestroy {
   slides: TimelineSlide[] = [
     {
       id: 1,
-      images: ['assets/images/ptst1.jpg', 'assets/images/ptst2.JPG', 'assets/images/ptst3.jpg', 'assets/images/ptst4.jpg', 'assets/images/ptst5.jpg', 'assets/images/ptst6.jpg', 'assets/images/ptst7.jpg', 'assets/images/ptst8.jpg', 'assets/images/ptst9.jpg', 'assets/images/ptst10.jpg', 'assets/images/ptst11.jpg', 'assets/images/ptst12.jpg', 'assets/images/ptst13.jpg', 'assets/images/ptst14.jpg', 'assets/images/ptst15.jpg', 'assets/images/ptst16.jpg', 'assets/images/ptst17.jpg', 'assets/images/ptst18.jpg', 'assets/images/ptst19.jpg', 'assets/images/ptst20.jpg'],
+      images: ['assets/images/ptst1.jpg', 'assets/images/ptst2.JPG', 'assets/images/ptst3.jpg', 'assets/images/ptst4.jpg', 'assets/images/ptst5.jpg', 'assets/images/ptst6.jpg', 'assets/images/ptst7.jpg', 'assets/images/ptst8.jpg', 'assets/images/ptst9.jpg', 'assets/images/ptst10.jpg', 'assets/images/ptst11.jpg'],
       currentImageIndex: 0,
       title: 'Mt. Pinatubo Stories',
       captionTitle: 'Pinatubo Stories',

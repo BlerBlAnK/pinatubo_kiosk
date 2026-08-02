@@ -41,6 +41,7 @@
   object-fit: cover;
   filter: sepia(80%) grayscale(10%);
   transition: filter 3s ease;
+  object-position: top;
 }
 
 /* When active, remove the sepia filter from the video */
