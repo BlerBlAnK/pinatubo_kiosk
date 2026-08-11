@@ -145,17 +145,28 @@ canvas, #dropLayer {
 }
 #goalPanel::after { left: auto; right: 5px; }
 #goalPanel .label {
-  font-size: 11px; letter-spacing: .8px; text-transform: uppercase;
-  color: var(--budget-red); margin-bottom: 4px;
+  font-size: 12px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase;
+  color: var(--budget-red); margin-bottom: 3px;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
 }
+#goalPanel .label::before { content: '🛡️'; font-size: 11px; }
+.goal-counter {
+  font-size: 12px; font-weight: 700; color: var(--ink); opacity: .75;
+  transition: color .2s;
+}
+.goal-counter.warning { color: var(--budget-red); opacity: 1; }
 /* Regardless of how many houses/landmarks a town has, the dot row stays a
    single line that scrolls horizontally rather than wrapping or spilling
    past the panel — this keeps #goalPanel's height fixed so it can never
    grow tall enough to collide with the buttons in the row below it. */
 #houseDots {
-  display: flex; justify-content: flex-start; align-items: center; gap: 5px; margin-top: 6px;
+  display: flex; justify-content: flex-start; align-items: center; gap: 5px; margin-top: 5px;
   flex-wrap: nowrap; overflow-x: auto; max-width: 100%;
   padding: 0 2px 2px; scrollbar-width: none;
+  /* Soft fade at both edges hints there are more dots to scroll to,
+     instead of a hard, easy-to-miss cutoff. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 10px, black calc(100% - 10px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, black 10px, black calc(100% - 10px), transparent 100%);
 }
 #houseDots::-webkit-scrollbar { display: none; }
 
@@ -164,24 +175,46 @@ canvas, #dropLayer {
   border: 2px solid #5a4b3c;
   box-shadow: inset 0 -2px 3px rgba(0,0,0,.18), 0 2px 4px rgba(0,0,0,0.2);
   transform: rotate(45deg); transition: background .3s, transform .2s;
+  position: relative;
 }
 .landmark-dot.lost { background: var(--budget-red); border-color: #7f1d1d; transform: rotate(45deg) scale(1.1); }
+/* ✕ marks destroyed structures explicitly, rather than relying on the
+   red color change alone to convey "lost" (helps colorblind visitors,
+   and just reads faster at a glance). Counter-rotated -45deg since the
+   diamond shape itself is rotated +45deg — keeps the mark upright. */
+.landmark-dot.lost::after {
+  content: '✕'; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  font-size: 9px; font-weight: 900; color: #fff; line-height: 1;
+}
 
 .school-dot {
   width: 16px; height: 16px; border-radius: 3px; background: #adc178;
   border: 2px solid #3c5a2b;
   box-shadow: inset 0 -2px 3px rgba(0,0,0,.18), 0 2px 4px rgba(0,0,0,0.2);
   transition: background .3s, transform .2s;
+  position: relative;
 }
 .school-dot.lost { background: var(--budget-red); border-color: #7f1d1d; transform: scale(1.1); }
+.school-dot.lost::after {
+  content: '✕'; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 8px; font-weight: 900; color: #fff; line-height: 1;
+}
 
 .house-dot {
   width: 14px; height: 14px; border-radius: 50%; background: #e2e8f0;
   border: 2px solid var(--grass-dark);
   box-shadow: inset 0 -2px 3px rgba(0,0,0,.18), 0 2px 4px rgba(0,0,0,0.2);
   transition: background .3s, transform 0.2s;
+  position: relative;
 }
 .house-dot.lost { background: var(--budget-red); border-color: #7f1d1d; transform: scale(1.1); }
+.house-dot.lost::after {
+  content: '✕'; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 7px; font-weight: 900; color: #fff; line-height: 1;
+}
 
 @keyframes pulse {
   0%   { box-shadow: 0 4px 10px rgba(0,0,0,.25), 0 0 0 0 rgba(63, 198, 255, 0.65); }
@@ -196,6 +229,15 @@ canvas, #dropLayer {
   cursor: pointer; user-select: none; font-size: 13px;
   box-shadow: 0 5px 0 #55677e, 0 8px 18px rgba(0,0,0,0.35);
   transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.2s;
+  position: relative; overflow: hidden;
+}
+/* Amber warning stripe along the left edge — signals this is the primary
+   action waiting on the player, distinguishing it at a glance from the
+   purely informational panels (budget/goal) beside it. */
+#rainPanel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; bottom: 0; width: 6px;
+  background: linear-gradient(180deg, #fbbf24, #f59e0b);
 }
 #rainPanel::after { right: 5px; left: auto; }
 #rainPanel:not(.active):hover { transform: translateY(-2px); filter: brightness(1.04); }
@@ -212,16 +254,33 @@ canvas, #dropLayer {
   background: radial-gradient(circle, #eaf5fc 45%, #c8dff2 100%);
   box-shadow: inset 0 -3px 4px rgba(0,0,0,.14), inset 0 2px 3px rgba(255,255,255,.75);
   padding: 3px;
+  margin-left: 4px;
 }
-#rainStatus { font-size: 12px; opacity: .8; font-weight: 600; }
+/* Droplets fall in a staggered loop while the storm hasn't started —
+   a live preview of what "Tap to Start" is about to unleash. Settles
+   to static once .active is applied (the filter/grayscale on the panel
+   already conveys "spent" for the rest of the HUD). */
+#rainPanel:not(.active) #rainDrops line {
+  animation: dropFall 1s ease-in infinite;
+  transform-origin: center;
+}
+#rainDrops line:nth-child(1) { animation-delay: 0s; }
+#rainDrops line:nth-child(2) { animation-delay: 0.2s; }
+#rainDrops line:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dropFall {
+  0%   { transform: translateY(-3px); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateY(4px); opacity: 0; }
+}
+#rainStatus { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; opacity: .85; }
 
 /* ---- Menu Button ---- */
 #instructionsBtn {
-  position: absolute; top: 115px; right: 15px; width: 50px; height: 50px; border-radius: 50%;
+  position: absolute; top: 115px; right: 15px; height: 50px; padding: 0 20px; border-radius: 27px;
   background: linear-gradient(180deg, #f4f8fc 0%, var(--panel-bg) 100%);
   border: 3px solid #4a5c74; color: var(--ink);
-  font-weight: 900; font-size: 20px;
-  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 15px; letter-spacing: 0.2px; white-space: nowrap;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
   cursor: pointer;
   box-shadow: 0 5px 0 #5c6f88, 0 8px 18px rgba(0,0,0,.38), 0 0 0 3px rgba(251,191,36,0.5);
   z-index: 30; transition: transform 0.12s ease, box-shadow 0.12s ease, filter .15s;
@@ -267,10 +326,18 @@ canvas, #dropLayer {
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   box-shadow: -4px 2px 8px rgba(0,0,0,.18), inset 2px 0 0 rgba(255,255,255,.45);
-  transition: filter .15s;
+  transition: filter .15s, transform .15s;
 }
-#toolboxToggle:hover { filter: brightness(1.06); }
-#toolboxToggle:active { filter: brightness(0.94); }
+#toolboxToggle:hover { filter: brightness(1.06); transform: translateY(-50%) translateX(-3px); }
+#toolboxToggle:active { filter: brightness(0.94); transform: translateY(-50%); }
+/* Gentle recurring nudge while collapsed — the tab is easy to miss on a
+   kiosk if nothing ever calls attention to it. Stops once expanded. */
+#toolbox.collapsed #toolboxToggle { animation: toggleNudge 3.2s ease-in-out infinite; }
+@keyframes toggleNudge {
+  0%, 80%, 100% { transform: translateY(-50%) translateX(0); }
+  88%           { transform: translateY(-50%) translateX(-6px); }
+  94%           { transform: translateY(-50%) translateX(-2px); }
+}
 #toolboxToggle svg { width: 22px; height: 22px; fill: var(--ink); transition: transform .3s ease; }
 #toolbox.collapsed #toolboxToggle svg { transform: rotate(180deg); }
 
@@ -282,6 +349,15 @@ canvas, #dropLayer {
   box-shadow: 0 2px 5px rgba(0,0,0,.1), inset 0 1px 0 rgba(255,255,255,0.6);
   transition: transform .15s ease, background .15s, border-color .15s, box-shadow .15s;
   touch-action: none;
+  position: relative;
+}
+/* Small grip-dot cue in the corner, hinting these cards are draggable
+   rather than just tappable — easy to miss otherwise on a kiosk. */
+.tool-item::after {
+  content: '⠿';
+  position: absolute; top: 3px; right: 6px;
+  font-size: 11px; color: rgba(30,41,59,0.28);
+  pointer-events: none;
 }
 .tool-item:hover:not(.disabled) {
   background: linear-gradient(180deg, #ffffff 0%, #f0f4f8 100%);
@@ -291,14 +367,26 @@ canvas, #dropLayer {
 }
 .tool-item:active:not(.disabled) { transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 .tool-item.dragging { opacity: .35; transform: scale(0.88); }
-.tool-item.disabled { opacity: .42; cursor: not-allowed; filter: grayscale(65%); box-shadow: none; }
-.tool-icon { width: 52px; height: 52px; }
+.tool-item.disabled { opacity: .55; cursor: not-allowed; filter: grayscale(45%); box-shadow: none; }
+.tool-icon {
+  width: 52px; height: 52px;
+  background: rgba(255,255,255,0.55);
+  border-radius: 50%;
+  padding: 5px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
 .tool-name { font-size: 11px; font-weight: 800; color: var(--ink); text-transform: uppercase; text-align: center; line-height: 1.1; }
 .tool-price {
   font-size: 11.5px; font-weight: 700; color: #15803d;
   background: linear-gradient(180deg, #dcfce7, #bbf7d0);
   border-radius: 5px; padding: 1px 6px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+}
+/* Unaffordable items get an explicit red price tag instead of relying on
+   the grayscale filter alone — color-codes "can't afford" unambiguously. */
+.tool-item.disabled .tool-price {
+  color: #b91c1c;
+  background: linear-gradient(180deg, #fee2e2, #fecaca);
 }
 
 #dragGhost {

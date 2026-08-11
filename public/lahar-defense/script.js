@@ -1233,12 +1233,14 @@ function loadTownMap() {
 
 function refreshStatusDots() {
   const w = document.getElementById('houseDots'); w.innerHTML = '';
+  let total = 0, standing = 0;
 
   if (state.church) {
     const cDot = document.createElement('div');
     cDot.className = 'landmark-dot' + (state.church.lost ? ' lost' : '');
     cDot.title = "Local Church";
     w.appendChild(cDot);
+    total++; if (!state.church.lost) standing++;
   }
 
   if (state.school) {
@@ -1246,6 +1248,7 @@ function refreshStatusDots() {
     sDot.className = 'school-dot' + (state.school.lost ? ' lost' : '');
     sDot.title = "Local School";
     w.appendChild(sDot);
+    total++; if (!state.school.lost) standing++;
   }
 
   if (state.robot) {
@@ -1254,6 +1257,7 @@ function refreshStatusDots() {
     rDot.style.background = '#3b82f6';
     rDot.title = "Babo Robot Landmark";
     w.appendChild(rDot);
+    total++; if (!state.robot.lost) standing++;
   }
 
   if (state.monument) {
@@ -1262,6 +1266,7 @@ function refreshStatusDots() {
     mDot.style.background = '#c084fc';
     mDot.title = "Juan Crisostomo Soto Monument";
     w.appendChild(mDot);
+    total++; if (!state.monument.lost) standing++;
   }
 
   if (state.bridge) {
@@ -1270,11 +1275,22 @@ function refreshStatusDots() {
     bDot.style.background = '#eab308';
     bDot.title = "Bridge";
     w.appendChild(bDot);
+    total++; if (!state.bridge.lost) standing++;
   }
 
   state.houses.forEach(h => {
     const d = document.createElement('div'); d.className = 'house-dot' + (h.lost ? ' lost' : ''); w.appendChild(d);
+    total++; if (!h.lost) standing++;
   });
+
+  // At-a-glance summary — the dot row alone gets hard to read once a
+  // town has 15-20+ structures and starts scrolling, so this gives an
+  // immediate "how are we doing" number without needing to scan it.
+  const counterEl = document.getElementById('goalCounter');
+  if (counterEl) {
+    counterEl.textContent = `${standing} / ${total} standing`;
+    counterEl.classList.toggle('warning', total > 0 && standing / total <= 0.6);
+  }
 }
 
 /* ---------------- DIFFICULTY SETTING HOOKS ---------------- */

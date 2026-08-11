@@ -1,0 +1,107 @@
+<div class="kiosk">
+  <header class="kiosk__header">
+    <h1>Pinatubo, 1991</h1>
+    <p>An interactive walkthrough of the eruption that reshaped a mountain.</p>
+  </header>
+
+  <div class="kiosk__body">
+    <div class="canvas-wrap">
+      <canvas #canvas></canvas>
+      <div class="canvas-tag">{{ currentChapter.numeral }} &middot; {{ currentChapter.year }}</div>
+      <button type="button" class="canvas-mute" (click)="toggleMute()" [attr.aria-pressed]="audioMuted"
+        [attr.aria-label]="audioMuted ? 'Unmute ambient sound' : 'Mute ambient sound'">
+        {{ audioMuted ? '🔇' : '🔊' }}
+      </button>
+      <div class="canvas-badge" *ngIf="isErupting">{{ phase | uppercase }}</div>
+    </div>
+
+    <ng-container *ngFor="let c of [currentChapter]; trackBy: trackChapter">
+      <section class="info-card">
+        <header class="info-card__head fade-in">
+          <span class="info-card__eyebrow">Chapter {{ c.numeral }} of VI &middot; {{ c.year }}</span>
+          <h2>{{ c.title }}</h2>
+        </header>
+
+        <div class="info-card__media fade-in" *ngIf="c.image">
+          <div class="info-card__media-fallback">
+            <span class="info-card__media-icon">{{ c.icon }}</span>
+            <span class="info-card__media-caption">Historical photo &mdash; add your own at {{ c.image }}</span>
+          </div>
+          <img [src]="c.image" [alt]="c.title" (error)="onImageError($event)" />
+        </div>
+
+        <p class="info-card__desc fade-in">{{ c.description }}</p>
+
+        <ul class="info-card__bullets fade-in" *ngIf="c.bullets.length">
+          <li *ngFor="let b of c.bullets">{{ b }}</li>
+        </ul>
+
+        <div class="seismograph fade-in" *ngIf="c.id === 'pressure-buildup' || c.id === 'unrest'">
+          <div class="seismograph__label">
+            <span>Live Seismic Activity</span>
+            <span>{{ seismicLevel }}%</span>
+          </div>
+          <div class="panel__waveform" [style.--level]="seismicLevel">
+            <span *ngFor="let bar of bars" class="panel__bar"></span>
+          </div>
+        </div>
+
+        <div class="eruption-block fade-in" *ngIf="c.id === 'eruption'">
+          <button class="panel__erupt" [class.panel__erupt--active]="isErupting"
+            [disabled]="isErupting" (click)="triggerEruption()">
+            {{ phase === 'idle' ? 'Trigger the Eruption' : (phase | uppercase) }}
+          </button>
+          <div class="eruption-block__readout" *ngIf="displayedPlume > 0">
+            Ash column climbing: <strong>{{ displayedPlume }} km</strong>
+          </div>
+          <button *ngIf="eruptionWitnessed" type="button" class="btn-ghost" (click)="continueToAftermath()">
+            Continue to Aftermath &rarr;
+          </button>
+        </div>
+
+        <div class="aftermath-grid fade-in" *ngIf="c.id === 'aftermath'">
+          <div class="metric" *ngFor="let s of aftermathStats">
+            <span class="metric__label">{{ s.label }}</span>
+            <span class="metric__value">{{ s.value }}</span>
+            <span class="metric__hint">{{ s.hint }}</span>
+          </div>
+        </div>
+
+        <div class="info-card__nav">
+          <button type="button" class="nav-btn nav-btn--prev" (click)="goPrevious()" [disabled]="!canGoBack">
+            &larr; Previous
+          </button>
+          <button *ngIf="c.id !== 'aftermath' && c.id !== 'eruption'" type="button"
+            class="nav-btn nav-btn--next" (click)="goNext()" [disabled]="!canGoNext">
+            Next Chapter &rarr;
+          </button>
+          <button *ngIf="c.id === 'aftermath'" type="button" class="nav-btn nav-btn--next" (click)="replay()">
+            Replay from the Beginning &#8635;
+          </button>
+        </div>
+      </section>
+    </ng-container>
+
+    <nav class="chapter-rail" aria-label="Eruption chapters">
+      <ol class="chapter-rail__track">
+        <li *ngFor="let c of chapters; let i = index"
+          class="chapter-card"
+          [class.chapter-card--active]="i === chapterIndex"
+          [class.chapter-card--done]="i < chapterIndex"
+          [class.chapter-card--locked]="!isUnlocked(i)"
+          [attr.aria-current]="i === chapterIndex ? 'step' : null"
+          [attr.aria-disabled]="!isUnlocked(i)"
+          (click)="goToChapter(i)">
+          <span class="chapter-card__thumb">
+            <span class="chapter-card__icon">{{ isUnlocked(i) && i < chapterIndex ? '✓' : c.icon }}</span>
+          </span>
+          <span class="chapter-card__body">
+            <span class="chapter-card__title">{{ c.title }}</span>
+            <span class="chapter-card__year">{{ c.year }}</span>
+          </span>
+          <span class="chapter-card__lock" *ngIf="!isUnlocked(i)">&#128274;</span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>

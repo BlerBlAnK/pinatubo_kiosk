@@ -5,6 +5,7 @@ import { VideoPage } from './video-page/video-page';
 import { ApoPinatubo } from './apo-pinatubo/apo-pinatubo';
 import { TimelinePage } from './timeline-page/timeline-page';
 import { LaharDefensePage } from './lahar-defense-page/lahar-defense-page';
+import { SimulatorComponent } from './simulator-component/simulator-component';
 
 export const routes: Routes = [
     { path: '', component: WelcomePage },
@@ -16,5 +17,6 @@ export const routes: Routes = [
     // kiosk never gets stuck on a blank/broken screen.
     { path: 'timeline', component: TimelinePage},
     { path: 'lahar-defense', component: LaharDefensePage },
+    { path: 'simulator', component: SimulatorComponent },
     { path: '**', redirectTo: 'menu' }
 ];
