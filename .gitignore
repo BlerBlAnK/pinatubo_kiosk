@@ -47,3 +47,4 @@ notepad .gitignore
 # Server (Gemini AI backend)
 server/node_modules
 server/.env
+
