@@ -444,7 +444,7 @@ function traceJaggedRidge(context, points, closeToY, seed, ruggedness) {
 
 // Fixed seeds so the clipped fill, the shading passes, and the final
 // edge-light stroke all trace the exact same jagged outline.
-const BACK_RIDGE_SEED = 4411, FRONT_RIDGE_SEED = 9911;
+const BACK_RIDGE_SEED = 4411, MID_RIDGE_SEED = 6633, FRONT_RIDGE_SEED = 9911;
 
 /* ---- Cloud sprites: two soft multi-blob puffs (different silhouettes),
    cached once and reused/stamped many times — cheap per-frame cost ---- */
@@ -723,6 +723,31 @@ function paintMountainScene(context, mode) {
   context.fill();
   context.restore();
 
+  /* ---- Mid-ground ridge: a third depth plane between the hazy distant
+     range and the main massif — without it the scene jumps straight from
+     "far and flat" to "close and detailed," which reads as a backdrop
+     rather than an actual landscape with real depth. ---- */
+  const midAnchors = [
+    { x: -10, y: 300 }, { x: 60, y: 260 }, { x: 130, y: 285 }, { x: 190, y: 235 },
+    { x: 250, y: 210 }, { x: 310, y: 195 }, { x: 370, y: 220 }, { x: 430, y: 245 },
+    { x: 490, y: 270 }, { x: 550, y: 300 }
+  ];
+  context.save();
+  traceJaggedRidge(context, midAnchors, 460, MID_RIDGE_SEED, 9);
+  const midGrad = context.createLinearGradient(0, 170, 0, 460);
+  if (isNight) { midGrad.addColorStop(0, '#2a323f'); midGrad.addColorStop(1, '#1c222c'); }
+  else { midGrad.addColorStop(0, '#93a0a8'); midGrad.addColorStop(1, '#77838c'); }
+  context.fillStyle = midGrad;
+  context.globalAlpha = isNight ? 1 : 0.92;
+  context.fill();
+  const midHaze = context.createLinearGradient(0, 170, 0, 460);
+  midHaze.addColorStop(0, isNight ? 'rgba(170,190,215,0.08)' : 'rgba(235,242,248,0.3)');
+  midHaze.addColorStop(1, 'rgba(235,242,248,0)');
+  context.fillStyle = midHaze;
+  context.globalAlpha = 1;
+  context.fill();
+  context.restore();
+
   /* ---- Main Pinatubo massif: broad shoulders rising to an asymmetric,
      gently domed summit with a breached crater rim (real profile, not a triangle) ---- */
   const frontAnchors = [
@@ -823,6 +848,48 @@ function paintMountainScene(context, mode) {
     context.stroke();
   }
 
+  // ---- Radial erosion gullies: real stratovolcanoes are carved by
+  // drainage channels radiating down from the summit — these are the
+  // ancestors of the very lahar channels the game simulates, so they're
+  // rendered wider and more deliberate than the fine cracks above,
+  // fanning outward from near the crater down across the visible slope.
+  const gullyRand = mulberry32(4455);
+  const gullyCount = 7;
+  for (let g = 0; g < gullyCount; g++) {
+    const angle = (Math.PI * 0.12) + (g / (gullyCount - 1)) * (Math.PI * 0.76);
+    const startR = 46 + gullyRand() * 22;
+    let gx = CRATER_X + Math.cos(angle) * startR;
+    let gy = CRATER_Y + 10 + Math.sin(angle) * startR * 0.5;
+    context.beginPath();
+    context.moveTo(gx, gy);
+    const steps = 5 + Math.floor(gullyRand() * 3);
+    for (let s = 0; s < steps; s++) {
+      gx += Math.cos(angle) * (18 + gullyRand() * 10) + (gullyRand() - 0.5) * 14;
+      gy += Math.sin(angle) * (18 + gullyRand() * 10) * 0.6 + (10 + gullyRand() * 8);
+      context.lineTo(gx, gy);
+    }
+    context.strokeStyle = isNight ? 'rgba(0,0,0,0.34)' : 'rgba(30,20,14,0.28)';
+    context.lineWidth = 2.2 + gullyRand() * 1.6;
+    context.lineCap = 'round';
+    context.stroke();
+  }
+
+  // ---- Pyroclastic flow deposit bands: Pinatubo's real slopes carry
+  // pale ash-flow deposit layers from the 1991 eruption sequence — a
+  // few broad, gently irregular horizontal bands read as that history
+  // without looking like a painted stripe.
+  const bandRand = mulberry32(7788);
+  [230, 310, 390].forEach(baseY => {
+    context.beginPath();
+    context.moveTo(20, baseY);
+    for (let x = 20; x <= 520; x += 40) context.lineTo(x, baseY + (bandRand() - 0.5) * 16);
+    context.lineTo(520, baseY + 14);
+    for (let x = 520; x >= 20; x -= 40) context.lineTo(x, baseY + 14 + (bandRand() - 0.5) * 10);
+    context.closePath();
+    context.fillStyle = isNight ? 'rgba(160,165,175,0.05)' : 'rgba(220,210,195,0.16)';
+    context.fill();
+  });
+
   // ---- Rocky ledges: small flat-topped outcrops that catch the key light
   // on their upper edge and cast a soft shadow beneath — reads as a cliff
   // step without needing a hard black outline.
@@ -882,6 +949,22 @@ function paintMountainScene(context, mode) {
   crWallGrad.addColorStop(1, 'rgba(0,0,0,0)');
   context.fillStyle = crWallGrad;
   context.fill();
+
+  // Night-only ember glow — a warm residual-heat glimmer visible through
+  // the breach after dark, hinting the volcano is still active rather
+  // than just a dark silhouette. Small/soft enough to read within the
+  // crater's own dark fill without needing an explicit clip.
+  if (isNight) {
+    const emberGlow = context.createRadialGradient(CRATER_X, CRATER_Y + 8, 0, CRATER_X, CRATER_Y + 8, 22);
+    emberGlow.addColorStop(0, 'rgba(255,140,50,0.4)');
+    emberGlow.addColorStop(0.55, 'rgba(200,80,20,0.15)');
+    emberGlow.addColorStop(1, 'rgba(200,80,20,0)');
+    context.fillStyle = emberGlow;
+    context.beginPath();
+    context.ellipse(CRATER_X, CRATER_Y + 8, 22, 10, 0, 0, Math.PI * 2);
+    context.fill();
+  }
+
   context.restore();
 
   // Rim highlight catching the upper-left light — traced along the same
