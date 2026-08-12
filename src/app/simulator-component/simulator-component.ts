@@ -3,7 +3,7 @@ import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, HostListene
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-type ChapterId = 'before-1991' | 'magma-rising' | 'pressure-buildup' | 'unrest' | 'eruption' | 'aftermath';
+type ChapterId = 'before-1991' | 'early-unrest' | 'steam-and-gas' | 'magma-ascent' | 'escalating-activity' | 'eruption' | 'aftermath';
 type Phenomenon = 'ash' | 'bomb' | 'lava' | 'steam';
 type EruptionPhase = 'idle' | 'rumble' | 'rising' | 'pressure' | 'burst' | 'overflow' | 'cooling';
 
@@ -52,49 +52,58 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
   readonly chapters: Chapter[] = [
     {
       id: 'before-1991', numeral: 'I', title: 'Before 1991', year: 'Dormant since c. 1500', icon: '🌲',
-      description: 'For more than four centuries Pinatubo sat quiet under thick forest, unremarkable enough that most regional maps barely named it. The Aeta people had lived on its slopes for generations. Nothing about its gentle, green profile suggested it was one of the most dangerous volcanoes in the Philippines.',
+      description: 'For more than four centuries Pinatubo sat quiet under thick forest in the Zambales Mountains of Central Luzon, unremarkable enough that most regional maps barely named it. The Aeta people had lived on its slopes for generations. Nothing about its gentle, green profile suggested it was one of the most dangerous volcanoes in the Philippines.',
       bullets: [
         'Last confirmed eruption roughly 500 years earlier',
-        'A densely forested, gently sloped stratovolcano',
+        'A densely forested, gently sloped stratovolcano in the Zambales Range',
         'Home to the indigenous Aeta community',
       ],
       image: 'assets/pinatubo/before-1991.jpg',
     },
     {
-      id: 'magma-rising', numeral: 'II', title: 'Magma Generation and Ascent', year: 'April 1991', icon: '🔥',
-      description: 'Beneath the mountain, heat from the mantle had been slowly melting rock for centuries. In early 1991 that molten rock started pushing upward through cracks and conduits in the crust, drawn toward the surface by its own buoyancy — long before anything visible changed up top.',
+      id: 'early-unrest', numeral: 'II', title: 'Early Unrest', year: 'March 15, 1991', icon: '📳',
+      description: 'A magnitude 7.8 earthquake had rattled the region back in July 1990, triggering a brief, unremarkable stir of steam and small quakes at Pinatubo before it went quiet again. Then, on March 15, 1991, villagers on the volcano\u2019s forested northwest flank began feeling tremors of their own — the first sign that this time, something underneath was actually changing.',
       bullets: [
-        'Magma is molten rock, less dense than the solid rock around it',
-        'It forces its way up through existing fractures the way oil rises through water',
-        'Small, deep earthquakes were the earliest instrumental warning sign',
+        'Villagers at Sitios Tarao and Yamut felt the season\u2019s first tremors',
+        'Nothing was yet visible at the summit — the mountain still looked completely normal',
+        'A magnitude 7.8 regional quake eight months earlier is now seen as a possible trigger',
       ],
     },
     {
-      id: 'pressure-buildup', numeral: 'III', title: 'Ground Deformation and Gas Release', year: 'April – May 1991', icon: '💨',
-      description: 'As magma pushed higher, the ground above it began to swell and crack, and gases trickled out through fumaroles well before any eruption. The first, smaller explosions on April 2 were phreatic — steam blasts from groundwater flashing against the intruding heat, not magma itself reaching the surface yet.',
+      id: 'steam-and-gas', numeral: 'III', title: 'Steam and Phreatic Explosions', year: 'April 2 \u2013 May 1991', icon: '💨',
+      description: 'On the afternoon of April 2, a series of small explosions tore a 1.5-kilometer line of vents across the volcano\u2019s upper north flank, dusting villages 10 kilometers away with ash. These were phreatic blasts — groundwater flashing to steam against rising heat, not magma itself reaching the surface. Dense white steam kept jetting from the new vents for weeks afterward.',
       bullets: [
-        'The summit inflated slightly as the magma body pushed upward',
-        'Fumaroles vented thin white steam, growing more frequent by the week',
-        'April 2 phreatic (steam-driven) explosions triggered the first evacuations',
+        'The April 2 explosions ejected only old rock — no fresh magma, confirming a steam-driven origin',
+        'Fumaroles vented steam 300\u2013800 m high, occasionally gusting ash to 3 km',
+        'A seismic network installed within days logged tens to hundreds of quakes a day',
       ],
     },
     {
-      id: 'unrest', numeral: 'IV', title: 'Increasing Volcanic Unrest', year: 'Late May – June 12, 1991', icon: '⚡',
-      description: 'By late May, sulfur dioxide emissions had spiked and instruments were logging thousands of small earthquakes a day. Steam turned darker and more forceful as ash mixed in, rockfalls rattled loose from the crater rim, and the sky itself began to dim under the volcano\u2019s own emissions.',
+      id: 'magma-ascent', numeral: 'IV', title: 'Magma on the Move', year: 'Late May \u2013 June 6, 1991', icon: '🔥',
+      description: 'Beneath Mount Pinatubo\u2019s still-unchanged summit, fresh magma was forcing its way toward the surface through the volcano\u2019s own plumbing. In mid-May, sulfur dioxide output suddenly spiked — then puzzlingly collapsed within days. Scientists correctly read the drop as bad news: the conduit had sealed itself, trapping gas-charged magma directly under the mountain\u2019s summit at mounting pressure.',
       bullets: [
-        'Sulfur dioxide output jumped roughly tenfold in two weeks',
-        'Rockfalls and ground cracking signaled the summit was failing structurally',
-        'On June 7 a lava dome breached the surface — magma had finally arrived',
+        'A sealed conduit traps rising gas — pressure builds invisibly rather than venting safely',
+        'A newly installed tilt network detected the ground swelling on the upper east flank',
+        'By June 1, earthquakes were originating just 5 km below the summit',
       ],
     },
     {
-      id: 'eruption', numeral: 'V', title: 'The Climactic Eruption', year: 'June 15, 1991', icon: '🌋',
+      id: 'escalating-activity', numeral: 'V', title: 'Escalating Activity', year: 'June 7 \u2013 14, 1991', icon: '⚡',
+      description: 'On June 7, seismicity rocketed to 1,500 quakes a day and an ash burst reached 8 kilometers — magma had finally arrived, extruding a small lava dome just northwest of the summit. Alert Level 4 was declared and a 20-kilometer danger zone drawn. Explosions on June 12 and 13 sent ash 19 and then 25 kilometers up, each one a rehearsal for what was coming.',
+      bullets: [
+        '14,400 personnel evacuated Clark Air Base on June 10 alone',
+        'June 12 (Philippine Independence Day) produced the first sub-Plinian column, ~19 km high',
+        'The unstable new dome triggered Pinatubo\u2019s first small pyroclastic flows on June 9',
+      ],
+    },
+    {
+      id: 'eruption', numeral: 'VI', title: 'The Climactic Eruption', year: 'June 15, 1991', icon: '🌋',
       description: 'On the afternoon of June 15, with Typhoon Yunya battering the region at the very same time, Pinatubo let go in a colossal Plinian eruption — hurling an ash column more than 35 kilometers into the stratosphere while pyroclastic density currents raced down every flank of the mountain.',
       bullets: [],
     },
     {
-      id: 'aftermath', numeral: 'VI', title: 'Aftermath', year: 'After June 1991', icon: '🏞️',
-      description: 'When the explosions finally stopped, the mountain had lost its summit to a wide new caldera. Ash blanketed the surrounding provinces gray for kilometers in every direction. Within months, rain and groundwater began collecting in the crater floor — the first stage of what would become Lake Pinatubo.',
+      id: 'aftermath', numeral: 'VII', title: 'Aftermath', year: 'After June 1991', icon: '🏞️',
+      description: 'When the explosions finally stopped, the mountain had lost its summit to a wide new caldera, and Pampanga, Tarlac, and Zambales all lay under a blanket of grey ash. Renewed dome growth continued intermittently into 1992. Within months, rain and groundwater began collecting in the caldera floor — the first stage of what would become Lake Pinatubo, still slowly deepening years later.',
       bullets: [],
     },
   ];
@@ -103,16 +112,17 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
     { label: 'VEI', value: '6', hint: 'Ultra-Plinian — the second-largest eruption of the 20th century' },
     { label: 'Ash Column', value: '~35 km', hint: 'Height the eruption column reached into the stratosphere' },
     { label: 'People Evacuated', value: '200,000+', hint: 'Residents, Aeta communities, and Clark Air Base personnel moved to safety' },
-    { label: 'Lives Lost', value: '800+', hint: 'Most from wet ash collapsing roofs during Typhoon Yunya, which struck at the same time' },
+    { label: 'Lives Lost', value: '847', hint: 'Most from wet ash collapsing roofs during Typhoon Yunya, which struck at the same time' },
     { label: 'Economic Damage', value: '~$700M', hint: 'Crops, infrastructure, evacuation, and lahar-control costs combined' },
     { label: 'Global Cooling', value: '~0.5\u00B0C', hint: 'Average drop in global temperatures for about two years afterward' },
   ];
 
   private readonly cameraViews: Record<ChapterId, CameraView> = {
     'before-1991': { position: [0, 11, 32], target: [0, 6, 0] },
-    'magma-rising': { position: [7, -20, 14], target: [0, -23, 0] },
-    'pressure-buildup': { position: [-7, 10, 20], target: [0, 7, 0] },
-    'unrest': { position: [7, 9, 17], target: [0, 8, 0] },
+    'early-unrest': { position: [0, 10, 29], target: [0, 6, 0] },
+    'steam-and-gas': { position: [-7, 10, 20], target: [0, 7, 0] },
+    'magma-ascent': { position: [7, -20, 14], target: [0, -23, 0] },
+    'escalating-activity': { position: [7, 9, 17], target: [0, 8, 0] },
     'eruption': { position: [0, 8, 27], target: [0, 11, 0] },
     'aftermath': { position: [0, 14, 34], target: [0, 5, 0] },
   };
@@ -208,6 +218,7 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
 
   private onEnterChapter(): void {
     clearTimeout(this.quakeTimer);
+    clearTimeout(this.precursorPuffTimer);
     this.applyAudioProfile();
 
     const view = this.cameraViews[this.currentChapter.id];
@@ -215,13 +226,14 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
 
     this.birdGroup.visible = this.currentChapter.id === 'before-1991';
 
-    const underground = this.currentChapter.id === 'magma-rising';
+    const underground = this.currentChapter.id === 'magma-ascent';
     this.undergroundGroup.visible = underground;
     this.mountainMesh.visible = !underground;
     this.skyMesh.visible = !underground;
     this.cloudGroup.visible = !underground;
     this.groundMesh.visible = !underground;
     this.vegetation.visible = !underground;
+    this.geoGroup.visible = !underground;
 
     this.fumarolesActive = false;
     this.rockfallsActive = false;
@@ -240,31 +252,42 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
         this.lakeFormationTarget = 0;
         break;
 
-      case 'magma-rising':
+      case 'early-unrest':
+        // Deliberately near-identical to "before" — the whole point is that nothing
+        // is visible at the summit yet. Only a barely-perceptible tremor hints at change.
+        this.craterFillTarget = 0;
+        this.smokeTarget = 0.03;
+        this.magmaBaseGlowTarget = 0;
+        this.vegetationGrowthTarget = 1;
+        this.startQuakePulses(0.006, 0.014, 4500);
+        break;
+
+      case 'steam-and-gas':
+        this.craterFillTarget = 0.1;
+        this.smokeTarget = 0;
+        this.magmaBaseGlowTarget = 0;
+        this.fumarolesActive = true;
+        this.crackVisibilityTarget = 0.55;
+        this.vegetationGrowthTarget = 0.9;
+        this.startQuakePulses(0.015, 0.03, 3200);
+        break;
+
+      case 'magma-ascent':
         this.magmaRiseTarget = 1;
         this.startQuakePulses(0.012, 0.028, 3800);
         break;
 
-      case 'pressure-buildup':
-        this.craterFillTarget = 0.15;
-        this.smokeTarget = 0;
-        this.magmaBaseGlowTarget = 0;
-        this.fumarolesActive = true;
-        this.crackVisibilityTarget = 0.7;
-        this.vegetationGrowthTarget = 0.85;
-        this.startQuakePulses(0.02, 0.045, 3000);
-        break;
-
-      case 'unrest':
-        this.craterFillTarget = 0.4;
+      case 'escalating-activity':
+        this.craterFillTarget = 0.35;
         this.smokeTarget = 0.55;
-        this.magmaBaseGlowTarget = 0.3;
+        this.magmaBaseGlowTarget = 0.12;
         this.fumarolesActive = true;
         this.rockfallsActive = true;
         this.crackVisibilityTarget = 1;
         this.skyDarknessTarget = 0.55;
-        this.vegetationGrowthTarget = 0.4;
+        this.vegetationGrowthTarget = 0.35;
         this.startQuakePulses(0.035, 0.08, 2000);
+        this.startPrecursorPuffs();
         break;
 
       case 'eruption':
@@ -296,10 +319,26 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
     this.quakeTimer = setTimeout(tick, baseMs + Math.random() * 1500);
   }
 
+  /** The June 7–14 precursor explosions were discrete, separate events — not sustained activity.
+   *  A small, infrequent puff (with a matching quiet boom) reads very differently from both the
+   *  ambient unrest of earlier chapters and the continuous bursts of the climax itself. */
+  private startPrecursorPuffs(): void {
+    clearTimeout(this.precursorPuffTimer);
+    const tick = () => {
+      if (this.currentChapter.id !== 'escalating-activity') return;
+      this.spawnEjecta(0.1);
+      this.playBoom();
+      this.shakeAmount = Math.max(this.shakeAmount, 0.06);
+      this.precursorPuffTimer = setTimeout(tick, 9000 + Math.random() * 7000);
+    };
+    this.precursorPuffTimer = setTimeout(tick, 5000 + Math.random() * 4000);
+  }
+
   replay(): void {
     clearTimeout(this.phaseTimer);
     clearInterval(this.plumeCountUpId);
     clearTimeout(this.quakeTimer);
+    clearTimeout(this.precursorPuffTimer);
     clearTimeout(this.eruptionBurstTimer);
     this.clearFlows();
 
@@ -464,6 +503,9 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
   private readonly rainCount = 260;
   private rainActive = false;
 
+  // ---- static Central Luzon geographic context (background ranges, rivers, fields, landmarks) ----
+  private geoGroup = new THREE.Group();
+
   // ---- ambient audio (procedural — no external assets) ----
   private audioCtx: AudioContext | null = null;
   private audioMaster: GainNode | null = null;
@@ -477,6 +519,7 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
   private phaseTimer: any = null;
   private plumeCountUpId: any = null;
   private quakeTimer: any = null;
+  private precursorPuffTimer: any = null;
   private eruptionBurstTimer: any = null;
 
   // Shared noise field — used by both the mountain mesh AND the lava flow sampler,
@@ -499,6 +542,7 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
     clearTimeout(this.phaseTimer);
     clearInterval(this.plumeCountUpId);
     clearTimeout(this.quakeTimer);
+    clearTimeout(this.precursorPuffTimer);
     clearTimeout(this.eruptionBurstTimer);
     this.resizeObserver?.disconnect();
     this.controls?.dispose();
@@ -559,11 +603,11 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
     const heightFrac = (baseY + height / 2) / height;
     const roughness = this.terrainNoise(x, z) * (0.4 + heightFrac * 0.6);
 
-    let y = baseY + roughness * 1.8;
+    let y = baseY + roughness * 2.3;
 
-    if (heightFrac > 0.82) {
-      const craterT = Math.min(1, (heightFrac - 0.82) / 0.18);
-      y -= craterT * craterT * this.craterDepth * 1.4;
+    if (heightFrac > 0.78) {
+      const craterT = Math.min(1, (heightFrac - 0.78) / 0.22);
+      y -= craterT * craterT * this.craterDepth * 1.6;
     }
     return y + this.mountainMesh.position.y;
   }
@@ -623,6 +667,12 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
     this.computeFumaroleVents();
     this.buildCracks();
     this.buildRain();
+    this.buildBackgroundRanges();
+    this.buildRivers();
+    this.buildFieldPatches();
+    this.buildLandmarks();
+    this.buildLakeIsland();
+    this.scene.add(this.geoGroup);
     this.scene.add(this.ejectaGroup);
 
     // --- Orbit controls: click-and-drag rotation around the volcano ---
@@ -721,11 +771,11 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
 
       let newX = x * scale;
       let newZ = z * scale;
-      let newY = y + roughness * 1.8;
+      let newY = y + roughness * 2.3;
 
-      if (heightFrac > 0.82) {
-        const craterT = Math.min(1, (heightFrac - 0.82) / 0.18);
-        newY -= craterT * craterT * this.craterDepth * 1.4;
+      if (heightFrac > 0.78) {
+        const craterT = Math.min(1, (heightFrac - 0.78) / 0.22);
+        newY -= craterT * craterT * this.craterDepth * 1.6;
       }
 
       pos.setXYZ(i, newX, newY, newZ);
@@ -1225,6 +1275,138 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
     pos.needsUpdate = true;
   }
 
+  // ================= GEOGRAPHIC CONTEXT (Central Luzon setting, all static/cheap) =================
+
+  /** Distant, irregular ridgelines suggesting the wider Zambales mountain range Pinatubo sits
+   *  within — deliberately built from clustered, flattened, faceted rock forms rather than any
+   *  single symmetric peak, so they read as ordinary terrain and never as other volcanoes. */
+  private buildBackgroundRanges(): void {
+    const clusterCount = 9;
+    for (let i = 0; i < clusterCount; i++) {
+      const angle = (i / clusterCount) * Math.PI * 2 + Math.random() * 0.3;
+      const dist = 55 + Math.random() * 70;
+      const distFactor = Math.min(1, (dist - 40) / 90);
+      const group = new THREE.Group();
+
+      const bumpCount = 3 + Math.floor(Math.random() * 3);
+      for (let b = 0; b < bumpCount; b++) {
+        const height = 4 + Math.random() * 7;
+        const radius = 5 + Math.random() * 6;
+        const mat = new THREE.MeshStandardMaterial({ color: 0x5a6a78, roughness: 1, flatShading: true });
+        mat.color.lerp(new THREE.Color(0x8a7a6d), distFactor * 0.5);
+        const bump = new THREE.Mesh(new THREE.IcosahedronGeometry(radius, 0), mat);
+        // Flattened and stretched so it reads as a weathered ridge segment, not a pointed cone.
+        bump.scale.set(1.1 + Math.random() * 0.4, (height / radius) * 0.5, 1.1 + Math.random() * 0.4);
+        bump.position.set((Math.random() - 0.5) * radius * 1.6, height * 0.28 - 1, (Math.random() - 0.5) * radius * 0.7);
+        bump.rotation.y = Math.random() * Math.PI * 2;
+        group.add(bump);
+      }
+
+      group.position.set(Math.cos(angle) * dist, 0, Math.sin(angle) * dist);
+      group.rotation.y = Math.random() * Math.PI * 2;
+      this.geoGroup.add(group);
+    }
+  }
+
+  /** Two winding drainage rivers descending from the slopes into the lowlands — standing in for
+   *  the real Sacobia–Bamban, O'Donnell, and Bucao systems that later carried Pinatubo's lahars
+   *  into Tarlac, Pampanga, and Zambales. */
+  private buildRivers(): void {
+    const riverMat = new THREE.MeshStandardMaterial({ color: 0x4a6b78, roughness: 0.25, metalness: 0.1, transparent: true, opacity: 0.85 });
+    const riverConfigs = [{ startAngle: 0.6, curve: 0.3 }, { startAngle: 3.6, curve: -0.4 }];
+    riverConfigs.forEach((cfg) => {
+      const points: THREE.Vector3[] = [];
+      let angle = cfg.startAngle;
+      let dist = 9;
+      for (let i = 0; i < 10; i++) {
+        const x = Math.cos(angle) * dist;
+        const z = Math.sin(angle) * dist;
+        const y = dist < 12 ? this.sampleTerrainHeight(x, z) : -0.03;
+        points.push(new THREE.Vector3(x, y + 0.02, z));
+        angle += cfg.curve * 0.15;
+        dist += 5 + i * 0.6;
+      }
+      const curve = new THREE.CatmullRomCurve3(points);
+      const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, 60, 0.35, 6, false), riverMat);
+      this.geoGroup.add(mesh);
+    });
+  }
+
+  /** Scattered flat color patches in the mid-distance reading as a lowland agricultural mosaic. */
+  private buildFieldPatches(): void {
+    const colors = [0x5a7a3f, 0x8a7a4a, 0x6b8a4f, 0x9a8a5a];
+    for (let i = 0; i < 16; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 28 + Math.random() * 48;
+      const x = Math.cos(angle) * dist, z = Math.sin(angle) * dist;
+      const geo = new THREE.PlaneGeometry(4 + Math.random() * 7, 4 + Math.random() * 7);
+      const mat = new THREE.MeshStandardMaterial({ color: colors[Math.floor(Math.random() * colors.length)], roughness: 1 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.rotation.z = Math.random() * Math.PI * 2;
+      mesh.position.set(x, -0.03, z);
+      this.geoGroup.add(mesh);
+    }
+  }
+
+  /** A small forest-fringe settlement plus a simplified Clark Air Base cluster (runway strip and
+   *  a handful of buildings) further out, connected by a rough road — grounding the scene in the
+   *  real Central Luzon communities the 1991 eruption displaced. */
+  private buildLandmarks(): void {
+    const hutRoofMat = new THREE.MeshStandardMaterial({ color: 0x8a5a3a, roughness: 1 });
+    const hutWallMat = new THREE.MeshStandardMaterial({ color: 0xd8c8a8, roughness: 1 });
+    const settlementCenter = new THREE.Vector3(Math.cos(1.1) * 48, 0, Math.sin(1.1) * 48);
+    for (let i = 0; i < 8; i++) {
+      const pos = settlementCenter.clone().add(new THREE.Vector3((Math.random() - 0.5) * 8, 0, (Math.random() - 0.5) * 8));
+      const wall = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.6, 0.9), hutWallMat);
+      wall.position.set(pos.x, 0.3, pos.z);
+      const roof = new THREE.Mesh(new THREE.ConeGeometry(0.75, 0.5, 4), hutRoofMat);
+      roof.position.set(pos.x, 0.85, pos.z);
+      roof.rotation.y = Math.PI / 4;
+      this.geoGroup.add(wall, roof);
+    }
+
+    const baseCenter = new THREE.Vector3(Math.cos(4.4) * 85, 0, Math.sin(4.4) * 85);
+    const runway = new THREE.Mesh(
+      new THREE.PlaneGeometry(16, 2.4),
+      new THREE.MeshStandardMaterial({ color: 0x8a8a82, roughness: 0.9 })
+    );
+    runway.rotation.x = -Math.PI / 2;
+    runway.position.set(baseCenter.x, -0.02, baseCenter.z);
+    this.geoGroup.add(runway);
+
+    const buildingMat = new THREE.MeshStandardMaterial({ color: 0xaba69c, roughness: 0.85 });
+    for (let i = 0; i < 5; i++) {
+      const b = new THREE.Mesh(new THREE.BoxGeometry(1.2 + Math.random(), 0.8 + Math.random() * 0.6, 1.2 + Math.random()), buildingMat);
+      b.position.set(baseCenter.x + (Math.random() - 0.5) * 10, 0.5, baseCenter.z + (Math.random() - 0.5) * 6 - 3);
+      this.geoGroup.add(b);
+    }
+
+    const roadCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(Math.cos(1.1) * 13, 0.01, Math.sin(1.1) * 13),
+      settlementCenter.clone().setY(0.01),
+    ]);
+    const roadMesh = new THREE.Mesh(
+      new THREE.TubeGeometry(roadCurve, 20, 0.25, 5, false),
+      new THREE.MeshStandardMaterial({ color: 0x6b6258, roughness: 1 })
+    );
+    this.geoGroup.add(roadMesh);
+  }
+
+  /** Small rocky protrusions sitting just above the eventual aftermath lake level — matching the
+   *  real dome-island documented in Lake Pinatubo's crater lake in years after the eruption. */
+  private buildLakeIsland(): void {
+    const mat = new THREE.MeshStandardMaterial({ color: 0x4a4741, roughness: 0.95 });
+    const islandY = this.craterFloorY + this.mountainMesh.position.y + this.craterDepth * 0.5 + 0.08;
+    for (let i = 0; i < 2; i++) {
+      const mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22 + Math.random() * 0.18, 0), mat);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 0.6 + Math.random() * 0.8;
+      mesh.position.set(Math.cos(angle) * dist, islandY, Math.sin(angle) * dist);
+      this.scene.add(mesh);
+    }
+  }
+
   // ================= AMBIENT AUDIO (procedural synthesis — no external assets) =================
 
   private initAudio(): void {
@@ -1278,9 +1460,10 @@ export class SimulatorComponent implements AfterViewInit, OnDestroy {
 
     const profiles: Record<ChapterId, { freq: number; q: number; noise: number; rumble: number; rumbleHz: number }> = {
       'before-1991': { freq: 1400, q: 0.5, noise: 0.10, rumble: 0, rumbleHz: 40 },
-      'magma-rising': { freq: 220, q: 1.2, noise: 0.05, rumble: 0.10, rumbleHz: 38 },
-      'pressure-buildup': { freq: 2600, q: 0.9, noise: 0.14, rumble: 0.06, rumbleHz: 42 },
-      'unrest': { freq: 900, q: 0.8, noise: 0.20, rumble: 0.16, rumbleHz: 46 },
+      'early-unrest': { freq: 1300, q: 0.5, noise: 0.09, rumble: 0.02, rumbleHz: 40 },
+      'steam-and-gas': { freq: 2600, q: 0.9, noise: 0.14, rumble: 0.05, rumbleHz: 41 },
+      'magma-ascent': { freq: 220, q: 1.2, noise: 0.05, rumble: 0.10, rumbleHz: 38 },
+      'escalating-activity': { freq: 900, q: 0.8, noise: 0.20, rumble: 0.18, rumbleHz: 46 },
       'eruption': { freq: 500, q: 0.6, noise: 0.28, rumble: 0.30, rumbleHz: 55 },
       'aftermath': { freq: 3200, q: 0.5, noise: 0.16, rumble: 0.02, rumbleHz: 36 },
     };
