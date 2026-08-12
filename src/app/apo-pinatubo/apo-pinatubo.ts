@@ -7,11 +7,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  buildAnswer,
-  getAutocompleteMatches,
-  initBM25
-} from './pinatubo-engine';
+import { getAutocompleteMatches, initBM25 } from './pinatubo-engine';
+import { PinatuboAiService } from './pinatubo-ai.service';
 import { Router } from "@angular/router";
 
 
@@ -21,8 +18,6 @@ export interface ChatMessage {
   citations?: string[];
   followups?: string[];
 }
-
-const TYPING_BUBBLE_DURATION = 1200;
 
 @Component({
   selector: 'app-apo-pinatubo',
@@ -35,7 +30,6 @@ export class ApoPinatubo implements OnInit {
   @ViewChild('chatEl') private chatEl?: ElementRef<HTMLDivElement>;
   @ViewChild('queryInput') private queryInputEl?: ElementRef<HTMLInputElement>;
 
-  // Signal state management
   messages = signal<ChatMessage[]>([]);
   thinking = signal<boolean>(false);
   acItems = signal<string[]>([]);
@@ -43,7 +37,7 @@ export class ApoPinatubo implements OnInit {
 
   query = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private ai: PinatuboAiService) {}
 
   goBack(): void {
     const previous = sessionStorage.getItem('kioskPreviousRoute');
@@ -64,7 +58,8 @@ export class ApoPinatubo implements OnInit {
   ];
 
   ngOnInit(): void {
-    // Warm up the BM25 index on init
+    // Warm up the local retrieval index so the first real question
+    // doesn't pay the indexing cost on top of network latency.
     initBM25();
 
     this.addBotMessage(
@@ -74,9 +69,6 @@ export class ApoPinatubo implements OnInit {
   }
 
   private scrollToBottom(): void {
-    // requestAnimationFrame waits for the browser to finish laying out
-    // the newly-added message before we read scrollHeight, so the
-    // scroll always lands on the true bottom instead of one message behind.
     requestAnimationFrame(() => {
       if (this.chatEl) {
         const el = this.chatEl.nativeElement;
@@ -171,7 +163,7 @@ export class ApoPinatubo implements OnInit {
     this.handleAsk();
   }
 
-  handleAsk(): void {
+  async handleAsk(): Promise<void> {
     const q = this.query.trim();
     if (!q || this.thinking()) return;
 
@@ -181,11 +173,12 @@ export class ApoPinatubo implements OnInit {
     this.thinking.set(true);
     this.scrollToBottom();
 
-    setTimeout(() => {
-      const ans = buildAnswer(q);
-      this.thinking.set(false);
+    try {
+      const ans = await this.ai.ask(q);
       this.addBotMessage(ans.text, ans.citations, ans.followups);
+    } finally {
+      this.thinking.set(false);
       setTimeout(() => this.queryInputEl?.nativeElement.focus(), 50);
-    }, TYPING_BUBBLE_DURATION);
+    }
   }
 }

@@ -1,83 +1,123 @@
 <div class="kiosk">
   <header class="kiosk__header">
-    <h1>Recipe for Eruption</h1>
-    <p>Dial in the geology below, then press the trigger to see what the mountain does.</p>
+    <h1>Pinatubo, 1991</h1>
+    <p>An interactive walkthrough of the eruption that reshaped a mountain.</p>
   </header>
 
   <div class="kiosk__body">
     <div class="canvas-wrap">
       <canvas #canvas></canvas>
+      <div class="canvas-tag">{{ currentChapter.numeral }} &middot; {{ currentChapter.year }}</div>
+      <button type="button" class="canvas-mute" (click)="toggleMute()" [attr.aria-pressed]="audioMuted"
+        [attr.aria-label]="audioMuted ? 'Unmute ambient sound' : 'Mute ambient sound'">
+        {{ audioMuted ? '🔇' : '🔊' }}
+      </button>
       <div class="canvas-badge" *ngIf="isErupting">{{ phase | uppercase }}</div>
     </div>
 
-    <section class="panel">
-      <div class="panel__unrest">
-        <div class="panel__unrest-label">
-          <span>Unrest Index</span>
-          <span class="panel__unrest-value">{{ unrestIndex }}</span>
-        </div>
-        <div class="panel__waveform" [style.--level]="unrestIndex">
-          <span *ngFor="let bar of bars" class="panel__bar"></span>
-        </div>
-      </div>
+    <ng-container *ngFor="let c of [currentChapter]; trackBy: trackChapter">
+      <section class="info-card">
+        <header class="info-card__head fade-in">
+          <span class="info-card__eyebrow">Chapter {{ c.numeral }} of {{ chapters.length }} &middot; {{ c.year }}</span>
+          <h2>{{ c.title }}</h2>
+        </header>
 
-      <div class="panel__sliders">
-        <div class="slider-group">
-          <label for="viscosity">01 · Magma Viscosity <span class="tag">{{ viscosityLabels[viscosity-1] }}</span></label>
-          <input id="viscosity" type="range" min="1" max="3" step="1"
-            [value]="viscosity" (input)="onSlide('viscosity', $event)" />
-          <div class="slider-scale"><span>{{ viscosityLabels[0] }}</span><span>{{ viscosityLabels[2] }}</span></div>
+        <div class="info-card__media fade-in" *ngIf="c.image">
+          <div class="info-card__media-fallback">
+            <span class="info-card__media-icon">{{ c.icon }}</span>
+            <span class="info-card__media-caption">Historical photo &mdash; add your own at {{ c.image }}</span>
+          </div>
+          <img [src]="c.image" [alt]="c.title" (error)="onImageError($event)" />
         </div>
-        <div class="slider-group">
-          <label for="gas">02 · Gas Concentration <span class="tag">{{ gasLabels[gas-1] }}</span></label>
-          <input id="gas" type="range" min="1" max="3" step="1"
-            [value]="gas" (input)="onSlide('gas', $event)" />
-          <div class="slider-scale"><span>{{ gasLabels[0] }}</span><span>{{ gasLabels[2] }}</span></div>
-        </div>
-        <div class="slider-group">
-          <label for="water">03 · Groundwater <span class="tag">{{ waterLabels[water-1] }}</span></label>
-          <input id="water" type="range" min="1" max="3" step="1"
-            [value]="water" (input)="onSlide('water', $event)" />
-          <div class="slider-scale"><span>{{ waterLabels[0] }}</span><span>{{ waterLabels[2] }}</span></div>
-        </div>
-      </div>
 
-      <button class="panel__erupt" [class.panel__erupt--active]="isErupting"
-        [disabled]="isErupting" (click)="erupt()">
-        {{ isErupting ? phase : 'Erupt' }}
-      </button>
-    </section>
+        <p class="info-card__desc fade-in">{{ c.description }}</p>
 
-    <section class="result">
-      <header class="result__header">
-        <span class="result__vei">{{ outcome.vei }}</span>
-        <h2>{{ outcome.title }}</h2>
-      </header>
-      <p class="result__narrative">{{ outcome.narrative }}</p>
-      <div class="result__grid">
-        <div class="metric" (mouseenter)="hoveredMetric='plume'" (mouseleave)="hoveredMetric=null">
-          <span class="metric__label">Plume Height</span>
-          <span class="metric__value">{{ displayedPlume }} km</span>
-          <span class="metric__hint" *ngIf="hoveredMetric==='plume'">Height the ash column reaches above the vent</span>
+        <ul class="info-card__bullets fade-in" *ngIf="c.bullets.length">
+          <li *ngFor="let b of c.bullets">{{ b }}</li>
+        </ul>
+
+        <div class="map-inset fade-in" *ngIf="c.id === 'before-1991' || c.id === 'aftermath'">
+          <svg viewBox="0 0 220 200" class="map-inset__svg" role="img" aria-label="Map of Central Luzon showing Mount Pinatubo at the border of Zambales, Tarlac, and Pampanga">
+            <path class="map-inset__province map-inset__province--zambales" d="M18,30 L95,18 L88,150 L40,178 L14,140 Z" />
+            <path class="map-inset__province map-inset__province--tarlac" d="M95,18 L188,14 L176,96 L88,150 Z" />
+            <path class="map-inset__province map-inset__province--pampanga" d="M88,150 L176,96 L206,150 L150,188 L60,190 Z" />
+            <circle cx="92" cy="96" r="4.5" class="map-inset__pinatubo" />
+            <circle cx="150" cy="130" r="2.6" class="map-inset__landmark" />
+            <text x="30" y="70" class="map-inset__label">Zambales</text>
+            <text x="120" y="55" class="map-inset__label">Tarlac</text>
+            <text x="110" y="175" class="map-inset__label">Pampanga</text>
+            <text x="98" y="90" class="map-inset__label map-inset__label--peak">Pinatubo</text>
+            <text x="156" y="126" class="map-inset__label map-inset__label--small">Clark AB</text>
+          </svg>
+          <span class="map-inset__caption">Pinatubo sits almost exactly where Zambales, Tarlac, and Pampanga meet.</span>
         </div>
-        <div class="metric" (mouseenter)="hoveredMetric='pyro'" (mouseleave)="hoveredMetric=null">
-          <span class="metric__label">Pyroclastic Flows</span>
-          <span class="metric__value">{{ outcome.pyroclasticFlow ? 'Yes' : 'No' }}</span>
-          <span class="metric__hint" *ngIf="hoveredMetric==='pyro'">Fast-moving currents of hot gas and rock</span>
+
+        <div class="seismograph fade-in" *ngIf="c.id === 'early-unrest' || c.id === 'steam-and-gas' || c.id === 'magma-ascent' || c.id === 'escalating-activity'">
+          <div class="seismograph__label">
+            <span>Live Seismic Activity</span>
+            <span>{{ seismicLevel }}%</span>
+          </div>
+          <div class="panel__waveform" [style.--level]="seismicLevel">
+            <span *ngFor="let bar of bars" class="panel__bar"></span>
+          </div>
         </div>
-        <div class="metric metric--wide">
-          <span class="metric__label">Gas Pressure</span>
-          <span class="metric__value metric__value--text">{{ outcome.pressureNote }}</span>
+
+        <div class="eruption-block fade-in" *ngIf="c.id === 'eruption'">
+          <button class="panel__erupt" [class.panel__erupt--active]="isErupting"
+            [disabled]="isErupting" (click)="triggerEruption()">
+            {{ phase === 'idle' ? 'Trigger the Eruption' : (phase | uppercase) }}
+          </button>
+          <div class="eruption-block__readout" *ngIf="displayedPlume > 0">
+            Ash column climbing: <strong>{{ displayedPlume }} km</strong>
+          </div>
+          <button *ngIf="eruptionWitnessed" type="button" class="btn-ghost" (click)="continueToAftermath()">
+            Continue to Aftermath &rarr;
+          </button>
         </div>
-        <div class="metric metric--wide">
-          <span class="metric__label">Water Interaction</span>
-          <span class="metric__value metric__value--text">{{ outcome.waterNote }}</span>
+
+        <div class="aftermath-grid fade-in" *ngIf="c.id === 'aftermath'">
+          <div class="metric" *ngFor="let s of aftermathStats">
+            <span class="metric__label">{{ s.label }}</span>
+            <span class="metric__value">{{ s.value }}</span>
+            <span class="metric__hint">{{ s.hint }}</span>
+          </div>
         </div>
-        <div class="metric metric--wide">
-          <span class="metric__label">Viscosity Behavior</span>
-          <span class="metric__value metric__value--text">{{ outcome.viscosityNote }}</span>
+
+        <div class="info-card__nav">
+          <button type="button" class="nav-btn nav-btn--prev" (click)="goPrevious()" [disabled]="!canGoBack">
+            &larr; Previous
+          </button>
+          <button *ngIf="c.id !== 'aftermath' && c.id !== 'eruption'" type="button"
+            class="nav-btn nav-btn--next" (click)="goNext()" [disabled]="!canGoNext">
+            Next Chapter &rarr;
+          </button>
+          <button *ngIf="c.id === 'aftermath'" type="button" class="nav-btn nav-btn--next" (click)="replay()">
+            Replay from the Beginning &#8635;
+          </button>
         </div>
-      </div>
-    </section>
+      </section>
+    </ng-container>
+
+    <nav class="chapter-rail" aria-label="Eruption chapters">
+      <ol class="chapter-rail__track">
+        <li *ngFor="let c of chapters; let i = index"
+          class="chapter-card"
+          [class.chapter-card--active]="i === chapterIndex"
+          [class.chapter-card--done]="i < chapterIndex"
+          [class.chapter-card--locked]="!isUnlocked(i)"
+          [attr.aria-current]="i === chapterIndex ? 'step' : null"
+          [attr.aria-disabled]="!isUnlocked(i)"
+          (click)="goToChapter(i)">
+          <span class="chapter-card__thumb">
+            <span class="chapter-card__icon">{{ isUnlocked(i) && i < chapterIndex ? '✓' : c.icon }}</span>
+          </span>
+          <span class="chapter-card__body">
+            <span class="chapter-card__title">{{ c.title }}</span>
+            <span class="chapter-card__year">{{ c.year }}</span>
+          </span>
+          <span class="chapter-card__lock" *ngIf="!isUnlocked(i)">&#128274;</span>
+        </li>
+      </ol>
+    </nav>
   </div>
 </div>
